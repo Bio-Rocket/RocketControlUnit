@@ -636,7 +636,7 @@
 
 <div class="container">
 	<svelte:component this={BackgroundComponent} />
-
+<!-- 
 	<div class="ac1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="ac1_slider"
@@ -1081,7 +1081,7 @@
 		style="top: calc(var(--container-width) * 0.47);"
 		on:click={() => instantStateChange("RSC_MEV_CLOSE")}>Close MEV</button
 		>
-	{/if}
+	{/if} -->
 </div>
 
 <style>
