@@ -12,7 +12,7 @@
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://192.168.0.69:8090');
+	const PB = new PocketBase('http://127.0.0.1:8090');
 	
 	PB.authStore.clear();
 
@@ -98,47 +98,14 @@
     }
 
 	let containerElement: any;
+	let intervalId: any;
 
-	interface Timestamps {
-		[key: string]: number;
-	}
-
-	let timestamps: Timestamps = {
-		relay_status: Date.now(),
-		combustion_control_status: Date.now(),
-		rcu_temp: Date.now(),
-		pad_box_status: Date.now(),
-		battery: Date.now(),
-		dmb_pressure: Date.now(),
-		launch_rail_load_cell: Date.now(),
-		nos_load_cell: Date.now(),
-		pbb_pressure: Date.now(),
-		pbb_temperature: Date.now(),
-		rcu_pressure: Date.now(),
-		sob_temperature: Date.now(),
-		sys_state: Date.now(),
-		heartbeat: Date.now(),
-	};
+    onDestroy(() => {
+        clearInterval(intervalId); // Stop the interval when the component is destroyed
+    });
 
 	onMount(() => {
 		containerElement = document.querySelector('.container') as HTMLElement;
-
-		setInterval(() => {
-			for (let variable in timestamps) {
-				let elements = document.getElementsByClassName(variable);
-				if (!elements.length) continue;
-
-				for(let i = 0; i < elements.length; i++) {
-					let element = elements[i];
-
-					if (Date.now() - timestamps[variable] > 5000) {
-						element.classList.add('outdated');
-					} else {
-						element.classList.remove('outdated');
-					}
-				}
-			}
-		}, 1000);
 
 		// Define the resize handler
 		const handleResize = () => {
@@ -169,59 +136,55 @@
 		};
 	});
 
-	let intervalId: any;
-
-    onDestroy(() => {
-        clearInterval(intervalId); // Stop the interval when the component is destroyed
-    });
-
-	const ac1_open = writable(undefined);
-
 	const pbv1_open = writable(undefined);
 	const pbv2_open = writable(undefined);
 	const pbv3_open = writable(undefined);
 	const pbv4_open = writable(undefined);
+	const pbv5_open = writable(undefined);
+	const pbv6_open = writable(undefined);
+	const pbv7_open = writable(undefined);
+	const pbv8_open = writable(undefined);
 
-	const sol5_open = writable(undefined);
-	const sol6_open = writable(undefined);
-	const sol7_open = writable(undefined);
-	const sol8a_open = writable(undefined);
-	const sol8b_open = writable(undefined);
+	const sol1_open = writable(undefined);
+	const sol2_open = writable(undefined);
+	const sol3_open = writable(undefined);
+	const sol4_open = writable(undefined);
 
-	const continuity1 = writable(undefined);
-	const continuity2 = writable(undefined);
-	const box1_on = writable(undefined);
-	const box2_on = writable(undefined);
+	const ign1_on = writable(undefined);
+	const ign2_on = writable(undefined);
 
-	const vent_open = writable(undefined);
-	const drain_open = writable(undefined);
-	const mev_open = writable(undefined);
+	const tc1_temperature: Writable<string | number | undefined> = writable(undefined);
+	const tc2_temperature: Writable<string | number | undefined> = writable(undefined);
+	const tc3_temperature: Writable<string | number | undefined> = writable(undefined);
+	const tc4_temperature: Writable<string | number | undefined> = writable(undefined);
+	const tc5_temperature: Writable<string | number | undefined> = writable(undefined);
+	const tc6_temperature: Writable<string | number | undefined> = writable(undefined);
+	const tc7_temperature: Writable<string | number | undefined> = writable(undefined);
+	const tc8_temperature: Writable<string | number | undefined> = writable(undefined);
 
-	const rcu_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
-	const rcu_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
-
-	const battery_voltage = writable(undefined);
-	const power_source = writable(undefined);
-
-	const upper_pv_pressure: Writable<string | number | undefined> = writable(undefined);
-
-	const rocket_mass = writable(undefined);
-
-	const nos1_mass = writable(undefined);
-	const nos2_mass = writable(undefined);
-
-	const ib_pressure: Writable<string | number | undefined> = writable(undefined);
-	const lower_pv_pressure: Writable<string | number | undefined> = writable(undefined);
-
-	const pv_temperature: Writable<string | number | undefined> = writable(undefined);
+	const lc1_mass = writable(undefined);
+	const lc2_mass = writable(undefined);
+	const lc3_mass = writable(undefined);
+	const lc4_mass = writable(undefined);
+	const lc5_mass = writable(undefined);
+	const lc6_mass = writable(undefined);
 
 	const pt1_pressure: Writable<string | number | undefined> = writable(undefined);
 	const pt2_pressure: Writable<string | number | undefined> = writable(undefined);
 	const pt3_pressure: Writable<string | number | undefined> = writable(undefined);
 	const pt4_pressure: Writable<string | number | undefined> = writable(undefined);
-
-	const sob_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
-	const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
+	const pt5_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt6_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt7_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt8_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt9_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt10_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt11_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt12_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt13_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt14_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt15_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt16_pressure: Writable<string | number | undefined> = writable(undefined);
 
 	const system_state: Writable<string | undefined> = writable(undefined);
 
@@ -229,52 +192,55 @@
 	const timer_period: Writable<number | undefined> = writable(undefined);
 	const timer_remaining: Writable<number | undefined> = writable(undefined);
 
-	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
-
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSE';
-	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'OPEN' : 'CLOSE';
+	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'CLOSE' : 'OPEN';
 	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSE';
 	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSE' : 'OPEN';
+	$: pbv5_display = $pbv5_open === undefined ? 'N/A' : $pbv5_open ? 'OPEN' : 'CLOSE';
+	$: pbv6_display = $pbv6_open === undefined ? 'N/A' : $pbv6_open ? 'OPEN' : 'CLOSE';
+	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'CLOSE' : 'OPEN';
+	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'CLOSE' : 'OPEN';
 
-	$: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSE';
-	$: sol6_display = $sol6_open === undefined ? 'N/A' : $sol6_open ? 'OPEN' : 'CLOSE';
-	$: sol7_display = $sol7_open === undefined ? 'N/A' : $sol7_open ? 'OPEN' : 'CLOSE';
-	$: sol8a_display = $sol8a_open === undefined ? 'N/A' : $sol8a_open ? 'OPEN' : 'CLOSE';
-	$: sol8b_display = $sol8b_open === undefined ? 'N/A' : $sol8b_open ? 'OPEN' : 'CLOSE';
+	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSE';
+	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSE';
+	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSE';
+	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSE';
 
-	$: box1_display = $box1_on === undefined ? 'N/A' : $box1_on ? 'LIVE' : 'DEAD';
-	$: box2_display = $box2_on === undefined ? 'N/A' : $box2_on ? 'LIVE' : 'DEAD';
+	$: ign1_display = $ign1_on === undefined ? 'N/A' : $ign1_on ? 'LIVE' : 'DEAD';
+	$: ign2_display = $ign2_on === undefined ? 'N/A' : $ign2_on ? 'LIVE' : 'DEAD';
 
-	$: vent_display = $vent_open === undefined ? 'N/A' : $vent_open ? 'OPEN' : 'CLOSED';
-	$: drain_display = $drain_open === undefined ? 'N/A' : $drain_open ? 'OPEN' : 'CLOSED';
+	$: tc1_display = $tc1_temperature === undefined ? 'N/A' : $tc1_temperature;
+	$: tc2_display = $tc2_temperature === undefined ? 'N/A' : $tc2_temperature;
+	$: tc3_display = $tc3_temperature === undefined ? 'N/A' : $tc3_temperature;
+	$: tc4_display = $tc4_temperature === undefined ? 'N/A' : $tc4_temperature;
+	$: tc5_display = $tc5_temperature === undefined ? 'N/A' : $tc5_temperature;
+	$: tc6_display = $tc6_temperature === undefined ? 'N/A' : $tc6_temperature;
+	$: tc7_display = $tc7_temperature === undefined ? 'N/A' : $tc7_temperature;
+	$: tc8_display = $tc8_temperature === undefined ? 'N/A' : $tc8_temperature;
 
-	$: rcu_tc1_display = $rcu_tc1_temperature === undefined ? 'N/A' : $rcu_tc1_temperature;
-	$: rcu_tc2_display = $rcu_tc2_temperature === undefined ? 'N/A' : $rcu_tc2_temperature;
-
-	$: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
-
-	$: battery_display = $battery_voltage === undefined ? 'N/A' : $battery_voltage;
-	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ROCKET' : 'GROUND';
-
-	$: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
-
-	$: rocket_mass_display = $rocket_mass === undefined ? 'N/A' : Number($rocket_mass).toFixed(2);
-
-	$: nos1_mass_display = $nos1_mass === undefined ? 'N/A' : Number($nos1_mass).toFixed(2);
-	$: nos2_mass_display = $nos2_mass === undefined ? 'N/A' : Number($nos2_mass).toFixed(2);
-
-	$: ib_pressure_display = $ib_pressure === undefined ? 'N/A' : $ib_pressure;
-	$: lower_pv_display = $lower_pv_pressure === undefined ? 'N/A' : $lower_pv_pressure;
-
-	$: pv_temperature_display = $pv_temperature === undefined ? 'N/A' : $pv_temperature;
+	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : Number($lc1_mass).toFixed(2);
+	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : Number($lc2_mass).toFixed(2);
+	$: lc3_mass_display = $lc3_mass === undefined ? 'N/A' : Number($lc3_mass).toFixed(2);
+	$: lc4_mass_display = $lc4_mass === undefined ? 'N/A' : Number($lc4_mass).toFixed(2);
+	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
+	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
 
 	$: pt1_pressure_display = $pt1_pressure === undefined ? 'N/A' : $pt1_pressure;
 	$: pt2_pressure_display = $pt2_pressure === undefined ? 'N/A' : $pt2_pressure;
 	$: pt3_pressure_display = $pt3_pressure === undefined ? 'N/A' : $pt3_pressure;
 	$: pt4_pressure_display = $pt4_pressure === undefined ? 'N/A' : $pt4_pressure;
-
-	$: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
-	$: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
+	$: pt5_pressure_display = $pt5_pressure === undefined ? 'N/A' : $pt5_pressure;
+	$: pt6_pressure_display = $pt6_pressure === undefined ? 'N/A' : $pt6_pressure;
+	$: pt7_pressure_display = $pt7_pressure === undefined ? 'N/A' : $pt7_pressure;
+	$: pt8_pressure_display = $pt8_pressure === undefined ? 'N/A' : $pt8_pressure;
+	$: pt9_pressure_display = $pt9_pressure === undefined ? 'N/A' : $pt9_pressure;
+	$: pt10_pressure_display = $pt10_pressure === undefined ? 'N/A' : $pt10_pressure;
+	$: pt11_pressure_display = $pt11_pressure === undefined ? 'N/A' : $pt11_pressure;
+	$: pt12_pressure_display = $pt12_pressure === undefined ? 'N/A' : $pt12_pressure;
+	$: pt13_pressure_display = $pt13_pressure === undefined ? 'N/A' : $pt13_pressure;
+	$: pt14_pressure_display = $pt14_pressure === undefined ? 'N/A' : $pt14_pressure;
+	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
+	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
 
 	$: system_state_display = $system_state === undefined 
     ? 'N/A' 
@@ -290,211 +256,83 @@
 	? 'N/A' 
 	: ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
-	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
-	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
-	$: rcuTempOutdated = Date.now() - timestamps.rcu_temp > 5000;
-	$: batteryOutdated = Date.now() - timestamps.battery > 5000;
-	$: dmbPressureOutdated = Date.now() - timestamps.dmb_pressure > 5000;
-	$: launchRailLoadCellOutdated = Date.now() - timestamps.launch_rail_load_cell > 5000;
-	$: nosLoadCellOutdated = Date.now() - timestamps.nos_load_cell > 5000;
-	$: pbbPressureOutdated = Date.now() - timestamps.pbb_pressure > 5000;
-	$: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
-	$: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
-	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
-	$: sysStateOutdated = Date.now() - timestamps.system_state > 5000;
-	$: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
+	onMount(() => {
+		const interval = setInterval(async () => {
+		try {
+			// Query the most recent record from 'LabJack1' collection
+			const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
+			const labJack1Data = labJack1Record.lj1_data;
+			pt7_pressure.set(labJack1Data[0]);
+			pt8_pressure.set(labJack1Data[1]);
+			pt9_pressure.set(labJack1Data[2]);
+			pt10_pressure.set(labJack1Data[3]);
+			pt11_pressure.set(labJack1Data[4]);
+			pt12_pressure.set(labJack1Data[5]);
+			sol1_open.set(labJack1Data[6]);
+			sol2_open.set(labJack1Data[7]);
+			sol3_open.set(labJack1Data[8]);
+			sol4_open.set(labJack1Data[9]);
 
-	onMount(async () => {
-		// Subscribe to changes in the 'RelayStatus' collection
-		PB.collection('RelayStatus').subscribe('*', function (e) {
-			ac1_open.set(e.record.ac1_open);
+			const labJack2Record = await PB.collection('LabJack2').getFirstListItem("", { sort: '-created' })
+			const labJack2Data = labJack2Record.lj2_data;
+			lc3_mass.set(labJack2Data[0]);
+			lc4_mass.set(labJack2Data[1]);
+			lc5_mass.set(labJack2Data[2]);
+			lc6_mass.set(labJack2Data[3]);
+			pt13_pressure.set(labJack2Data[4]);
+			pt14_pressure.set(labJack2Data[5]);
 
-			pbv1_open.set(e.record.pbv1_open);
-			pbv2_open.set(e.record.pbv2_open);
-			pbv3_open.set(e.record.pbv3_open);
-			pbv4_open.set(e.record.pbv4_open);
+			const plcRecord = await PB.collection('PLC').getFirstListItem("", { sort: '-created' })
+			const plcData = plcRecord.plc_data;
+			pt1_pressure.set(plcData[0]);
+			pt2_pressure.set(plcData[1]);
+			pt3_pressure.set(plcData[2]);
+			pt4_pressure.set(plcData[3]);
+			pt5_pressure.set(plcData[4]);
+			pt6_pressure.set(plcData[5]);
+			pt15_pressure.set(plcData[6]);
+			pt16_pressure.set(plcData[7]);
+			tc1_temperature.set(plcData[8]);
+			tc2_temperature.set(plcData[9]);
+			tc3_temperature.set(plcData[10]);
+			tc4_temperature.set(plcData[11]);
+			tc5_temperature.set(plcData[12]);
+			tc6_temperature.set(plcData[13]);
+			tc7_temperature.set(plcData[14]);
+			tc8_temperature.set(plcData[15]);
+			lc1_mass.set(plcData[16]);
+			lc2_mass.set(plcData[17]);
+			pbv1_open.set(plcData[18]);
+			pbv2_open.set(plcData[19]);
+			pbv3_open.set(plcData[20]);
+			pbv4_open.set(plcData[21]);
+			pbv5_open.set(plcData[22]);
+			pbv6_open.set(plcData[23]);
+			pbv7_open.set(plcData[24]);
+			pbv8_open.set(plcData[25]);
 
-			sol5_open.set(e.record.sol5_open);
-			sol6_open.set(e.record.sol6_open);
-			sol7_open.set(e.record.sol7_open);
-			sol8a_open.set(e.record.sol8a_open);
-			sol8b_open.set(e.record.sol8b_open);
-			timestamps.relay_status = Date.now();
-		});
+			// Query the most recent record from 'sys_state' collection
+			// const sysStateRecord = await queryMostRecentRecord('sys_state');
+			// currentState.set(sysStateRecord.rocket_state);
+			// system_state.set(sysStateRecord.sys_state);
+			// timestamps.sys_state = Date.now();
 
-		// Subscribe to changes in the 'CombustionControlStatus' collection
-		PB.collection('CombustionControlStatus').subscribe('*', function (e) {
-			// Update the CombustionControlStatus data store whenever a change is detected
-			vent_open.set(e.record.vent_open);
-			drain_open.set(e.record.drain_open);
-			mev_open.set(e.record.mev_open);
-			timestamps.combustion_control_status = Date.now();
-		});
+			// // Query the most recent record from 'hb_state' collection
+			// const hbStateRecord = await queryMostRecentRecord('hb_state');
+			// timer_state.set(hbStateRecord.timer_state);
+			// timer_period.set(hbStateRecord.timer_period);
+			// timer_remaining.set(hbStateRecord.timer_remaining);
+			// timestamps.hb_state = Date.now();
+		} catch (error) {
+			console.error('Error querying records:', error);
+		}
+		}, 200);
 
-		// Subscribe to changes in the 'RcuTemp' collection
-		PB.collection('RcuTemperature').subscribe('*', function (e) {
-			// Update the RcuTemp data store whenever a change is detected
-			if(e.record.tc1_temperature == 9999) {
-				rcu_tc1_temperature.set('DC');
-			}
-			else {
-				rcu_tc1_temperature.set(Math.round(e.record.tc1_temperature/100));
-			}
-
-			if(e.record.tc2_temperature == 9999) {
-				rcu_tc2_temperature.set('DC');
-			}
-			else {
-				rcu_tc2_temperature.set(Math.round(e.record.tc2_temperature/100));
-			}
-			timestamps.rcu_temp = Date.now();
-		});
-
-		// Subscribe to changes in the 'PadBoxStatus' collection
-		PB.collection('PadBoxStatus').subscribe('*', function (e) {
-			// Update the PadBoxStatus data store whenever a change is detected
-			continuity1.set(e.record.continuity_1);
-			continuity2.set(e.record.continuity_2);
-			box1_on.set(e.record.box1_on);
-			box2_on.set(e.record.box2_on);
-			timestamps.pad_box_status = Date.now();
-		});
-
-		// Subscribe to changes in the 'Battery' collection
-		PB.collection('Battery').subscribe('*', function (e) {
-			// Update the Battery data store whenever a change is detected
-			battery_voltage.set(e.record.voltage);
-			power_source.set(e.record.power_source);
-			timestamps.battery = Date.now();
-		});
-
-		// Subscribe to changes in the 'DmbPressure' collection
-		PB.collection('DmbPressure').subscribe('*', function (e) {
-			// Update the DmbPressure data store whenever a change is detected
-			if (e.record.upper_pv_pressure < -100000) {
-				upper_pv_pressure.set('DC');
-			}
-			else {
-				upper_pv_pressure.set(Math.round(e.record.upper_pv_pressure/1000));
-			}
-			timestamps.dmb_pressure = Date.now();
-		});
-
-		// Subscribe to changes in the 'LaunchRailLoadCell' collection
-		PB.collection('LaunchRailLoadCell').subscribe('*', function (e) {
-			// Update the LaunchRailLoadCell data store whenever a change is detected
-			rocket_mass.set(e.record.rocket_mass);
-			timestamps.launch_rail_load_cell = Date.now();
-		});
-
-		// Subscribe to changes in the 'NosLoadCell' collection
-		PB.collection('NosLoadCell').subscribe('*', function (e) {
-			// Update the NosLoadCell data store whenever a change is detected
-			nos1_mass.set(e.record.nos1_mass);
-			nos2_mass.set(e.record.nos2_mass);
-			timestamps.nos_load_cell = Date.now();
-		});
-
-		// Subscribe to changes in the 'PbbPressure' collection
-		PB.collection('PbbPressure').subscribe('*', function (e) {
-			// Update the PbbPressure data store whenever a change is detected
-			if (e.record.ib_pressure < -100000) {
-				ib_pressure.set('DC');
-			}
-			else {
-				ib_pressure.set(Math.round(e.record.ib_pressure/1000));
-			}
-			if (e.record.lower_pv_pressure < -100000) {
-				lower_pv_pressure.set('DC');
-			}
-			else {
-				lower_pv_pressure.set(Math.round(e.record.lower_pv_pressure/1000));
-			}
-			timestamps.pbb_pressure = Date.now();
-		});
-
-		// Subscribe to changes in the 'PbbTemperature' collection
-		PB.collection('PbbTemperature').subscribe('*', function (e) {
-			// Update the PbbTemperature data store whenever a change is detected
-			if(e.record.ib_temperature == 9999) {
-				pv_temperature.set('DC');
-			}
-			else {
-				pv_temperature.set(Math.round(e.record.ib_temperature/100));
-			}
-			timestamps.pbb_temperature = Date.now();
-		});
-
-		// Subscribe to changes in the 'RcuPressure' collection
-		PB.collection('RcuPressure').subscribe('*', function (e) {
-			// Update the RcuPressure data store whenever a change is detected
-			if(e.record.pt1_pressure <-100) {
-				pt1_pressure.set('DC');
-			}
-			else {
-				pt1_pressure.set(e.record.pt1_pressure);
-			}
-			if(e.record.pt2_pressure <-100) {
-				pt2_pressure.set('DC');
-			}
-			else {
-				pt2_pressure.set(e.record.pt2_pressure);
-			}
-			if(e.record.pt3_pressure <-100) {
-				pt3_pressure.set('DC');
-			}
-			else {
-				pt3_pressure.set(e.record.pt3_pressure);
-			}
-			if(e.record.pt4_pressure <-100) {
-				pt4_pressure.set('DC');
-			}
-			else {
-				pt4_pressure.set(e.record.pt4_pressure);
-			}
-			timestamps.rcu_pressure = Date.now();
-		});
-
-		// Subscribe to changes in the 'SobTemperature' collection
-		PB.collection('SobTemperature').subscribe('*', function (e) {
-			// Update the SobTemperature data store whenever a change is detected
-			if(e.record.tc1_temperature == 9999) {
-				sob_tc1_temperature.set('DC');
-			}
-			else {
-				sob_tc1_temperature.set(Math.round(e.record.tc1_temperature/100));
-			}
-
-			if(e.record.tc2_temperature == 9999) {
-				sob_tc2_temperature.set('DC');
-			}
-			else {
-				sob_tc2_temperature.set(Math.round(e.record.tc2_temperature/100));
-			}
-			timestamps.sob_temperature = Date.now();
-		});
-
-		// Subscribe to changes in the 'sys_state' collection
-		PB.collection('sys_state').subscribe('*', function (e) {
-			// Update the SystemState data store whenever a change is detected
-			currentState.set(e.record.rocket_state);
-			system_state.set(e.record.sys_state);
-			timestamps.sys_state = Date.now();
-		});
-
-		// Subscribe to changes in the 'HeartbeatTelemetry' collection
-		PB.collection('hb_state').subscribe('*', function (e) {
-			// Update the Heartbeat data store whenever a change is detected
-			timer_state.set(e.record.timer_state);
-			timer_period.set(e.record.timer_period);
-			timer_remaining.set(e.record.timer_remaining);
-			timestamps.heartbeat = Date.now();
-		});
+		return () => clearInterval(interval);
 	});
 
-	async function handleSliderChange(
+	async function handleLabJackSliderChange(
 		e: any,
-		target: string,
 		openCommand: string,
 		closeCommand: string
 	) {
@@ -504,9 +342,25 @@
 		const command = e.target.checked ? openCommand : closeCommand;
 
 		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
+		await PB.collection('LabJack1Commands').create({
 			// Write a new record with all current values
-			target: target,
+			command: command
+		});
+	}
+
+	async function handlePlcSliderChange(
+		e: any,
+		openCommand: string,
+		closeCommand: string
+	) {
+		e.preventDefault();
+
+		// Determine the command based on the current value of the slider
+		const command = e.target.checked ? openCommand : closeCommand;
+
+		// Create a change on the 'RelayStatus' collection
+		await PB.collection('PlcCommands').create({
+			// Write a new record with all current values
 			command: command
 		});
 	}
@@ -514,19 +368,17 @@
 	let wasLiveAtAnyPoint = false;
 
 	async function pollIgnitors() {
-		if (box1_display === 'LIVE' || box2_display === 'LIVE') {
+		if (ign1_display === 'LIVE' || ign2_display === 'LIVE') {
 			wasLiveAtAnyPoint = true;
 		}
 	}
 
 	async function handleLaunchSequence() {
-		await PB.collection('CommandMessage').create({
-			target: 'NODE_RCU',
+		await PB.collection('PlcCommands').create({
 			command: 'RCU_IGNITE_PAD_BOX1'
 		});
 
-		await PB.collection('CommandMessage').create({
-			target: 'NODE_RCU',
+		await PB.collection('PlcCommands').create({
 			command: 'RCU_IGNITE_PAD_BOX2'
 		});
 
@@ -538,8 +390,7 @@
 
 		if (wasLiveAtAnyPoint) {
 			for (let i = 0; i < 3; i++) {
-				await PB.collection('CommandMessage').create({
-					target: 'NODE_DMB',
+				await PB.collection('PlcCommands').create({
 					command: 'RSC_IGNITION_TO_LAUNCH'
 				});
 				await new Promise(resolve => setTimeout(resolve, 100));
@@ -628,358 +479,452 @@
 	// NOTE: This seems odd but since the event will switch these MUST be swapped
 	// Open to alternate ways of doing it. Everything I tried didn't work.
 	async function handleIgnition(e: MouseEvent) {
-		await handleSliderChange(e, 'NODE_RCU', 'RCU_IGNITE_PAD_BOX1', 'RCU_KILL_BOX1');
-		await handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_PAD_BOX2');
+		await handlePlcSliderChange(e, 'RCU_IGNITE_PAD_BOX1', 'RCU_KILL_BOX1');
+		await handlePlcSliderChange(e, 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_PAD_BOX2');
 	}
 
 </script>
 
 <div class="container">
 	<svelte:component this={BackgroundComponent} />
-<!-- 
-	<div class="ac1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
-		<SlideToggle
-			name="ac1_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$ac1_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}
-		>
-			{ac1_display}</SlideToggle
-		>
-	</div>
 
-	<div class="pbv1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv1_slider">
 		<SlideToggle
 			name="pbv1_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv1_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV1', 'RCU_CLOSE_PBV1')}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV1', 'CLOSE_PBV1')}
 		>
 			{pbv1_display}</SlideToggle
 		>
 	</div>
 
-	<div class="pbv2_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv2_slider">
 		<SlideToggle
 			name="pbv2_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv2_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV2', 'RCU_CLOSE_PBV2')}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV2', 'CLOSE_PBV2')}
 		>
 			{pbv2_display}</SlideToggle
 		>
 	</div>
 
-	<div class="pbv3_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv3_slider">
 		<SlideToggle
 			name="pbv3_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv3_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV3', 'RCU_CLOSE_PBV3')}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV3', 'CLOSE_PBV3')}
 		>
 			{pbv3_display}</SlideToggle
 		>
 	</div>
 
-	<div class="pbv4_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv4_slider">
 		<SlideToggle
 			name="pbv4_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv4_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV4', 'RCU_CLOSE_PBV4')}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV4', 'CLOSE_PBV4')}
 		>
 			{pbv4_display}</SlideToggle
 		>
 	</div>
-	
-	<div class="sol5_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+
+	<div class="pbv5_slider">
 		<SlideToggle
-			name="sol5_slider"
+			name="pbv5_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$sol5_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL5', 'RCU_CLOSE_SOL5')}
+			bind:checked={$pbv5_open}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV5', 'CLOSE_PBV5')}
 		>
-			{sol5_display}</SlideToggle
+			{pbv5_display}</SlideToggle
 		>
 	</div>
 
-	<div class="sol6_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv6_slider">
 		<SlideToggle
-			name="sol6_slider"
+			name="pbv6_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$sol6_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL6', 'RCU_CLOSE_SOL6')}
+			bind:checked={$pbv6_open}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV6', 'CLOSE_PBV6')}
 		>
-			{sol6_display}</SlideToggle
+			{pbv6_display}</SlideToggle
 		>
 	</div>
 
-	<div class="sol7_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv7_slider">
 		<SlideToggle
-			name="sol7_slider"
+			name="pbv7_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$sol7_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL7', 'RCU_CLOSE_SOL7')}
+			bind:checked={$pbv7_open}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV7', 'CLOSE_PBV7')}
 		>
-			{sol7_display}</SlideToggle
+			{pbv7_display}</SlideToggle
 		>
 	</div>
 
-	<div class="sol8a_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv8_slider">
 		<SlideToggle
-			name="sol8a_slider"
+			name="pbv8_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$sol8a_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8A', 'RCU_CLOSE_SOL8A')}
+			bind:checked={$pbv8_open}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV8', 'CLOSE_PBV8')}
 		>
-			{sol8a_display}</SlideToggle
+			{pbv8_display}</SlideToggle
 		>
 	</div>
 
-	<div class="sol8b_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="sol1_slider">
 		<SlideToggle
-			name="sol8b_slider"
+			name="sol1_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$sol8b_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}
+			bind:checked={$sol1_open}
+			on:click={(e) => handleLabJackSliderChange(e, 'OPEN_SOL1', 'CLOSE_SOL1')}
 		>
-			{sol8b_display}</SlideToggle
+			{sol1_display}</SlideToggle
 		>
 	</div>
 
-	<div class="vent_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
+	<div class="sol2_slider">
 		<SlideToggle
-			name="vent_slider"
+			name="sol2_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$vent_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_VENT', 'RSC_CLOSE_VENT')}
+			bind:checked={$sol2_open}
+			on:click={(e) => handleLabJackSliderChange(e, 'OPEN_SOL2', 'CLOSE_SOL2')}
 		>
-			{vent_display}</SlideToggle
+			{sol2_display}</SlideToggle
 		>
 	</div>
 
-	<div class="drain_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
+	<div class="sol3_slider">
 		<SlideToggle
-			name="drain_slider"
+			name="sol3_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$drain_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_DRAIN', 'RSC_CLOSE_DRAIN')}
+			bind:checked={$sol3_open}
+			on:click={(e) => handleLabJackSliderChange(e, 'OPEN_SOL3', 'CLOSE_SOL3')}
 		>
-			{drain_display}</SlideToggle
+			{sol3_display}</SlideToggle
 		>
 	</div>
 
-	<div class="power_source_slider battery {batteryOutdated  ? 'outdated' : ''}">
+	<div class="sol4_slider">
 		<SlideToggle
-			name="power_source_slider"
+			name="sol4_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$power_source}
-			on:click={(e) =>
-				handleSliderChange(
-					e,
-					'NODE_DMB',
-					'RSC_POWER_TRANSITION_ONBOARD',
-					'RSC_POWER_TRANSITION_EXTERNAL'
-				)}
+			bind:checked={$sol4_open}
+			on:click={(e) => handleLabJackSliderChange(e, 'OPEN_SOL4', 'CLOSE_SOL4')}
 		>
-			{power_display}</SlideToggle
+			{sol4_display}</SlideToggle
 		>
 	</div>
 
 	{#if $currentState === "RS_IGNITION" || $currentState === "RS_TEST" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
-		<div class="box1_slider">
+		<div class="ign1_slider">
 			<SlideToggle
-				name="box1_slider"
+				name="ign1_slider"
 				active="bg-primary-500 dark:bg-primary-500"
 				size="sm"
-				bind:checked={$box1_on}
+				bind:checked={$ign1_on}
 				on:click={handleIgnition}
 				disabled={$currentState === "RS_IGNITION" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
 			>
-				{box1_display}</SlideToggle
+				{ign1_display}</SlideToggle
 			>
 		</div>
 
-		<div class="box2_slider">
+		<div class="ign2_slider">
 			<SlideToggle
-				name="box2_slider"
+				name="ign2_slider"
 				active="bg-primary-500 dark:bg-primary-500"
 				size="sm"
-				bind:checked={$box2_on}
+				bind:checked={$ign2_on}
 				on:click={handleIgnition}
 				disabled={$currentState === "RS_IGNITION" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
 			>
-				{box2_display}</SlideToggle
+				{ign2_display}</SlideToggle
 			>
 		</div>
 	{/if}
 
-	<div class="nos1_tare_button">
+	<div class="lc1_tare_button">
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("NOS1")}
+			on:click={() => performTare("LC1")}
 		>
 			TARE
 		</button>
 	</div>
 
-	<div class="nos1_cal_button">
+	<div class="lc1_cal_button">
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
 			on:click={() => {
-				writeLoadCellCommandMessage("NOS1", "CANCEL", 0);
-				confirmRemoveWeight("NOS1");}}
+				writeLoadCellCommandMessage("LC1", "CANCEL", 0);
+				confirmRemoveWeight("LC1");}}
 		>
 			CAL
 		</button>
 	</div>
 
-	<div class="nos2_tare_button">
+	<div class="lc2_tare_button">
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("NOS2")}
+			on:click={() => performTare("LC2")}
 		>
 			TARE
 		</button>
 	</div>
 
-	<div class="nos2_cal_button">
+	<div class="lc2_cal_button">
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
 			on:click={() => {
-				writeLoadCellCommandMessage("NOS2", "CANCEL", 0);	
-				confirmRemoveWeight("NOS2");}}
+				writeLoadCellCommandMessage("LC2", "CANCEL", 0);
+				confirmRemoveWeight("LC2");}}
 		>
 			CAL
 		</button>
 	</div>
 
-	<div class="rail_tare_button">
+	<div class="lc3_tare_button">
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LAUNCHRAIL")}
+			on:click={() => performTare("LC3")}
 		>
 			TARE
 		</button>
 	</div>
 
-	<div class="rail_cal_button">
+	<div class="lc3_cal_button">
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
-			on:click={() => { 
-				writeLoadCellCommandMessage("LAUNCHRAIL", "CANCEL", 0);
-				confirmRemoveWeight("LAUNCHRAIL");}}
+			on:click={() => {
+				writeLoadCellCommandMessage("LC3", "CANCEL", 0);
+				confirmRemoveWeight("LC3");}}
 		>
 			CAL
 		</button>
 	</div>
 
-	<div class="rcu_tc1 rcu_temp {rcuTempOutdated ? 'outdated' : ''}">
-		<p>{rcu_tc1_display}</p>
+	<div class="lc4_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("LC4")}
+		>
+			TARE
+		</button>
 	</div>
 
-	<div class="rcu_tc2 rcu_temp {rcuTempOutdated ? 'outdated' : ''}">
-		<p>{rcu_tc2_display}</p>
+	<div class="lc4_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => {
+				writeLoadCellCommandMessage("LC4", "CANCEL", 0);
+				confirmRemoveWeight("LC4");}}
+		>
+			CAL
+		</button>
 	</div>
 
-	<div class="nos1 nos_load_cell {nosLoadCellOutdated ? 'outdated' : ''}">
-		<p>{nos1_mass_display}</p>
+	<div class="lc5_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("LC5")}
+		>
+			TARE
+		</button>
 	</div>
 
-	<div class="nos2 nos_load_cell {nosLoadCellOutdated ? 'outdated' : ''}">
-		<p>{nos2_mass_display}</p>
+	<div class="lc5_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => {
+				writeLoadCellCommandMessage("LC5", "CANCEL", 0);
+				confirmRemoveWeight("LC5");}}
+		>
+			CAL
+		</button>
 	</div>
 
-	<div class="pt1_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
+	<div class="lc6_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("LC6")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="lc6_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => {
+				writeLoadCellCommandMessage("LC6", "CANCEL", 0);
+				confirmRemoveWeight("LC6");}}
+		>
+			CAL
+		</button>
+	</div>
+
+	<div class="tc1_temperature">
+		<p>{tc1_display}</p>
+	</div>
+
+	<div class="tc2_temperature">
+		<p>{tc2_display}</p>
+	</div>
+
+	<div class="tc3_temperature">
+		<p>{tc3_display}</p>
+	</div>
+
+	<div class="tc4_temperature">
+		<p>{tc4_display}</p>
+	</div>
+
+	<div class="tc5_temperature">
+		<p>{tc5_display}</p>
+	</div>
+
+	<div class="tc6_temperature">
+		<p>{tc6_display}</p>
+	</div>
+
+	<div class="tc7_temperature">
+		<p>{tc7_display}</p>
+	</div>
+
+	<div class="tc8_temperature">
+		<p>{tc8_display}</p>
+	</div>
+
+	<div class="lc1_mass">
+		<p>{lc1_mass_display}</p>
+	</div>
+
+	<div class="lc2_mass">
+		<p>{lc2_mass_display}</p>
+	</div>
+
+	<div class="lc3_mass">
+		<p>{lc3_mass_display}</p>
+	</div>
+
+	<div class="lc4_mass">
+		<p>{lc4_mass_display}</p>
+	</div>
+
+	<div class="lc5_mass">
+		<p>{lc5_mass_display}</p>
+	</div>
+
+	<div class="lc6_mass">
+		<p>{lc6_mass_display}</p>
+	</div>
+
+	<div class="pt1_pressure">
 		<p>{pt1_pressure_display}</p>
 	</div>
 
-	<div class="pt2_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
+	<div class="pt2_pressure">
 		<p>{pt2_pressure_display}</p>
 	</div>
 
-	<div class="pt3_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
+	<div class="pt3_pressure">
 		<p>{pt3_pressure_display}</p>
 	</div>
 
-	<div class="pt4_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
+	<div class="pt4_pressure">
 		<p>{pt4_pressure_display}</p>
 	</div>
 
-	<div class="box1_continuity">
+	<div class="pt5_pressure">
+		<p>{pt5_pressure_display}</p>
 	</div>
 
-	<div class="box2_continuity">
+	<div class="pt6_pressure">
+		<p>{pt6_pressure_display}</p>
 	</div>
 
-	<div class="mev_status combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
-		<p>{mev_display}</p>
+	<div class="pt7_pressure">
+		<p>{pt7_pressure_display}</p>
 	</div>
 
-	<div class="battery_voltage  battery {batteryOutdated ? 'outdated' : ''}">
-		<p>{battery_display}</p>
+	<div class="pt8_pressure">
+		<p>{pt8_pressure_display}</p>
 	</div>
 
-	<div class="upper_pv_pressure">
-		<p>{upper_pv_display}</p>
+	<div class="pt9_pressure">
+		<p>{pt9_pressure_display}</p>
 	</div>
 
-	<div class="rocket_mass launch_rail_load_cell {launchRailLoadCellOutdated ? 'outdated' : ''}">
-		<p>{rocket_mass_display}</p>
+	<div class="pt10_pressure">
+		<p>{pt10_pressure_display}</p>
 	</div>
 
-	<div class="ib_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
-		<p>{ib_pressure_display}</p>
+	<div class="pt11_pressure">
+		<p>{pt11_pressure_display}</p>
 	</div>
 
-	<div class="lower_pv_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
-		<p>{lower_pv_display}</p>
+	<div class="pt12_pressure">
+		<p>{pt12_pressure_display}</p>
 	</div>
 
-	<div class="pv_temperature pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
-		<p>{pv_temperature_display}</p>
+	<div class="pt13_pressure">
+		<p>{pt13_pressure_display}</p>
 	</div>
 
-	<div class="sob_tc1 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">
-		<p>{sob_tc1_display}</p>
+	<div class="pt14_pressure">
+		<p>{pt14_pressure_display}</p>
 	</div>
 
-	<div class="sob_tc2 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">
-		<p>{sob_tc2_display}</p>
+	<div class="pt15_pressure">
+		<p>{pt15_pressure_display}</p>
 	</div>
 
-	<div class="system_state sys_state {sysStateOutdated ? 'outdated' : ''}">
+	<div class="pt16_pressure">
+		<p>{pt16_pressure_display}</p>
+	</div>
+
+	<div class="system_state">
 		<p>{system_state_display}</p>
 	</div>
 
-	<div class="timer_state heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+	<div class="timer_state">
 		<p>{timer_state_display}</p>
 	</div>
 
-	<div class="timer_period heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+	<div class="timer_period">
 		<p>{timer_period_display}</p>
 	</div>
 
-	<div class="timer_remaining heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+	<div class="timer_remaining">
 		<p>{timer_remaining_display}</p>
 	</div>
 
@@ -1081,7 +1026,7 @@
 		style="top: calc(var(--container-width) * 0.47);"
 		on:click={() => instantStateChange("RSC_MEV_CLOSE")}>Close MEV</button
 		>
-	{/if} -->
+	{/if}
 </div>
 
 <style>
@@ -1111,13 +1056,6 @@
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
 
-	.ac1_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.025);
-		left: 8.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-		font-size: 16px;
-	}
 	.pbv1_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.118);
@@ -1150,71 +1088,72 @@
 		font-size: 16px;
 	}
 
-	.sol5_slider {
+	.pbv5_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.269);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.215);
+		left: 47.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.sol6_slider {
+	.pbv6_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.313);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.301);
+		left: 47.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.sol7_slider {
+	.pbv7_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.356);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.144);
+		left: 59.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.sol8a_slider {
+	.pbv8_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.396);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.215);
+		left: 59.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.sol8b_slider {
+	.sol1_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.44);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.373);
+		left: 12.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.vent_slider {
+	.sol2_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.152);
-		left: 85.3%;
+		top: calc(var(--container-width) * 0.391);
+		left: 12.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.drain_slider {
+	.sol3_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.265);
-		left: 85.3%;
+		top: calc(var(--container-width) * 0.409);
+		left: 12.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.power_source_slider {
+	.sol4_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.025);
-		left: 95.5%;
+		top: calc(var(--container-width) * 0.427);
+		left: 12.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.box1_slider {
+
+	.ign1_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.415);
 		left: 12.5%;
@@ -1222,7 +1161,7 @@
 		font-size: 16px;
 	}
 
-	.box2_slider {
+	.ign2_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.433);
 		left: 12.5%;
@@ -1230,78 +1169,198 @@
 		font-size: 16px;
 	}
 
-	.nos1_tare_button {
+	.lc1_tare_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.176);
-		left: 11.1%;
+		top: calc(var(--container-width) * 0.118);
+		left: 70%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
-	.nos1_cal_button {
+	.lc1_cal_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.195);
-		left: 11.0%;
+		top: calc(var(--container-width) * 0.144);
+		left: 70%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
-	.nos2_tare_button {
-		color: #04AA6D;
+	.lc2_tare_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.246);
-		left: 11.1%;
+		top: calc(var(--container-width) * 0.188);
+		left: 70%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
-	.nos2_cal_button {
-		color: #04AA6D;
+	.lc2_cal_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.265);
-		left: 11.0%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-	
-	.rail_tare_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.078);
-		left: 69.1%;
+		top: calc(var(--container-width) * 0.215);
+		left: 70%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
-	.rail_cal_button {
+	.lc3_tare_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.097);
-		left: 69.1%;
+		top: calc(var(--container-width) * 0.274);
+		left: 70%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
-	.rcu_tc1 {
+	.lc3_cal_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.065);
-		left: 5.6%;
+		top: calc(var(--container-width) * 0.301);
+		left: 70%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.lc4_tare_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.118);
+		left: 82%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.lc4_cal_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.144);
+		left: 82%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.lc5_tare_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.188);
+		left: 82%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.lc5_cal_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.215);
+		left: 82%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.lc6_tare_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.274);
+		left: 82%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.lc6_cal_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.301);
+		left: 82%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.tc1_temperature {
+		position: absolute;
+		top: calc(var(--container-width) * 0.117);
+		left: 14.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.rcu_tc2 {
+	.tc2_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.065);
-		left: 9.2%;
+		top: calc(var(--container-width) * 0.188);
+		left: 14.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.nos1 {
+	.tc3_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.187);
-		left: 7.6%;
+		top: calc(var(--container-width) * 0.274);
+		left: 14.9%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.nos2 {
+	.tc4_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.255);
-		left: 7.6%;
+		top: calc(var(--container-width) * 0.188);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.tc5_temperature {
+		position: absolute;
+		top: calc(var(--container-width) * 0.274);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.tc6_temperature {
+		position: absolute;
+		top: calc(var(--container-width) * 0.188);
+		left: 69.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.tc7_temperature {
+		position: absolute;
+		top: calc(var(--container-width) * 0.274);
+		left: 69.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.tc8_temperature {
+		position: absolute;
+		top: calc(var(--container-width) * 0.188);
+		left: 97%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.lc1_mass {
+		position: absolute;
+		top: calc(var(--container-width) * 0.117);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.lc2_mass {
+		position: absolute;
+		top: calc(var(--container-width) * 0.188);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.lc3_mass {
+		position: absolute;
+		top: calc(var(--container-width) * 0.274);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.lc4_mass {
+		position: absolute;
+		top: calc(var(--container-width) * 0.188);
+		left: 69.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.lc5_mass {
+		position: absolute;
+		top: calc(var(--container-width) * 0.274);
+		left: 69.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.lc6_mass {
+		position: absolute;
+		top: calc(var(--container-width) * 0.188);
+		left: 97%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1338,98 +1397,98 @@
 		font-size: 14px;
 	}
 
-	.box1_continuity {
+	.pt5_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.372);
+		top: calc(var(--container-width) * 0.274);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.pt6_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.188);
+		left: 69.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.pt7_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.274);
+		left: 69.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.pt8_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.188);
+		left: 97%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.pt9_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.274);
+		left: 97%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.pt10_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.117);
 		left: 14.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
-		width: 1em;
-		height: 1em;
-		background-color: green;
-		border-radius: 10%;
 	}
 
-	.box2_continuity {
+	.pt11_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.386);
+		top: calc(var(--container-width) * 0.1882);
 		left: 14.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
-		width: 1em;
-		height: 1em;
-		background-color: green;
-		border-radius: 10%;
 	}
 
-	.mev_status {
+	.pt12_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.069);
-		left: 93.9%;
+		top: calc(var(--container-width) * 0.2743);
+		left: 14.9%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.battery_voltage {
+	.pt13_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.049);
-		left: 93.9%;
+		top: calc(var(--container-width) * 0.188);
+		left: 42%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.upper_pv_pressure {
+	.pt14_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.104);
-		left: 92.9%;
+		top: calc(var(--container-width) * 0.274);
+		left: 42%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.rocket_mass {
+	.pt15_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.09);
-		left: 74.3%;
+		top: calc(var(--container-width) * 0.188);
+		left: 69.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.ib_pressure {
+	.pt16_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.391);
-		left: 93.1%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.lower_pv_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.345);
-		left: 90.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pv_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.345);
-		left: 95.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.sob_tc1 {
-		position: absolute;
-		top: calc(var(--container-width) * 0.1405);
-		left: 69%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.sob_tc2 {
-		position: absolute;
-		top: calc(var(--container-width) * 0.179);
-		left: 69%;
+		top: calc(var(--container-width) * 0.274);
+		left: 69.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1464,10 +1523,5 @@
 		left: 45%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
-	}
-
-	.outdated {
-		color: #d4163c
-
 	}
 </style>
