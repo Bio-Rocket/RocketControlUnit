@@ -7,31 +7,31 @@
 	import type { Writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
 	import BackgroundDark from './background-dark.svelte';
-	import BackgroundLight from './background-light.svelte';
+	import BackgroundLight from './fort.svelte';
 	import { auth } from '../store';
+
+	import SolTesting from './sol_testing.svelte';
 
 	const modalStore = getModalStore();
 
 	const PB = new PocketBase('http://127.0.0.1:8090');
-	
-	PB.authStore.clear();
 
-	onMount(async () => {
-		const email = import.meta.env.VITE_EMAIL;
-		const password = import.meta.env.VITE_PASSWORD;
-		if (email && password) {
-			await PB.admins.authWithPassword(email, password);
-			$auth = true;
-		}
+	// onMount(async () => {
+	// 	const email = import.meta.env.VITE_EMAIL;
+	// 	const password = import.meta.env.VITE_PASSWORD;
+	// 	if (email && password) {
+	// 		await PB.admins.authWithPassword(email, password);
+	// 		$auth = true;
+	// 	}
 
-		if ($auth === true) {
-			intervalId = setInterval(async () => {
-				await PB.collection('Heartbeat').create({
-					message: 'heartbeat'
-				});
-			}, 5000); // 5000 milliseconds = 5 seconds
-		}
-	});
+	// 	if ($auth === true) {
+	// 		intervalId = setInterval(async () => {
+	// 			await PB.collection('Heartbeat').create({
+	// 				message: 'heartbeat'
+	// 			});
+	// 		}, 5000); // 5000 milliseconds = 5 seconds
+	// 	}
+	// });
 
 	let nextStatePending: string = '';
 	function confirmStateChange(state: string): void {
@@ -87,15 +87,15 @@
     	Object.entries(stateToCommand).map(([key, value]) => [value, key])
   	);
 
-    let BackgroundComponent: any;
+    // let BackgroundComponent: any;
 
-    $: {
-        if ($modeCurrent) {
-            BackgroundComponent = BackgroundLight;
-        } else {
-            BackgroundComponent = BackgroundDark;
-        }
-    }
+    // $: {
+    //     if ($modeCurrent) {
+    //         BackgroundComponent = BackgroundLight;
+    //     } else {
+    //         BackgroundComponent = BackgroundDark;
+    //     }
+    // }
 
 	let containerElement: any;
 	let intervalId: any;
@@ -150,6 +150,8 @@
 	const sol3_open = writable(undefined);
 	const sol4_open = writable(undefined);
 
+	const sol_test_open = writable(undefined);
+
 	const ign1_on = writable(undefined);
 	const ign2_on = writable(undefined);
 
@@ -186,25 +188,30 @@
 	const pt15_pressure: Writable<string | number | undefined> = writable(undefined);
 	const pt16_pressure: Writable<string | number | undefined> = writable(undefined);
 
+	const pt1_test_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt2_test_pressure: Writable<string | number | undefined> = writable(undefined);
+
 	const system_state: Writable<string | undefined> = writable(undefined);
 
 	const timer_state: Writable<string | undefined> = writable(undefined);
 	const timer_period: Writable<number | undefined> = writable(undefined);
 	const timer_remaining: Writable<number | undefined> = writable(undefined);
 
-	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSE';
-	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'CLOSE' : 'OPEN';
-	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSE';
-	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSE' : 'OPEN';
-	$: pbv5_display = $pbv5_open === undefined ? 'N/A' : $pbv5_open ? 'OPEN' : 'CLOSE';
-	$: pbv6_display = $pbv6_open === undefined ? 'N/A' : $pbv6_open ? 'OPEN' : 'CLOSE';
-	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'CLOSE' : 'OPEN';
-	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'CLOSE' : 'OPEN';
+	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSED';
+	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'CLOSED' : 'OPEN';
+	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSED';
+	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSED' : 'OPEN';
+	$: pbv5_display = $pbv5_open === undefined ? 'N/A' : $pbv5_open ? 'OPEN' : 'CLOSED';
+	$: pbv6_display = $pbv6_open === undefined ? 'N/A' : $pbv6_open ? 'OPEN' : 'CLOSED';
+	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'CLOSED' : 'OPEN';
+	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'CLOSED' : 'OPEN';
 
-	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSE';
-	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSE';
-	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSE';
-	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSE';
+	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSED';
+	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSED';
+	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
+	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSED';
+
+	$: sol_test_display = $sol_test_open === undefined ? 'N/A' : $sol_test_open ? 'OPEN' : 'CLOSED';
 
 	$: ign1_display = $ign1_on === undefined ? 'N/A' : $ign1_on ? 'LIVE' : 'DEAD';
 	$: ign2_display = $ign2_on === undefined ? 'N/A' : $ign2_on ? 'LIVE' : 'DEAD';
@@ -242,6 +249,9 @@
 	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
 	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
 
+	$: pt1_test_pressure_display = $pt1_test_pressure === undefined ? 'N/A' : $pt1_test_pressure;
+	$: pt2_test_pressure_display = $pt2_test_pressure === undefined ? 'N/A' : $pt2_test_pressure;
+
 	$: system_state_display = $system_state === undefined 
     ? 'N/A' 
     : $system_state.replace('SYS_', '');
@@ -262,67 +272,13 @@
 			// Query the most recent record from 'LabJack1' collection
 			const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
 			const labJack1Data = labJack1Record.lj1_data;
-			pt7_pressure.set(labJack1Data[0]);
-			pt8_pressure.set(labJack1Data[1]);
-			pt9_pressure.set(labJack1Data[2]);
-			pt10_pressure.set(labJack1Data[3]);
-			pt11_pressure.set(labJack1Data[4]);
-			pt12_pressure.set(labJack1Data[5]);
-			sol1_open.set(labJack1Data[6]);
-			sol2_open.set(labJack1Data[7]);
-			sol3_open.set(labJack1Data[8]);
-			sol4_open.set(labJack1Data[9]);
-
-			const labJack2Record = await PB.collection('LabJack2').getFirstListItem("", { sort: '-created' })
-			const labJack2Data = labJack2Record.lj2_data;
-			lc3_mass.set(labJack2Data[0]);
-			lc4_mass.set(labJack2Data[1]);
-			lc5_mass.set(labJack2Data[2]);
-			lc6_mass.set(labJack2Data[3]);
-			pt13_pressure.set(labJack2Data[4]);
-			pt14_pressure.set(labJack2Data[5]);
+			pt1_test_pressure.set(labJack1Data[0]);
+			pt2_test_pressure.set(labJack1Data[1]);
 
 			const plcRecord = await PB.collection('PLC').getFirstListItem("", { sort: '-created' })
 			const plcData = plcRecord.plc_data;
-			pt1_pressure.set(plcData[0]);
-			pt2_pressure.set(plcData[1]);
-			pt3_pressure.set(plcData[2]);
-			pt4_pressure.set(plcData[3]);
-			pt5_pressure.set(plcData[4]);
-			pt6_pressure.set(plcData[5]);
-			pt15_pressure.set(plcData[6]);
-			pt16_pressure.set(plcData[7]);
-			tc1_temperature.set(plcData[8]);
-			tc2_temperature.set(plcData[9]);
-			tc3_temperature.set(plcData[10]);
-			tc4_temperature.set(plcData[11]);
-			tc5_temperature.set(plcData[12]);
-			tc6_temperature.set(plcData[13]);
-			tc7_temperature.set(plcData[14]);
-			tc8_temperature.set(plcData[15]);
-			lc1_mass.set(plcData[16]);
-			lc2_mass.set(plcData[17]);
-			pbv1_open.set(plcData[18]);
-			pbv2_open.set(plcData[19]);
-			pbv3_open.set(plcData[20]);
-			pbv4_open.set(plcData[21]);
-			pbv5_open.set(plcData[22]);
-			pbv6_open.set(plcData[23]);
-			pbv7_open.set(plcData[24]);
-			pbv8_open.set(plcData[25]);
+			sol_test_open.set(plcData[0]);
 
-			// Query the most recent record from 'sys_state' collection
-			// const sysStateRecord = await queryMostRecentRecord('sys_state');
-			// currentState.set(sysStateRecord.rocket_state);
-			// system_state.set(sysStateRecord.sys_state);
-			// timestamps.sys_state = Date.now();
-
-			// // Query the most recent record from 'hb_state' collection
-			// const hbStateRecord = await queryMostRecentRecord('hb_state');
-			// timer_state.set(hbStateRecord.timer_state);
-			// timer_period.set(hbStateRecord.timer_period);
-			// timer_remaining.set(hbStateRecord.timer_remaining);
-			// timestamps.hb_state = Date.now();
 		} catch (error) {
 			console.error('Error querying records:', error);
 		}
@@ -399,83 +355,6 @@
 		wasLiveAtAnyPoint = false;
 	}
 
-	async function writeLoadCellCommandMessage(target: string, command: string, weight_kg: number) {
-		await PB.collection('LoadCellCommands').create({
-			target: target,
-			command: command,
-			weight: weight_kg
-		});
-	}
-
-	function confirmRemoveWeight(loadcell: string) {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: 'Remove All Weight',
-			response: (r: boolean) => {
-				if (r) {
-					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
-					promptEnterNumberOfWeights(loadcell);
-				} else {
-					writeLoadCellCommandMessage(loadcell, "CANCEL", 0);
-				}
-			}
-		};
-		modalStore.trigger(modal);
-	}
-
-	let numberOfWeights = 0;
-
-	function promptEnterNumberOfWeights(loadcell: string) {
-		const modal: ModalSettings = {
-			type: 'prompt',
-			title: 'Enter number of weights',
-			valueAttr: { type: 'number', required: true },
-			response: async (r: any) => {
-				if (r) {
-					// The modal was confirmed, set the number of weights
-					numberOfWeights = parseInt(r);
-					if (numberOfWeights > 0) {
-						promptEnterWeight(loadcell);
-					}
-				}
-			}
-		};
-		modalStore.trigger(modal);
-	}
-
-	function promptEnterWeight(loadcell: string) {
-		const modal: ModalSettings = {
-			type: 'prompt',
-			title: `Enter Weight (kg) (${numberOfWeights} remaining)`,
-			valueAttr: { type: 'text', required: true },
-			response: async (r: any) => {
-				if (r) {
-					// If this is the last weight, send the finish command
-					if (numberOfWeights === 1) {
-						writeLoadCellCommandMessage(loadcell, "FINISH", parseFloat(r));
-					} else {
-						// The modal was confirmed, send the calibrate command
-						writeLoadCellCommandMessage(loadcell, "CALIBRATE", parseFloat(r));
-					}
-
-					// Decrease the number of weights and open the modal again if there are more weights to enter
-					numberOfWeights--;
-					if (numberOfWeights > 0) {
-						promptEnterWeight(loadcell);
-					}
-				} else {
-					// The modal was cancelled, send a cancel command
-					writeLoadCellCommandMessage(loadcell, "CANCEL", 0);
-				}
-			}
-		};
-		modalStore.trigger(modal);
-	}
-
-	async function performTare(loadcell: string) {
-		writeLoadCellCommandMessage(loadcell, "TARE", 0);
-	}
-
 	// NOTE: This seems odd but since the event will switch these MUST be swapped
 	// Open to alternate ways of doing it. Everything I tried didn't work.
 	async function handleIgnition(e: MouseEvent) {
@@ -486,7 +365,7 @@
 </script>
 
 <div class="container">
-	<svelte:component this={BackgroundComponent} />
+	<svelte:component this={SolTesting} />
 
 	<div class="pbv1_slider">
 		<SlideToggle
@@ -632,7 +511,19 @@
 		>
 	</div>
 
-	{#if $currentState === "RS_IGNITION" || $currentState === "RS_TEST" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
+	<div class="test_sol_slider">
+		<SlideToggle
+			name="test_sol_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol_test_open}
+			on:click={(e) => handlePlcSliderChange(e, 'OPEN_SOL', 'CLOSE_SOL')}
+		>
+			{sol_test_display}</SlideToggle
+		>
+	</div>
+
+	{#if $currentState === "N/A" || $currentState === "RS_IGNITION" || $currentState === "RS_TEST" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
 		<div class="ign1_slider">
 			<SlideToggle
 				name="ign1_slider"
@@ -660,138 +551,6 @@
 		</div>
 	{/if}
 
-	<div class="lc1_tare_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LC1")}
-		>
-			TARE
-		</button>
-	</div>
-
-	<div class="lc1_cal_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-error" 
-			on:click={() => {
-				writeLoadCellCommandMessage("LC1", "CANCEL", 0);
-				confirmRemoveWeight("LC1");}}
-		>
-			CAL
-		</button>
-	</div>
-
-	<div class="lc2_tare_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LC2")}
-		>
-			TARE
-		</button>
-	</div>
-
-	<div class="lc2_cal_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-error" 
-			on:click={() => {
-				writeLoadCellCommandMessage("LC2", "CANCEL", 0);
-				confirmRemoveWeight("LC2");}}
-		>
-			CAL
-		</button>
-	</div>
-
-	<div class="lc3_tare_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LC3")}
-		>
-			TARE
-		</button>
-	</div>
-
-	<div class="lc3_cal_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-error" 
-			on:click={() => {
-				writeLoadCellCommandMessage("LC3", "CANCEL", 0);
-				confirmRemoveWeight("LC3");}}
-		>
-			CAL
-		</button>
-	</div>
-
-	<div class="lc4_tare_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LC4")}
-		>
-			TARE
-		</button>
-	</div>
-
-	<div class="lc4_cal_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-error" 
-			on:click={() => {
-				writeLoadCellCommandMessage("LC4", "CANCEL", 0);
-				confirmRemoveWeight("LC4");}}
-		>
-			CAL
-		</button>
-	</div>
-
-	<div class="lc5_tare_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LC5")}
-		>
-			TARE
-		</button>
-	</div>
-
-	<div class="lc5_cal_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-error" 
-			on:click={() => {
-				writeLoadCellCommandMessage("LC5", "CANCEL", 0);
-				confirmRemoveWeight("LC5");}}
-		>
-			CAL
-		</button>
-	</div>
-
-	<div class="lc6_tare_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LC6")}
-		>
-			TARE
-		</button>
-	</div>
-
-	<div class="lc6_cal_button">
-		<button 
-			type="button" 
-			class="btn btn-sm variant-filled-error" 
-			on:click={() => {
-				writeLoadCellCommandMessage("LC6", "CANCEL", 0);
-				confirmRemoveWeight("LC6");}}
-		>
-			CAL
-		</button>
-	</div>
-
 	<div class="tc1_temperature">
 		<p>{tc1_display}</p>
 	</div>
@@ -800,6 +559,14 @@
 		<p>{tc2_display}</p>
 	</div>
 
+	<div class="pt1_test_pressure">
+		<p>{pt1_test_pressure_display}</p>
+	</div>
+
+	<div class="pt2_test_pressure">
+		<p>{pt2_test_pressure_display}</p>
+	</div>
+<!--
 	<div class="tc3_temperature">
 		<p>{tc3_display}</p>
 	</div>
@@ -912,6 +679,14 @@
 		<p>{pt16_pressure_display}</p>
 	</div>
 
+	<div class="pt1_test_pressure">
+		<p>{pt1_test_pressure_display}</p>
+	</div>
+
+	<div class="pt2_test_pressure">
+		<p>{pt2_test_pressure_display}</p>
+	</div>
+
 	<div class="system_state">
 		<p>{system_state_display}</p>
 	</div>
@@ -926,7 +701,7 @@
 
 	<div class="timer_remaining">
 		<p>{timer_remaining_display}</p>
-	</div>
+	</div> -->
 
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState == "RS_PRELAUNCH"}
@@ -1058,213 +833,136 @@
 
 	.pbv1_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.118);
-		left: 35.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.125);
+		left: 17%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.pbv2_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 35.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.055);
+		left: 34%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.pbv3_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.275);
-		left: 35.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		left: 19%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.pbv4_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.144);
-		left: 47.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.23);
+		left: 34%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.pbv5_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.215);
-		left: 47.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.109);
+		left: 84%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.pbv6_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.301);
-		left: 47.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.109);
+		left: 95.8%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.pbv7_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.144);
-		left: 59.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.345);
+		left: 42.6%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.pbv8_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.215);
-		left: 59.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.274);
+		left: 50%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.sol1_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.373);
-		left: 12.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.197);
+		left: 42.6%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.sol2_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.391);
-		left: 12.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.197);
+		left: 54.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.sol3_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.409);
-		left: 12.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.29);
+		left: 65.2%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.sol4_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.427);
-		left: 12.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.29);
+		left: 72.3%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
+	.test_sol_slider {
+		position: absolute;
+		top: calc(var(--container-width) * 0.433);
+		left: 31%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
+		font-size: 16px;
+	}
 
 	.ign1_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.415);
-		left: 12.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.41);
+		left: 86%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.ign2_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.433);
-		left: 12.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		top: calc(var(--container-width) * 0.425);
+		left: 86%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
-	}
-
-	.lc1_tare_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.118);
-		left: 70%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc1_cal_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.144);
-		left: 70%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc2_tare_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 70%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc2_cal_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.215);
-		left: 70%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc3_tare_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 70%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc3_cal_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.301);
-		left: 70%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc4_tare_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.118);
-		left: 82%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc4_cal_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.144);
-		left: 82%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc5_tare_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 82%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc5_cal_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.215);
-		left: 82%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc6_tare_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 82%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-	}
-
-	.lc6_cal_button {
-		position: absolute;
-		top: calc(var(--container-width) * 0.301);
-		left: 82%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.tc1_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.117);
-		left: 14.7%;
+		top: calc(var(--container-width) * 0.274);
+		left: 10.75%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.tc2_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 14.7%;
+		top: calc(var(--container-width) * 0.441);
+		left: 55.45%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1489,6 +1187,22 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.274);
 		left: 69.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.pt1_test_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.41);
+		left: 26%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.pt2_test_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.41);
+		left: 30.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
