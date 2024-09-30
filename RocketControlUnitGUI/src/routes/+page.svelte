@@ -14,7 +14,7 @@
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://127.0.0.1:8090');
+	const PB = new PocketBase('http://192.168.0.130:8090');
 
 	// onMount(async () => {
 	// 	const email = import.meta.env.VITE_EMAIL;
