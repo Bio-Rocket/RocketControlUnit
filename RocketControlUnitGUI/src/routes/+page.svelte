@@ -249,8 +249,8 @@
 	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
 	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
 
-	$: pt1_test_pressure_display = $pt1_test_pressure === undefined ? 'N/A' : $pt1_test_pressure;
-	$: pt2_test_pressure_display = $pt2_test_pressure === undefined ? 'N/A' : $pt2_test_pressure;
+	$: pt1_test_pressure_display = $pt1_test_pressure === undefined ? 'N/A' : Math.round($pt1_test_pressure as number);
+	$: pt2_test_pressure_display = $pt2_test_pressure === undefined ? 'N/A' : Math.round($pt2_test_pressure as number);
 
 	$: system_state_display = $system_state === undefined 
     ? 'N/A' 
@@ -272,8 +272,8 @@
 			// Query the most recent record from 'LabJack1' collection
 			const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
 			const labJack1Data = labJack1Record.lj1_data;
-			pt1_test_pressure.set(labJack1Data[0]);
-			pt2_test_pressure.set(labJack1Data[1]);
+			pt1_test_pressure.set(labJack1Data[0] * 14.5);
+			pt2_test_pressure.set(labJack1Data[1] * 14.5);
 
 			const plcRecord = await PB.collection('PLC').getFirstListItem("", { sort: '-created' })
 			const plcData = plcRecord.plc_data;
