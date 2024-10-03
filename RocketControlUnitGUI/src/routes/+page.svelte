@@ -7,10 +7,8 @@
 	import type { Writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
 	import BackgroundDark from './background-dark.svelte';
-	import BackgroundLight from './fort.svelte';
+	import BackgroundLight from './background-light.svelte';
 	import { auth } from '../store';
-
-	import SolTesting from './sol_testing.svelte';
 
 	const modalStore = getModalStore();
 
@@ -150,8 +148,6 @@
 	const sol3_open = writable(undefined);
 	const sol4_open = writable(undefined);
 
-	const sol_test_open = writable(undefined);
-
 	const ign1_on = writable(undefined);
 	const ign2_on = writable(undefined);
 
@@ -188,9 +184,6 @@
 	const pt15_pressure: Writable<string | number | undefined> = writable(undefined);
 	const pt16_pressure: Writable<string | number | undefined> = writable(undefined);
 
-	const pt1_test_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt2_test_pressure: Writable<string | number | undefined> = writable(undefined);
-
 	const system_state: Writable<string | undefined> = writable(undefined);
 
 	const timer_state: Writable<string | undefined> = writable(undefined);
@@ -210,8 +203,6 @@
 	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSED';
 	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
 	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSED';
-
-	$: sol_test_display = $sol_test_open === undefined ? 'N/A' : $sol_test_open ? 'OPEN' : 'CLOSED';
 
 	$: ign1_display = $ign1_on === undefined ? 'N/A' : $ign1_on ? 'LIVE' : 'DEAD';
 	$: ign2_display = $ign2_on === undefined ? 'N/A' : $ign2_on ? 'LIVE' : 'DEAD';
@@ -249,9 +240,6 @@
 	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
 	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
 
-	$: pt1_test_pressure_display = $pt1_test_pressure === undefined ? 'N/A' : Math.round($pt1_test_pressure as number);
-	$: pt2_test_pressure_display = $pt2_test_pressure === undefined ? 'N/A' : Math.round($pt2_test_pressure as number);
-
 	$: system_state_display = $system_state === undefined 
     ? 'N/A' 
     : $system_state.replace('SYS_', '');
@@ -272,12 +260,9 @@
 			// Query the most recent record from 'LabJack1' collection
 			const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
 			const labJack1Data = labJack1Record.lj1_data;
-			pt1_test_pressure.set(labJack1Data[0] * 14.5);
-			pt2_test_pressure.set(labJack1Data[1] * 14.5);
 
 			const plcRecord = await PB.collection('PLC').getFirstListItem("", { sort: '-created' })
 			const plcData = plcRecord.plc_data;
-			sol_test_open.set(plcData[0]);
 
 		} catch (error) {
 			console.error('Error querying records:', error);
@@ -365,7 +350,7 @@
 </script>
 
 <div class="container">
-	<svelte:component this={SolTesting} />
+	<svelte:component this={BackgroundLight} />
 
 	<div class="pbv1_slider">
 		<SlideToggle
@@ -511,18 +496,6 @@
 		>
 	</div>
 
-	<div class="test_sol_slider">
-		<SlideToggle
-			name="test_sol_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$sol_test_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_SOL', 'CLOSE_SOL')}
-		>
-			{sol_test_display}</SlideToggle
-		>
-	</div>
-
 	{#if $currentState === "N/A" || $currentState === "RS_IGNITION" || $currentState === "RS_TEST" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
 		<div class="ign1_slider">
 			<SlideToggle
@@ -557,14 +530,6 @@
 
 	<div class="tc2_temperature">
 		<p>{tc2_display}</p>
-	</div>
-
-	<div class="pt1_test_pressure">
-		<p>{pt1_test_pressure_display}</p>
-	</div>
-
-	<div class="pt2_test_pressure">
-		<p>{pt2_test_pressure_display}</p>
 	</div>
 <!--
 	<div class="tc3_temperature">
@@ -927,14 +892,6 @@
 		font-size: 16px;
 	}
 
-	.test_sol_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.433);
-		left: 31%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
 	.ign1_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.41);
@@ -1187,22 +1144,6 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.274);
 		left: 69.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt1_test_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.41);
-		left: 26%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt2_test_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.41);
-		left: 30.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
