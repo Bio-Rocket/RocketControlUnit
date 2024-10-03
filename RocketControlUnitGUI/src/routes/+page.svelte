@@ -148,8 +148,14 @@
 	const sol3_open = writable(undefined);
 	const sol4_open = writable(undefined);
 
+	const pmp1_on = writable(undefined);
+	const pmp2_on = writable(undefined);
+	const pmp3_on = writable(undefined);
+
 	const ign1_on = writable(undefined);
 	const ign2_on = writable(undefined);
+
+	const heater_on = writable(undefined);
 
 	const tc1_temperature: Writable<string | number | undefined> = writable(undefined);
 	const tc2_temperature: Writable<string | number | undefined> = writable(undefined);
@@ -159,6 +165,7 @@
 	const tc6_temperature: Writable<string | number | undefined> = writable(undefined);
 	const tc7_temperature: Writable<string | number | undefined> = writable(undefined);
 	const tc8_temperature: Writable<string | number | undefined> = writable(undefined);
+	const tc9_temperature: Writable<string | number | undefined> = writable(undefined);
 
 	const lc1_mass = writable(undefined);
 	const lc2_mass = writable(undefined);
@@ -204,8 +211,14 @@
 	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
 	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSED';
 
+	$: pmp1_display = $pmp1_on === undefined ? 'N/A' : $pmp1_on ? 'ON' : 'OFF';
+	$: pmp2_display = $pmp2_on === undefined ? 'N/A' : $pmp2_on ? 'ON' : 'OFF';
+	$: pmp3_display = $pmp3_on === undefined ? 'N/A' : $pmp3_on ? 'ON' : 'OFF';
+
 	$: ign1_display = $ign1_on === undefined ? 'N/A' : $ign1_on ? 'LIVE' : 'DEAD';
 	$: ign2_display = $ign2_on === undefined ? 'N/A' : $ign2_on ? 'LIVE' : 'DEAD';
+
+	$: heater_display = $heater_on === undefined ? 'N/A' : $heater_on ? 'ON' : 'OFF';
 
 	$: tc1_display = $tc1_temperature === undefined ? 'N/A' : $tc1_temperature;
 	$: tc2_display = $tc2_temperature === undefined ? 'N/A' : $tc2_temperature;
@@ -215,6 +228,7 @@
 	$: tc6_display = $tc6_temperature === undefined ? 'N/A' : $tc6_temperature;
 	$: tc7_display = $tc7_temperature === undefined ? 'N/A' : $tc7_temperature;
 	$: tc8_display = $tc8_temperature === undefined ? 'N/A' : $tc8_temperature;
+	$: tc9_display = $tc9_temperature === undefined ? 'N/A' : $tc9_temperature;
 
 	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : Number($lc1_mass).toFixed(2);
 	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : Number($lc2_mass).toFixed(2);
@@ -254,23 +268,23 @@
 	? 'N/A' 
 	: ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
-	onMount(() => {
-		const interval = setInterval(async () => {
-		try {
-			// Query the most recent record from 'LabJack1' collection
-			const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
-			const labJack1Data = labJack1Record.lj1_data;
+	// onMount(() => {
+	// 	const interval = setInterval(async () => {
+	// 	try {
+	// 		// Query the most recent record from 'LabJack1' collection
+	// 		const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
+	// 		const labJack1Data = labJack1Record.lj1_data;
 
-			const plcRecord = await PB.collection('PLC').getFirstListItem("", { sort: '-created' })
-			const plcData = plcRecord.plc_data;
+	// 		const plcRecord = await PB.collection('PLC').getFirstListItem("", { sort: '-created' })
+	// 		const plcData = plcRecord.plc_data;
 
-		} catch (error) {
-			console.error('Error querying records:', error);
-		}
-		}, 200);
+	// 	} catch (error) {
+	// 		console.error('Error querying records:', error);
+	// 	}
+	// 	}, 200);
 
-		return () => clearInterval(interval);
-	});
+	// 	return () => clearInterval(interval);
+	// });
 
 	async function handleLabJackSliderChange(
 		e: any,
@@ -496,6 +510,54 @@
 		>
 	</div>
 
+	<div class="pmp1_slider">
+		<SlideToggle
+			name="pmp1_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pmp1_on}
+			on:click={(e) => handlePlcSliderChange(e, 'PUMP1_ON', 'PUMP1_OFF')}
+		>
+			{pmp1_display}</SlideToggle
+		>
+	</div>
+
+	<div class="pmp2_slider">
+		<SlideToggle
+			name="pmp2_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pmp2_on}
+			on:click={(e) => handlePlcSliderChange(e, 'PUMP2_ON', 'PUMP2_OFF')}
+		>
+			{pmp2_display}</SlideToggle
+		>
+	</div>
+
+	<div class="pmp3_slider">
+		<SlideToggle
+			name="pmp3_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pmp3_on}
+			on:click={(e) => handlePlcSliderChange(e, 'PUMP3_ON', 'PUMP3_OFF')}
+		>
+			{pmp3_display}</SlideToggle
+		>
+	</div>
+
+	<div class="heater_slider">
+		<SlideToggle
+			name="heater_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$heater_on}
+			on:click={(e) => handlePlcSliderChange(e, 'HEATER_ON', 'HEATER_OFF')}
+		>
+			{heater_display}</SlideToggle
+		>
+	</div>
+
 	{#if $currentState === "N/A" || $currentState === "RS_IGNITION" || $currentState === "RS_TEST" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
 		<div class="ign1_slider">
 			<SlideToggle
@@ -531,7 +593,7 @@
 	<div class="tc2_temperature">
 		<p>{tc2_display}</p>
 	</div>
-<!--
+
 	<div class="tc3_temperature">
 		<p>{tc3_display}</p>
 	</div>
@@ -554,6 +616,10 @@
 
 	<div class="tc8_temperature">
 		<p>{tc8_display}</p>
+	</div>
+
+	<div class="tc9_temperature">
+		<p>{tc9_display}</p>
 	</div>
 
 	<div class="lc1_mass">
@@ -643,15 +709,7 @@
 	<div class="pt16_pressure">
 		<p>{pt16_pressure_display}</p>
 	</div>
-
-	<div class="pt1_test_pressure">
-		<p>{pt1_test_pressure_display}</p>
-	</div>
-
-	<div class="pt2_test_pressure">
-		<p>{pt2_test_pressure_display}</p>
-	</div>
-
+<!--
 	<div class="system_state">
 		<p>{system_state_display}</p>
 	</div>
@@ -892,6 +950,30 @@
 		font-size: 16px;
 	}
 
+	.pmp1_slider {
+		position: absolute;
+		top: calc(var(--container-width) * 0.179);
+		left: 26.3%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
+		font-size: 16px;
+	}
+
+	.pmp2_slider {
+		position: absolute;
+		top: calc(var(--container-width) * 0.331);
+		left: 26.8%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
+		font-size: 16px;
+	}
+
+	.pmp3_slider {
+		position: absolute;
+		top: calc(var(--container-width) * 0.321);
+		left: 84%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
+		font-size: 16px;
+	}
+
 	.ign1_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.41);
@@ -904,6 +986,14 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.425);
 		left: 86%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
+		font-size: 16px;
+	}
+
+	.heater_slider {
+		position: absolute;
+		top: calc(var(--container-width) * 0.4405);
+		left: 14.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
@@ -926,228 +1016,236 @@
 
 	.tc3_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 14.9%;
+		top: calc(var(--container-width) * 0.218);
+		left: 87.6%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.tc4_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 42%;
+		top: calc(var(--container-width) * 0.218);
+		left: 96.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.tc5_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 42%;
+		top: calc(var(--container-width) * 0.2635);
+		left: 89%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.tc6_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 69.5%;
+		top: calc(var(--container-width) * 0.37);
+		left: 89%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.tc7_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 69.5%;
+		top: calc(var(--container-width) * 0.318);
+		left: 97.6%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.tc8_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 97%;
+		top: calc(var(--container-width) * 0.363);
+		left: 95.3%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.tc9_temperature {
+		position: absolute;
+		top: calc(var(--container-width) * 0.4115);
+		left: 10.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.lc1_mass {
 		position: absolute;
-		top: calc(var(--container-width) * 0.117);
-		left: 42%;
+		top: calc(var(--container-width) * 0.385);
+		left: 5.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.lc2_mass {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 42%;
+		top: calc(var(--container-width) * 0.485);
+		left: 5.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.lc3_mass {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 42%;
+		top: calc(var(--container-width) * 0.175);
+		left: 60.2%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.lc4_mass {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 69.5%;
+		top: calc(var(--container-width) * 0.298);
+		left: 60.2%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.lc5_mass {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 69.5%;
+		top: calc(var(--container-width) * 0.42);
+		left: 60.2%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.lc6_mass {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 97%;
+		top: calc(var(--container-width) * 0.313);
+		left: 92.05%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt1_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.117);
-		left: 14.7%;
+		top: calc(var(--container-width) * 0.12);
+		left: 9.25%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt2_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.1882);
-		left: 14.7%;
+		top: calc(var(--container-width) * 0.1205);
+		left: 22.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt3_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.2743);
-		left: 14.9%;
+		top: calc(var(--container-width) * 0.122);
+		left: 29.15%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt4_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 42%;
+		top: calc(var(--container-width) * 0.274);
+		left: 7.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt5_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 42%;
+		top: calc(var(--container-width) * 0.3421);
+		left: 22.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt6_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 69.5%;
+		top: calc(var(--container-width) * 0.274);
+		left: 29%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt7_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 69.5%;
+		top: calc(var(--container-width) * 0.111);
+		left: 56.75%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt8_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 97%;
+		top: calc(var(--container-width) * 0.111);
+		left: 63.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt9_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 97%;
+		top: calc(var(--container-width) * 0.3145);
+		left: 51.35%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt10_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.117);
-		left: 14.7%;
+		top: calc(var(--container-width) * 0.3145);
+		left: 54.85%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt11_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.1882);
-		left: 14.7%;
+		top: calc(var(--container-width) * 0.441);
+		left: 48.25%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt12_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.2743);
-		left: 14.9%;
+		top: calc(var(--container-width) * 0.44);
+		left: 51.83%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt13_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 42%;
+		top: calc(var(--container-width) * 0.183);
+		left: 87.6%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt14_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 42%;
+		top: calc(var(--container-width) * 0.183);
+		left: 96.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt15_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 69.5%;
+		top: calc(var(--container-width) * 0.264);
+		left: 85.38%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt16_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 69.5%;
+		top: calc(var(--container-width) * 0.37);
+		left: 85.38%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
-
+/*
 	.system_state {
 		position: absolute;
 		top: calc(var(--container-width) * 0.373);
@@ -1178,5 +1276,5 @@
 		left: 45%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
-	}
+	} */
 </style>
