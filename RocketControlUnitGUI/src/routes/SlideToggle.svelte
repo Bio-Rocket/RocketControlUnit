@@ -70,7 +70,7 @@
 	$: cThumbPos = checked ? 'translate-x-full' : '';
 
 	// Reactive Classes
-	$: classesDisabled = $$props.disabled === true ? 'opacity-50 bg-red-500' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
+	$: classesDisabled = $$props.disabled === true ? 'opacity-50 bg-red-500 p-1' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
 	$: classesBase = `${cBase} ${rounded} ${classesDisabled} ${$$props.class ?? ''}`;
 	$: classesLabel = `${cLabel}`;
 	$: classesTrack = `${cTrack} ${border} ${rounded} ${trackSize} ${cTrackActive}`;
