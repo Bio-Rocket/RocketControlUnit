@@ -285,42 +285,42 @@
 			// pt14_pressure.set(labJack2Data[5]);
 
 
-			// const plcRecord = await PB.collection('Plc').getFirstListItem("", { sort: '-created' })
-			// const plcData = plcRecord.plc_data;
+			const plcRecord = await PB.collection('Plc').getFirstListItem("", { sort: '-created' })
+			const plcData = plcRecord.plc_data;
 
-			// tc1_temperature.set(plcData[0]);
-			// tc2_temperature.set(plcData[1]);
-			// tc3_temperature.set(plcData[2]);
-			// tc4_temperature.set(plcData[3]);
-			// tc5_temperature.set(plcData[4]);
-			// tc6_temperature.set(plcData[5]);
-			// tc7_temperature.set(plcData[6]);
-			// tc8_temperature.set(plcData[7]);
-			// tc9_temperature.set(plcData[8]);
-			// lc1_mass.set(plcData[9]);
-			// lc2_mass.set(plcData[10]);
-			// pt1_pressure.set(plcData[11]);
-			// pt2_pressure.set(plcData[12]);
-			// pt3_pressure.set(plcData[13]);
-			// pt4_pressure.set(plcData[14]);
-			// pt5_pressure.set(plcData[15]);
-			// pt6_pressure.set(plcData[16]);
-			// pt15_pressure.set(plcData[17]);
-			// pt16_pressure.set(plcData[18]);
-			// pbv1_open.set(plcData[19]);
-			// pbv2_open.set(plcData[20]);
-			// pbv3_open.set(plcData[21]);
-			// pbv4_open.set(plcData[22]);
-			// pbv5_open.set(plcData[23]);
-			// pbv6_open.set(plcData[24]);
-			// pbv7_open.set(plcData[25]);
-			// pbv8_open.set(plcData[26]);
-			// pmp1_on.set(plcData[27]);
-			// pmp2_on.set(plcData[28]);
-			// pmp3_on.set(plcData[29]);
-			// ign1_on.set(plcData[30]);
-			// ign2_on.set(plcData[31]);
-			// heater_on.set(plcData[32]);
+			tc1_temperature.set(plcData[0]);
+			tc2_temperature.set(plcData[1]);
+			tc3_temperature.set(plcData[2]);
+			tc4_temperature.set(plcData[3]);
+			tc5_temperature.set(plcData[4]);
+			tc6_temperature.set(plcData[5]);
+			tc7_temperature.set(plcData[6]);
+			tc8_temperature.set(plcData[7]);
+			tc9_temperature.set(plcData[8]);
+			lc1_mass.set(plcData[9]);
+			lc2_mass.set(plcData[10]);
+			pt1_pressure.set(plcData[11]);
+			pt2_pressure.set(plcData[12]);
+			pt3_pressure.set(plcData[13]);
+			pt4_pressure.set(plcData[14]);
+			pt5_pressure.set(plcData[15]);
+			pt6_pressure.set(plcData[16]);
+			pt15_pressure.set(plcData[17]);
+			pt16_pressure.set(plcData[18]);
+			pbv1_open.set(plcData[19]);
+			pbv2_open.set(plcData[20]);
+			pbv3_open.set(plcData[21]);
+			pbv4_open.set(plcData[22]);
+			pbv5_open.set(plcData[23]);
+			pbv6_open.set(plcData[24]);
+			pbv7_open.set(plcData[25]);
+			pbv8_open.set(plcData[26]);
+			pmp1_on.set(plcData[27]);
+			pmp2_on.set(plcData[28]);
+			pmp3_on.set(plcData[29]);
+			ign1_on.set(plcData[30]);
+			ign2_on.set(plcData[31]);
+			heater_on.set(plcData[32]);
 
 			const stateRecord = await PB.collection('StateMachine').getFirstListItem("", { sort: '-created' })
 			const stateData = stateRecord.stateData;
