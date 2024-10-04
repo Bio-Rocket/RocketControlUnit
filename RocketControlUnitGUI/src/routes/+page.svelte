@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
+	import { getModalStore, modeCurrent } from '@skeletonlabs/skeleton';
+    import SlideToggle from "./SlideToggle.svelte"; 
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
 	import { onDestroy, onMount } from 'svelte';
@@ -12,7 +13,7 @@
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://192.168.0.130:8090');
+	const PB = new PocketBase('http://127.0.0.1:8090');
 
 	// onMount(async () => {
 	// 	const email = import.meta.env.VITE_EMAIL;
@@ -42,7 +43,6 @@
 				if (r) {
 					async function writeStateChange(state: string) {
 						await PB.collection('CommandMessage').create({
-							target: 'NODE_DMB',
 							command: state
 						});
 					}
@@ -59,7 +59,6 @@
 		async function writeStateChange(state: string) {
 			// state string : contains the state to transition to
 			await PB.collection('CommandMessage').create({
-				target: 'NODE_DMB',
 				command: state
 			});
 		}
@@ -68,32 +67,18 @@
 	}
 
 	const stateToCommand: { [key: string]: string } = {
-		RS_ABORT: 'RSC_ANY_TO_ABORT',
-		RS_PRELAUNCH: 'RSC_GOTO_PRELAUNCH',
-		RS_FILL: "RSC_GOTO_FILL",
-		RS_ARM: "RSC_GOTO_ARM",
-		RS_IGNITION: "RSC_GOTO_IGNITION",
-		RS_LAUNCH: "RSC_IGNITION_TO_LAUNCH",
-		RS_BURN: "RSC_GOTO_BURN",
-		RS_COAST: "RSC_GOTO_COAST",
-		RS_DESCENT: "RSC_GOTO_DESCENT",
-		RS_RECOVERY: "RSC_GOTO_RECOVERY",
-		RS_TEST: "RSC_GOTO_TEST"
+		ABORT: 'GOTO_ABORT',
+		PREFIRE: 'GOTO_PREFIRE',
+		MANUAL_FILL: 'GOTO_MANUAL_FILL',
+		EPR_FILL: "GOTO_EPR_FILL",
+		IGNITION: "GOTO_IGNITION",
+		POSTFIRE: "SOFT_ABORT",
+		TEST: "GOTO_TEST"
 	};
 
 	const commandToState = Object.fromEntries(
     	Object.entries(stateToCommand).map(([key, value]) => [value, key])
   	);
-
-    // let BackgroundComponent: any;
-
-    // $: {
-    //     if ($modeCurrent) {
-    //         BackgroundComponent = BackgroundLight;
-    //     } else {
-    //         BackgroundComponent = BackgroundDark;
-    //     }
-    // }
 
 	let containerElement: any;
 	let intervalId: any;
@@ -133,6 +118,8 @@
 			window.removeEventListener('resize', handleResize);
 		};
 	});
+
+	const warningState = writable("N/A");
 
 	const pbv1_open = writable(undefined);
 	const pbv2_open = writable(undefined);
@@ -191,11 +178,11 @@
 	const pt15_pressure: Writable<string | number | undefined> = writable(undefined);
 	const pt16_pressure: Writable<string | number | undefined> = writable(undefined);
 
-	const system_state: Writable<string | undefined> = writable(undefined);
+	// const system_state: Writable<string | undefined> = writable(undefined);
 
-	const timer_state: Writable<string | undefined> = writable(undefined);
-	const timer_period: Writable<number | undefined> = writable(undefined);
-	const timer_remaining: Writable<number | undefined> = writable(undefined);
+	// const timer_state: Writable<string | undefined> = writable(undefined);
+	// const timer_period: Writable<number | undefined> = writable(undefined);
+	// const timer_remaining: Writable<number | undefined> = writable(undefined);
 
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSED';
 	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'CLOSED' : 'OPEN';
@@ -254,37 +241,103 @@
 	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
 	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
 
-	$: system_state_display = $system_state === undefined 
-    ? 'N/A' 
-    : $system_state.replace('SYS_', '');
+	// $: system_state_display = $system_state === undefined 
+    // ? 'N/A' 
+    // : $system_state.replace('SYS_', '');
 
-	$: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
+	// $: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
 
-	$: timer_period_display = $timer_period === undefined 
-    ? 'N/A' 
-    : ($timer_period / 1000).toFixed(0); // Convert to seconds
+	// $: timer_period_display = $timer_period === undefined 
+    // ? 'N/A' 
+    // : ($timer_period / 1000).toFixed(0); // Convert to seconds
 
-	$: timer_remaining_display = $timer_remaining === undefined 
-	? 'N/A' 
-	: ($timer_remaining / 1000).toFixed(0); // Convert to seconds
+	// $: timer_remaining_display = $timer_remaining === undefined 
+	// ? 'N/A' 
+	// : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
-	// onMount(() => {
-	// 	const interval = setInterval(async () => {
-	// 	try {
-	// 		// Query the most recent record from 'LabJack1' collection
-	// 		const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
-	// 		const labJack1Data = labJack1Record.lj1_data;
+	onMount(() => {
+		const interval = setInterval(async () => {
+		try {
+			// Query the most recent record from 'LabJack1' collection
+			// const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
+			// const labJack1Data = labJack1Record.lj1_data;
 
-	// 		const plcRecord = await PB.collection('PLC').getFirstListItem("", { sort: '-created' })
-	// 		const plcData = plcRecord.plc_data;
+			// sol1_open.set(labJack1Data[0]);
+			// sol2_open.set(labJack1Data[1]);
+			// sol3_open.set(labJack1Data[2]);
+			// sol4_open.set(labJack1Data[3]);
+			// pt7_pressure.set(labJack1Data[4]);
+			// pt8_pressure.set(labJack1Data[5]);
+			// pt9_pressure.set(labJack1Data[6]);
+			// pt10_pressure.set(labJack1Data[7]);
+			// pt11_pressure.set(labJack1Data[8]);
+			// pt12_pressure.set(labJack1Data[9]);
 
-	// 	} catch (error) {
-	// 		console.error('Error querying records:', error);
-	// 	}
-	// 	}, 200);
 
-	// 	return () => clearInterval(interval);
-	// });
+			// const labJack2Record = await PB.collection('LabJack2').getFirstListItem("", { sort: '-created' })
+			// const labJack2Data = labJack2Record.lj2_data;
+
+			// lc3_mass.set(labJack2Data[0]);
+			// lc4_mass.set(labJack2Data[1]);
+			// lc5_mass.set(labJack2Data[2]);
+			// lc6_mass.set(labJack2Data[3]);
+			// pt13_pressure.set(labJack2Data[4]);
+			// pt14_pressure.set(labJack2Data[5]);
+
+
+			// const plcRecord = await PB.collection('Plc').getFirstListItem("", { sort: '-created' })
+			// const plcData = plcRecord.plc_data;
+
+			// tc1_temperature.set(plcData[0]);
+			// tc2_temperature.set(plcData[1]);
+			// tc3_temperature.set(plcData[2]);
+			// tc4_temperature.set(plcData[3]);
+			// tc5_temperature.set(plcData[4]);
+			// tc6_temperature.set(plcData[5]);
+			// tc7_temperature.set(plcData[6]);
+			// tc8_temperature.set(plcData[7]);
+			// tc9_temperature.set(plcData[8]);
+			// lc1_mass.set(plcData[9]);
+			// lc2_mass.set(plcData[10]);
+			// pt1_pressure.set(plcData[11]);
+			// pt2_pressure.set(plcData[12]);
+			// pt3_pressure.set(plcData[13]);
+			// pt4_pressure.set(plcData[14]);
+			// pt5_pressure.set(plcData[15]);
+			// pt6_pressure.set(plcData[16]);
+			// pt15_pressure.set(plcData[17]);
+			// pt16_pressure.set(plcData[18]);
+			// pbv1_open.set(plcData[19]);
+			// pbv2_open.set(plcData[20]);
+			// pbv3_open.set(plcData[21]);
+			// pbv4_open.set(plcData[22]);
+			// pbv5_open.set(plcData[23]);
+			// pbv6_open.set(plcData[24]);
+			// pbv7_open.set(plcData[25]);
+			// pbv8_open.set(plcData[26]);
+			// pmp1_on.set(plcData[27]);
+			// pmp2_on.set(plcData[28]);
+			// pmp3_on.set(plcData[29]);
+			// ign1_on.set(plcData[30]);
+			// ign2_on.set(plcData[31]);
+			// heater_on.set(plcData[32]);
+
+			const stateRecord = await PB.collection('StateMachine').getFirstListItem("", { sort: '-created' })
+			const stateData = stateRecord.stateData;
+			const warningData = stateRecord.warningData;
+
+			currentState.set(stateData);
+			warningState.set(warningData);
+
+		} catch (error) {
+			console.error('Error querying records:', error);
+		}
+		}, 200);
+
+		return () => clearInterval(interval);
+	});
+
+	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
 
 	async function handleLabJackSliderChange(
 		e: any,
@@ -299,7 +352,8 @@
 		// Create a change on the 'RelayStatus' collection
 		await PB.collection('LabJack1Commands').create({
 			// Write a new record with all current values
-			command: command
+			command: command,
+			value: null
 		});
 	}
 
@@ -316,7 +370,9 @@
 		// Create a change on the 'RelayStatus' collection
 		await PB.collection('PlcCommands').create({
 			// Write a new record with all current values
-			command: command
+			loadcell: null,
+			command: command,
+			value: null
 		});
 	}
 
@@ -330,11 +386,11 @@
 
 	async function handleLaunchSequence() {
 		await PB.collection('PlcCommands').create({
-			command: 'RCU_IGNITE_PAD_BOX1'
+			command: 'IGN1_ON'
 		});
 
 		await PB.collection('PlcCommands').create({
-			command: 'RCU_IGNITE_PAD_BOX2'
+			command: 'IGN2_ON'
 		});
 
 		const pollInterval = setInterval(pollIgnitors, 100);
@@ -357,8 +413,8 @@
 	// NOTE: This seems odd but since the event will switch these MUST be swapped
 	// Open to alternate ways of doing it. Everything I tried didn't work.
 	async function handleIgnition(e: MouseEvent) {
-		await handlePlcSliderChange(e, 'RCU_IGNITE_PAD_BOX1', 'RCU_KILL_BOX1');
-		await handlePlcSliderChange(e, 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_PAD_BOX2');
+		await handlePlcSliderChange(e, 'IGN1_ON', 'IGN1_OFF');
+		await handlePlcSliderChange(e, 'IGN2_OFF', 'IGN2_ON');
 	}
 
 </script>
@@ -372,7 +428,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv1_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV1', 'CLOSE_PBV1')}
+			on:click={(e) => handlePlcSliderChange(e, 'PBV1_OPEN', 'PBV1_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv1_display}</SlideToggle
 		>
@@ -384,7 +441,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv2_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV2', 'CLOSE_PBV2')}
+			on:click={(e) => handlePlcSliderChange(e, 'PBV2_OPEN', 'PBV2_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv2_display}</SlideToggle
 		>
@@ -396,7 +454,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv3_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV3', 'CLOSE_PBV3')}
+			on:click={(e) => handlePlcSliderChange(e, 'PBV3_OPEN', 'PBV3_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv3_display}</SlideToggle
 		>
@@ -408,7 +467,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv4_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV4', 'CLOSE_PBV4')}
+			on:click={(e) => handlePlcSliderChange(e, 'PBV4_OPEN', 'PBV4_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv4_display}</SlideToggle
 		>
@@ -420,7 +480,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv5_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV5', 'CLOSE_PBV5')}
+			on:click={(e) => handlePlcSliderChange(e, 'PBV5_OPEN', 'PBV5_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv5_display}</SlideToggle
 		>
@@ -432,7 +493,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv6_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV6', 'CLOSE_PBV6')}
+			on:click={(e) => handlePlcSliderChange(e, 'PBV6_OPEN', 'PBV6_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv6_display}</SlideToggle
 		>
@@ -444,7 +506,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv7_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV7', 'CLOSE_PBV7')}
+			on:click={(e) => handlePlcSliderChange(e, 'PBV7_OPEN', 'PBV7_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv7_display}</SlideToggle
 		>
@@ -456,7 +519,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv8_open}
-			on:click={(e) => handlePlcSliderChange(e, 'OPEN_PBV8', 'CLOSE_PBV8')}
+			on:click={(e) => handlePlcSliderChange(e, 'PBV8_OPEN', 'PBV8_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv8_display}</SlideToggle
 		>
@@ -468,7 +532,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol1_open}
-			on:click={(e) => handleLabJackSliderChange(e, 'OPEN_SOL1', 'CLOSE_SOL1')}
+			on:click={(e) => handleLabJackSliderChange(e, 'SOL1_OPEN', 'SOL1_CLOSE')}
+			disabled={["PREFIRE", "EPR_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{sol1_display}</SlideToggle
 		>
@@ -480,7 +545,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol2_open}
-			on:click={(e) => handleLabJackSliderChange(e, 'OPEN_SOL2', 'CLOSE_SOL2')}
+			on:click={(e) => handleLabJackSliderChange(e, 'SOL2_OPEN', 'SOL2_CLOSE')}
+			disabled={["PREFIRE", "EPR_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{sol2_display}</SlideToggle
 		>
@@ -492,7 +558,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol3_open}
-			on:click={(e) => handleLabJackSliderChange(e, 'OPEN_SOL3', 'CLOSE_SOL3')}
+			on:click={(e) => handleLabJackSliderChange(e, 'SOL3_OPEN', 'SOL3_CLOSE')}
+			disabled={["PREFIRE", "EPR_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{sol3_display}</SlideToggle
 		>
@@ -504,7 +571,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol4_open}
-			on:click={(e) => handleLabJackSliderChange(e, 'OPEN_SOL4', 'CLOSE_SOL4')}
+			on:click={(e) => handleLabJackSliderChange(e, 'SOL4_OPEN', 'SOL4_CLOSE')}
+			disabled={["PREFIRE", "EPR_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{sol4_display}</SlideToggle
 		>
@@ -516,7 +584,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pmp1_on}
-			on:click={(e) => handlePlcSliderChange(e, 'PUMP1_ON', 'PUMP1_OFF')}
+			on:click={(e) => handlePlcSliderChange(e, 'PMP1_ON', 'PMP1_OFF')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pmp1_display}</SlideToggle
 		>
@@ -528,7 +597,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pmp2_on}
-			on:click={(e) => handlePlcSliderChange(e, 'PUMP2_ON', 'PUMP2_OFF')}
+			on:click={(e) => handlePlcSliderChange(e, 'PMP2_ON', 'PMP2_OFF')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pmp2_display}</SlideToggle
 		>
@@ -540,7 +610,8 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pmp3_on}
-			on:click={(e) => handlePlcSliderChange(e, 'PUMP3_ON', 'PUMP3_OFF')}
+			on:click={(e) => handlePlcSliderChange(e, 'PMP3_ON', 'PMP3_OFF')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pmp3_display}</SlideToggle
 		>
@@ -558,33 +629,32 @@
 		>
 	</div>
 
-	{#if $currentState === "N/A" || $currentState === "RS_IGNITION" || $currentState === "RS_TEST" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
-		<div class="ign1_slider">
-			<SlideToggle
-				name="ign1_slider"
-				active="bg-primary-500 dark:bg-primary-500"
-				size="sm"
-				bind:checked={$ign1_on}
-				on:click={handleIgnition}
-				disabled={$currentState === "RS_IGNITION" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
-			>
-				{ign1_display}</SlideToggle
-			>
-		</div>
 
-		<div class="ign2_slider">
-			<SlideToggle
-				name="ign2_slider"
-				active="bg-primary-500 dark:bg-primary-500"
-				size="sm"
-				bind:checked={$ign2_on}
-				on:click={handleIgnition}
-				disabled={$currentState === "RS_IGNITION" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
-			>
-				{ign2_display}</SlideToggle
-			>
-		</div>
-	{/if}
+	<div class="ign1_slider">
+		<SlideToggle
+			name="ign1_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$ign1_on}
+			on:click={handleIgnition}
+			disabled={["PREFIRE", "MANUAL_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{ign1_display}</SlideToggle
+		>
+	</div>
+
+	<div class="ign2_slider">
+		<SlideToggle
+			name="ign2_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$ign2_on}
+			on:click={handleIgnition}
+			disabled={["PREFIRE", "MANUAL_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{ign2_display}</SlideToggle
+		>
+	</div>
 
 	<div class="tc1_temperature">
 		<p>{tc1_display}</p>
@@ -726,12 +796,14 @@
 		<p>{timer_remaining_display}</p>
 	</div> -->
 
+	<!-- on:click={() => warningState ? confirmStateChange("GOTO_FILL") : instantStateChange("GOTO_FILL")}>Go to Fill</button
+
 	<!-- Render different buttons based on the current state -->
-	{#if $currentState == "RS_PRELAUNCH"}
+	{#if $currentState == "PREFIRE"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.5);"
-			on:click={() => confirmStateChange("RSC_GOTO_FILL")}>Go to Fill</button
+			on:click={() => instantStateChange("GOTO_FILL")}>Go to Fill</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
@@ -1245,6 +1317,7 @@
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
+
 /*
 	.system_state {
 		position: absolute;
