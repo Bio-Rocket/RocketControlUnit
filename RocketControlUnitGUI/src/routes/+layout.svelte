@@ -19,7 +19,7 @@
 
 	initializeStores();
 
-	$: logoSrc = $modeCurrent ? '/soar_logo_light.svg' : '/soar_logo_dark.svg';
+	$: logoSrc = $modeCurrent ? '/biorocketfull.svg' : '/soar_logo_dark.svg';
 	$: homeIcon = $modeCurrent ? '/rocket-light.png' : '/rocket-dark.png';
 	$: aboutIcon = $modeCurrent ? '/info-light.png' : '/info-dark.png';
 	$: cameraIcon = $modeCurrent ? '/camera-light.png' : '/camera-dark.png';
@@ -42,7 +42,7 @@
 							src={logoSrc}
 							alt="SOAR Logo"
 							class="mr-2"
-							style="width: 70px; height: 35px;"
+							style="width: 90px; height: 35px;"
 						/>
 					</div>
 				</div>

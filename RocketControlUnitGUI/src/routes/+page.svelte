@@ -285,42 +285,42 @@
 			// pt14_pressure.set(labJack2Data[5]);
 
 
-			const plcRecord = await PB.collection('Plc').getFirstListItem("", { sort: '-created' })
-			const plcData = plcRecord.plc_data;
+			// const plcRecord = await PB.collection('Plc').getFirstListItem("", { sort: '-created' })
+			// const plcData = plcRecord.plc_data;
 
-			tc1_temperature.set(plcData[0]);
-			tc2_temperature.set(plcData[1]);
-			tc3_temperature.set(plcData[2]);
-			tc4_temperature.set(plcData[3]);
-			tc5_temperature.set(plcData[4]);
-			tc6_temperature.set(plcData[5]);
-			tc7_temperature.set(plcData[6]);
-			tc8_temperature.set(plcData[7]);
-			tc9_temperature.set(plcData[8]);
-			lc1_mass.set(plcData[9]);
-			lc2_mass.set(plcData[10]);
-			pt1_pressure.set(plcData[11]);
-			pt2_pressure.set(plcData[12]);
-			pt3_pressure.set(plcData[13]);
-			pt4_pressure.set(plcData[14]);
-			pt5_pressure.set(plcData[15]);
-			pt6_pressure.set(plcData[16]);
-			pt15_pressure.set(plcData[17]);
-			pt16_pressure.set(plcData[18]);
-			pbv1_open.set(plcData[19]);
-			pbv2_open.set(plcData[20]);
-			pbv3_open.set(plcData[21]);
-			pbv4_open.set(plcData[22]);
-			pbv5_open.set(plcData[23]);
-			pbv6_open.set(plcData[24]);
-			pbv7_open.set(plcData[25]);
-			pbv8_open.set(plcData[26]);
-			pmp1_on.set(plcData[27]);
-			pmp2_on.set(plcData[28]);
-			pmp3_on.set(plcData[29]);
-			ign1_on.set(plcData[30]);
-			ign2_on.set(plcData[31]);
-			heater_on.set(plcData[32]);
+			// tc1_temperature.set(plcData[0]);
+			// tc2_temperature.set(plcData[1]);
+			// tc3_temperature.set(plcData[2]);
+			// tc4_temperature.set(plcData[3]);
+			// tc5_temperature.set(plcData[4]);
+			// tc6_temperature.set(plcData[5]);
+			// tc7_temperature.set(plcData[6]);
+			// tc8_temperature.set(plcData[7]);
+			// tc9_temperature.set(plcData[8]);
+			// lc1_mass.set(plcData[9]);
+			// lc2_mass.set(plcData[10]);
+			// pt1_pressure.set(plcData[11]);
+			// pt2_pressure.set(plcData[12]);
+			// pt3_pressure.set(plcData[13]);
+			// pt4_pressure.set(plcData[14]);
+			// pt5_pressure.set(plcData[15]);
+			// pt6_pressure.set(plcData[16]);
+			// pt15_pressure.set(plcData[17]);
+			// pt16_pressure.set(plcData[18]);
+			// pbv1_open.set(plcData[19]);
+			// pbv2_open.set(plcData[20]);
+			// pbv3_open.set(plcData[21]);
+			// pbv4_open.set(plcData[22]);
+			// pbv5_open.set(plcData[23]);
+			// pbv6_open.set(plcData[24]);
+			// pbv7_open.set(plcData[25]);
+			// pbv8_open.set(plcData[26]);
+			// pmp1_on.set(plcData[27]);
+			// pmp2_on.set(plcData[28]);
+			// pmp3_on.set(plcData[29]);
+			// ign1_on.set(plcData[30]);
+			// ign2_on.set(plcData[31]);
+			// heater_on.set(plcData[32]);
 
 			const stateRecord = await PB.collection('StateMachine').getFirstListItem("", { sort: '-created' })
 			const stateData = stateRecord.stateData;
@@ -801,56 +801,26 @@
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState == "PREFIRE"}
 		<button
-			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.5);"
-			on:click={() => instantStateChange("GOTO_FILL")}>Go to Fill</button
-		>
-		<button
-			class="btn variant-ghost-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
-		>
-	{:else if $currentState == "RS_FILL"}
-		<button
-			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.5);"
-			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
-		>
-		<button
-		class="btn variant-filled-warning arm_button"
-		style="top: calc(var(--container-width) * 0.47);"
-		on:click={() => instantStateChange("RSC_ARM_CONFIRM_1")}>ARM CONFIRM 1</button
-		>
-		<button
-		class="btn variant-filled-warning arm_button"
-		style="top: calc(var(--container-width) * 0.5);"
-		on:click={() => instantStateChange("RSC_ARM_CONFIRM_2")}>ARM CONFIRM 2</button
+			class="btn variant-filled-primary next-state-btn"
+			style="left: 20%"
+			on:click={() => instantStateChange("GOTO_MANUAL_FILL")}>Go to Fill</button
 		>
 		<button
 			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.47);"
-			on:click={() => confirmStateChange("RSC_GOTO_ARM")}>Go to Arm</button
+			style="left: 33%"
+			on:click={() => instantStateChange("GOTO_TEST")}>Go to Test</button
 		>
+	{:else if $currentState == "MANUAL_FILL"}
 		<button
-			class="btn variant-ghost-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+			class="btn variant-filled-secondary next-state-btn"
+			style="left: 33%"
+			on:click={() => confirmStateChange("GOTO_PREFIRE")}>Go to Pre-Fire</button
 		>
-	{:else if $currentState == "RS_ARM"}
-		<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.5);"
-		on:click={() => confirmStateChange("RSC_GOTO_FILL")}>Go to Fill</button
-		>
+	{:else if $currentState == "EPR_FILL"}
 		<button
 			class="btn variant-filled-warning next-state-btn"
-			style="top: calc(var(--container-width) * 0.47);"
-			on:click={() => confirmStateChange("RSC_GOTO_IGNITION")}>Go to Ignition</button
-		>
-		<button
-			class="btn variant-ghost-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+			style="left: 20%"
+			on:click={() => confirmStateChange("GOTO_IGNITION")}>Go to Ignition</button
 		>
 	{:else if $currentState == "RS_IGNITION"}
 		<button
@@ -862,6 +832,11 @@
 		class="btn variant-filled-secondary next-state-btn"
 		style="top: calc(var(--container-width) * 0.5);"
 		on:click={() => confirmStateChange("RSC_GOTO_ARM")}>Go to Arm</button
+		>
+		<button
+			class="btn variant-ghost-error next-state-btn"
+			style="left: 7%"
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 	{:else if $currentState == "RS_ABORT"}
 		<button
@@ -914,14 +889,7 @@
 
 	.next-state-btn {
 		position: absolute;
-		left: 8%;
-		width: 200px;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
-	}
-
-	.arm_button {
-		position: absolute;
-		left: 21%;
+		top: calc(var(--container-width) * 0.532);
 		width: 200px;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
@@ -960,7 +928,7 @@
 
 	.pbv5_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.109);
+		top: calc(var(--container-width) * 0.107);
 		left: 84%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
@@ -984,7 +952,7 @@
 
 	.pbv8_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.274);
+		top: calc(var(--container-width) * 0.273);
 		left: 50%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
@@ -1008,7 +976,7 @@
 
 	.sol3_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.29);
+		top: calc(var(--container-width) * 0.288);
 		left: 65.2%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
@@ -1016,7 +984,7 @@
 
 	.sol4_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.29);
+		top: calc(var(--container-width) * 0.288);
 		left: 72.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
