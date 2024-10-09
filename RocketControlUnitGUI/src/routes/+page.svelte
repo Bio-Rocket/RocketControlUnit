@@ -8,12 +8,46 @@
 	import type { Writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
 	import BackgroundLight from './background-light.svelte';
+	import { get } from 'svelte/store';
 
 	const modalStore = getModalStore();
 
 	const PB = new PocketBase('http://127.0.0.1:8090');
 
 	let intervalId: ReturnType<typeof setInterval> | void;
+
+
+	const StateArray = {
+        Prefire_Valve_State: {
+            PBV1: 'CLOSED',
+            PBV2: 'OPEN',
+            PBV3: 'CLOSED',
+            PBV4: 'OPEN',
+            PBV5: 'CLOSED',
+            PBV6: 'CLOSED',
+            PBV7: 'OPEN',
+            PBV8: 'OPEN',
+            SOL1: 'CLOSED',
+            SOL2: 'CLOSED',
+            SOL3: 'CLOSED',
+            SOL4: 'CLOSED',
+            PUMP1: 'OFF',
+            PUMP2: 'OFF',
+            PUMP3: 'OFF'
+        },
+
+        Ignition_Valve_State: {
+            PBV1: 'CLOSED',
+            PBV2: 'CLOSED',
+            PBV3: 'CLOSED',
+            PBV4: 'CLOSED',
+            PBV7: 'CLOSED',
+            PBV8: 'CLOSED',
+            PUMP1: 'OFF',
+            PUMP2: 'OFF',
+            PUMP3: 'OFF'
+        }
+    };
 
 	intervalId = setInterval(async () => {
 		await PB.collection('Heartbeat').create({
@@ -421,6 +455,68 @@
 		await handlePlcSliderChange(e, 'IGN2_OFF', 'IGN2_ON');
 	}
 
+	function checkStateAndChangePrefire() {
+		const currentState = {
+			PBV1: get(pbv1_open),
+			PBV2: get(pbv2_open),
+			PBV3: get(pbv3_open),
+			PBV4: get(pbv4_open),
+			PBV5: get(pbv5_open),
+			PBV6: get(pbv6_open),
+			PBV7: get(pbv7_open),
+			PBV8: get(pbv8_open),
+			SOL1: get(sol1_open),
+			SOL2: get(sol2_open),
+			SOL3: get(sol3_open),
+			SOL4: get(sol4_open),
+			PUMP1: get(pmp1_on),
+			PUMP2: get(pmp2_on),
+			PUMP3: get(pmp3_on)
+		};
+
+    	const prefireState = StateArray.Prefire_Valve_State;
+
+		const isEqual = Object.keys(prefireState).every(key => {
+		const currentValue = currentState[key as keyof typeof currentState];
+		const prefireValue = prefireState[key as keyof typeof prefireState];
+		return currentValue === prefireValue || (currentValue === undefined && prefireValue === undefined);
+		});
+
+		if (isEqual) {
+			instantStateChange("GOTO_PREFIRE");
+		} else {
+			confirmStateChange("GOTO_PREFIRE");
+		}
+	}
+
+	function checkStateAndChangeIgnition() {
+		const currentState = {
+			PBV1: get(pbv1_open),
+			PBV2: get(pbv2_open),
+			PBV3: get(pbv3_open),
+			PBV4: get(pbv4_open),
+			PBV7: get(pbv7_open),
+			PBV8: get(pbv8_open),
+			PUMP1: get(pmp1_on),
+			PUMP2: get(pmp2_on),
+			PUMP3: get(pmp3_on)
+		};
+
+		const ignitionState = StateArray.Ignition_Valve_State;
+
+		const isEqual = Object.keys(ignitionState).every(key => {
+		const currentValue = currentState[key as keyof typeof currentState];
+		const ignitionValue = ignitionState[key as keyof typeof ignitionState];
+		return currentValue === ignitionValue || (currentValue === undefined && ignitionValue === undefined);
+		});
+
+		if (isEqual) {
+			instantStateChange("GOTO_IGNITION");
+		} else {
+			confirmStateChange("GOTO_IGNITION");
+		}
+  	}
+
 </script>
 
 <div class="container">
@@ -800,8 +896,6 @@
 		<p>{timer_remaining_display}</p>
 	</div> -->
 
-	<!-- on:click={() => warningState ? confirmStateChange("GOTO_FILL") : instantStateChange("GOTO_FILL")}>Go to Fill</button
-
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState == "PREFIRE"}
 		<button
@@ -818,7 +912,7 @@
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="left: 33%"
-			on:click={() => confirmStateChange("GOTO_PREFIRE")}>Go to Pre-Fire</button
+			on:click={() => checkStateAndChangePrefire()}>Go to Pre-Fire</button
 		>
 		<button
 			class="btn variant-filled-primary epr-start-btn"
@@ -831,7 +925,7 @@
 		<button
 			class="btn variant-filled-warning next-state-btn"
 			style="left: 20%"
-			on:click={() => confirmStateChange("GOTO_IGNITION")}>Go to Ignition</button
+			on:click={() => checkStateAndChangeIgnition()}>Go to Ignition</button
 		>
 		<button
 			class="btn variant-ghost-error epr-stop-btn"
@@ -876,22 +970,23 @@
 		<div class="epr_text">
         	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
     	</div>
-	{:else if $currentState == "RS_TEST"}
-		<button
-			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
-		>
-		<button
-			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.5);"
-			on:click={() => instantStateChange("RSC_TEST_MEV_OPEN")}>Open MEV</button
-		>
+	{:else if $currentState == "TEST"}
 		<button
 		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.47);"
-		on:click={() => instantStateChange("RSC_MEV_CLOSE")}>Close MEV</button
+		style="left: 7%"
+		on:click={() => confirmStateChange("GOTO_PREFIRE")}>Go to Pre-Fire</button
 		>
+		<button
+		class="btn variant-filled-primary epr-start-btn"
+		on:click={() => setEPR("EPR_START")}>EPR Start</button
+		>
+		<button
+		class="btn variant-ghost-error epr-stop-btn"
+		on:click={() => confirmStateChange("EPR_STOP")}>EPR Stop</button
+		>
+		<div class="epr_text">
+			<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
+		</div>
 	{/if}
 </div>
 
@@ -934,7 +1029,6 @@
 		width: 150px;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
-
 
 	.epr_text {
 		position: absolute;
