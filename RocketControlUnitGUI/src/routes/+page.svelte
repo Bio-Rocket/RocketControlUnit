@@ -7,30 +7,29 @@
 	import { writable } from 'svelte/store';
 	import type { Writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
-	import BackgroundDark from './background-dark.svelte';
 	import BackgroundLight from './background-light.svelte';
-	import { auth } from '../store';
 
 	const modalStore = getModalStore();
 
 	const PB = new PocketBase('http://127.0.0.1:8090');
 
-	// onMount(async () => {
-	// 	const email = import.meta.env.VITE_EMAIL;
-	// 	const password = import.meta.env.VITE_PASSWORD;
-	// 	if (email && password) {
-	// 		await PB.admins.authWithPassword(email, password);
-	// 		$auth = true;
-	// 	}
+	let intervalId: ReturnType<typeof setInterval> | void;
 
-	// 	if ($auth === true) {
-	// 		intervalId = setInterval(async () => {
-	// 			await PB.collection('Heartbeat').create({
-	// 				message: 'heartbeat'
-	// 			});
-	// 		}, 5000); // 5000 milliseconds = 5 seconds
-	// 	}
-	// });
+	intervalId = setInterval(async () => {
+		await PB.collection('Heartbeat').create({
+			message: 'heartbeat'
+		});
+	}, 5000); // 5000 milliseconds = 5 seconds
+
+	let eprSetPoint: number = 0;
+
+    async function setEPR(command: string) {
+        // Replace with your actual database write logic
+        await PB.collection('LabJack1Commands').create({
+			command: command,
+            value: eprSetPoint
+        });
+    }
 
 	let nextStatePending: string = '';
 	function confirmStateChange(state: string): void {
@@ -81,7 +80,7 @@
   	);
 
 	let containerElement: any;
-	let intervalId: any;
+
 
     onDestroy(() => {
         clearInterval(intervalId); // Stop the interval when the component is destroyed
@@ -385,6 +384,11 @@
 	}
 
 	async function handleLaunchSequence() {
+        await PB.collection('LabJack1Commands').create({
+			command: "EPR_SET",
+            value: eprSetPoint
+        });
+
 		await PB.collection('PlcCommands').create({
 			command: 'IGN1_ON'
 		});
@@ -816,45 +820,62 @@
 			style="left: 33%"
 			on:click={() => confirmStateChange("GOTO_PREFIRE")}>Go to Pre-Fire</button
 		>
+		<button
+			class="btn variant-filled-primary epr-start-btn"
+			on:click={() => setEPR("EPR_START")}>EPR Start</button
+		>
+		<div class="epr_text">
+        	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
+    	</div>
 	{:else if $currentState == "EPR_FILL"}
 		<button
 			class="btn variant-filled-warning next-state-btn"
 			style="left: 20%"
 			on:click={() => confirmStateChange("GOTO_IGNITION")}>Go to Ignition</button
 		>
-	{:else if $currentState == "RS_IGNITION"}
 		<button
-			class="btn variant-filled-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.47);"
-			on:click={() => handleLaunchSequence()}>LAUNCH</button
+			class="btn variant-ghost-error epr-stop-btn"
+			on:click={() => confirmStateChange("EPR_STOP")}>EPR Stop</button
+		>
+		<div class="epr_text">
+        	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
+    	</div>
+	{:else if $currentState == "IGNITION"}
+		<button
+			class="btn variant-filled next-state-btn fire-btn"
+			style="left:20%"
+			on:click={() => handleLaunchSequence()}>FIRE</button
 		>
 		<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.5);"
-		on:click={() => confirmStateChange("RSC_GOTO_ARM")}>Go to Arm</button
-		>
-		<button
-			class="btn variant-ghost-error next-state-btn"
+			class="btn variant-filled-warning next-state-btn"
 			style="left: 7%"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
-		>
-	{:else if $currentState == "RS_ABORT"}
-		<button
-			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
+			on:click={() => instantStateChange("SOFT_ABORT")}>Soft Abort</button
 		>
 		<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.5);"
-		on:click={() => confirmStateChange("RSC_GOTO_TEST")}>Go to Test</button
+			class="btn variant-filled-surface next-state-btn"
+			style="left: 33%"
+			on:click={() => confirmStateChange("GOTO_EPR_FILL")}>Go to Fill</button
 		>
-	{:else if $currentState == "RS_RECOVERY"}
 		<button
-			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+			class="btn variant-ghost-error epr-stop-btn"
+			on:click={() => confirmStateChange("EPR_STOP")}>EPR Stop</button
 		>
+		<div class="epr_text">
+        	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
+    	</div>
+	{:else if $currentState == "FIRE"}
+		<button
+			class="btn variant-filled-warning next-state-btn"
+			style="left: 7%"
+			on:click={() => instantStateChange("SOFT_ABORT")}>Soft Abort</button
+		>
+		<button
+			class="btn variant-ghost-error epr-stop-btn"
+			on:click={() => confirmStateChange("EPR_STOP")}>EPR Stop</button
+		>
+		<div class="epr_text">
+        	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
+    	</div>
 	{:else if $currentState == "RS_TEST"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
@@ -891,6 +912,36 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.532);
 		width: 200px;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
+	}
+
+	.epr-start-btn {
+		position: absolute;
+		top: calc(var(--container-width) * 0.42);
+		left: 28%;
+		width: 150px;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
+	}
+
+	.fire-btn {
+		background-color: #d4163c;
+	}
+
+	.epr-stop-btn {
+		position: absolute;
+		top: calc(var(--container-width) * 0.45);
+		left: 28%;
+		width: 150px;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
+	}
+
+
+	.epr_text {
+		position: absolute;
+		top: calc(var(--container-width) * 0.482);
+		left: 28%;
+		width: 150px;
+		text-align: center;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
 

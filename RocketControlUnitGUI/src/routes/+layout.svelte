@@ -15,7 +15,6 @@
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 	import { currentState } from '../store';
 	import { page } from '$app/stores';
-	import { auth } from '../store';
 
 	initializeStores();
 
@@ -24,7 +23,6 @@
 	$: aboutIcon = $modeCurrent ? '/info-light.png' : '/info-dark.png';
 	$: cameraIcon = $modeCurrent ? '/camera-light.png' : '/camera-dark.png';
 	$: statsIcon = $modeCurrent ? '/stats-light.png' : '/stats-dark.png';
-	let readOnlyIcon = '/read-only.svg';
 
 </script>
 
@@ -54,14 +52,6 @@
 
 			<svelte:fragment slot="trail">
 				<LightSwitch class="ml-auto" />
-				{#if $auth === false}
-					<img
-						src={readOnlyIcon}
-						alt="Read Only"
-						class="mr-2"
-						style="width: 20px; height: 20px;"
-					/>
-				{/if}
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
