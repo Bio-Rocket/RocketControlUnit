@@ -58,8 +58,8 @@
 			// Query the most recent record from 'LabJack1' collection
 			const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
 			const labJack1Data = labJack1Record.lj1_data;
-			pt1_test_pressure.set(labJack1Data[0] * 14.5);
-			pt2_test_pressure.set(labJack1Data[1] * 14.5);
+			pt1_test_pressure.set(labJack1Data[0][0] * 14.5);
+			pt2_test_pressure.set(labJack1Data[0][1] * 14.5);
 
 			const plcRecord = await PB.collection('Plc').getFirstListItem("", { sort: '-created' })
 			const plcData = plcRecord.plc_data;
