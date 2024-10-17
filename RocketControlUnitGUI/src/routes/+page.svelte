@@ -52,25 +52,25 @@
 	$: pt1_test_pressure_display = $pt1_test_pressure === undefined ? 'N/A' : Math.round($pt1_test_pressure as number);
 	$: pt2_test_pressure_display = $pt2_test_pressure === undefined ? 'N/A' : Math.round($pt2_test_pressure as number);
 
-	onMount(() => {
-		const interval = setInterval(async () => {
-		try {
-			// Query the most recent record from 'LabJack1' collection
-			const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
-			const labJack1Data = labJack1Record.lj1_data;
-			pt1_test_pressure.set(labJack1Data[0][0] * 14.5);
-			pt2_test_pressure.set(labJack1Data[0][1] * 14.5);
+	let labjackitter = 0;
+	let plcitter = 0;
 
-			const plcRecord = await PB.collection('Plc').getFirstListItem("", { sort: '-created' })
-			const plcData = plcRecord.plc_data;
-			sol_test_open.set(plcData[0]);
+	onMount(async () => {
+		PB.collection('LabJack1').subscribe('*', function (e) {
+			labjackitter++;
+			if (labjackitter % 50 === 0) { 
+				pt1_test_pressure.set(e.record.lj1_data[0][0] * 14.5);
+				pt2_test_pressure.set(e.record.lj1_data[0][1] * 14.5);
+				labjackitter = 0
+			}
+		});
 
-		} catch (error) {
-			console.error('Error querying records:', error);
-		}
-		}, 200);
-
-		return () => clearInterval(interval);
+		PB.collection('Plc').subscribe('*', function (e) {
+			if (plcitter % 50 === 0) {
+				sol_test_open.set(e.record.plc_data[0]);
+				plcitter = 0;
+			}
+		});
 	});
 
 	async function handlePlcSliderChange(
