@@ -7,15 +7,14 @@
 	import { writable } from 'svelte/store';
 	import type { Writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
-	import BackgroundLight from './background-light.svelte';
+	import BackgroundLight from './background.svelte';
 	import { get } from 'svelte/store';
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://127.0.0.1:8090');
+	const PB = new PocketBase('http://192.168.0.69:8090');
 
 	let intervalId: ReturnType<typeof setInterval> | void;
-
 
 	const StateArray = {
         Prefire_Valve_State: {
@@ -27,10 +26,6 @@
             PBV6: 'CLOSED',
             PBV7: 'OPEN',
             PBV8: 'OPEN',
-            SOL1: 'CLOSED',
-            SOL2: 'CLOSED',
-            SOL3: 'CLOSED',
-            SOL4: 'CLOSED',
             PUMP1: 'OFF',
             PUMP2: 'OFF',
             PUMP3: 'OFF'
@@ -54,16 +49,6 @@
 			message: 'heartbeat'
 		});
 	}, 5000); // 5000 milliseconds = 5 seconds
-
-	let eprSetPoint: number = 0;
-
-    async function setEPR(command: string) {
-        // Replace with your actual database write logic
-        await PB.collection('LabJack1Commands').create({
-			command: command,
-            value: eprSetPoint
-        });
-    }
 
 	let nextStatePending: string = '';
 	function confirmStateChange(state: string): void {
@@ -102,8 +87,7 @@
 	const stateToCommand: { [key: string]: string } = {
 		ABORT: 'GOTO_ABORT',
 		PREFIRE: 'GOTO_PREFIRE',
-		MANUAL_FILL: 'GOTO_MANUAL_FILL',
-		EPR_FILL: "GOTO_EPR_FILL",
+		FILL: 'GOTO_FILL',
 		IGNITION: "GOTO_IGNITION",
 		POSTFIRE: "SOFT_ABORT",
 		TEST: "GOTO_TEST"
@@ -114,7 +98,6 @@
   	);
 
 	let containerElement: any;
-
 
     onDestroy(() => {
         clearInterval(intervalId); // Stop the interval when the component is destroyed
@@ -162,11 +145,6 @@
 	const pbv6_open = writable(undefined);
 	const pbv7_open = writable(undefined);
 	const pbv8_open = writable(undefined);
-
-	const sol1_open = writable(undefined);
-	const sol2_open = writable(undefined);
-	const sol3_open = writable(undefined);
-	const sol4_open = writable(undefined);
 
 	const pmp1_on = writable(undefined);
 	const pmp2_on = writable(undefined);
@@ -226,11 +204,6 @@
 	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'CLOSED' : 'OPEN';
 	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'CLOSED' : 'OPEN';
 
-	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSED';
-	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSED';
-	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
-	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSED';
-
 	$: pmp1_display = $pmp1_on === undefined ? 'N/A' : $pmp1_on ? 'ON' : 'OFF';
 	$: pmp2_display = $pmp2_on === undefined ? 'N/A' : $pmp2_on ? 'ON' : 'OFF';
 	$: pmp3_display = $pmp3_on === undefined ? 'N/A' : $pmp3_on ? 'ON' : 'OFF';
@@ -288,9 +261,45 @@
 	// ? 'N/A' 
 	// : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
-	onMount(() => {
-		const interval = setInterval(async () => {
-		try {
+	let plcitter = 0;
+
+	onMount(async () => {
+		PB.collection('Plc').subscribe('*', function (e) {
+			tc1_temperature.set(e.record.TC1);
+			tc2_temperature.set(e.record.TC2);
+			tc3_temperature.set(e.record.TC3);
+			tc4_temperature.set(e.record.TC4);
+			tc5_temperature.set(e.record.TC5);
+			tc6_temperature.set(e.record.TC6);
+			tc7_temperature.set(e.record.TC7);
+			tc8_temperature.set(e.record.TC8);
+			tc9_temperature.set(e.record.TC9);
+			lc1_mass.set(e.record.LC1);
+			lc2_mass.set(e.record.LC2);
+			pt1_pressure.set(e.record.PT1_voltage);
+			pt2_pressure.set(e.record.PT2_voltage);
+			pt3_pressure.set(e.record.PT3_voltage);
+			pt4_pressure.set(e.record.PT4_voltage);
+			pt5_pressure.set(e.record.PT5_voltage);
+			pt6_pressure.set(e.record.PT6_voltage);
+			pt15_pressure.set(e.record.PT15_voltage);
+			pt16_pressure.set(e.record.PT16_voltage);
+			pbv1_open.set(e.record.PBV1);
+			pbv2_open.set(e.record.PBV2);
+			pbv3_open.set(e.record.PBV3);
+			pbv4_open.set(e.record.PBV4);
+			pbv5_open.set(e.record.PBV5);
+			pbv6_open.set(e.record.PBV6);
+			pbv7_open.set(e.record.PBV7);
+			pbv8_open.set(e.record.PBV8);
+			pmp1_on.set(e.record.PMP1);
+			pmp2_on.set(e.record.PMP2);
+			pmp3_on.set(e.record.PMP3);
+			ign1_on.set(e.record.IGN1);
+			ign2_on.set(e.record.IGN2);
+			heater_on.set(e.record.HEATER);
+		});
+	});
 			// Query the most recent record from 'LabJack1' collection
 			// const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
 			// const labJack1Data = labJack1Record.lj1_data;
@@ -355,20 +364,12 @@
 			// ign2_on.set(plcData[31]);
 			// heater_on.set(plcData[32]);
 
-			const stateRecord = await PB.collection('StateMachine').getFirstListItem("", { sort: '-created' })
-			const stateData = stateRecord.stateData;
-			const warningData = stateRecord.warningData;
+			// const stateRecord = await PB.collection('StateMachine').getFirstListItem("", { sort: '-created' })
+			// const stateData = stateRecord.stateData;
+			// const warningData = stateRecord.warningData;
 
-			currentState.set(stateData);
-			warningState.set(warningData);
-
-		} catch (error) {
-			console.error('Error querying records:', error);
-		}
-		}, 200);
-
-		return () => clearInterval(interval);
-	});
+			// currentState.set(stateData);
+			// warningState.set(warningData);
 
 	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
 
@@ -418,11 +419,6 @@
 	}
 
 	async function handleLaunchSequence() {
-        await PB.collection('LabJack1Commands').create({
-			command: "EPR_SET",
-            value: eprSetPoint
-        });
-
 		await PB.collection('PlcCommands').create({
 			command: 'IGN1_ON'
 		});
@@ -465,10 +461,6 @@
 			PBV6: get(pbv6_open),
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
-			SOL1: get(sol1_open),
-			SOL2: get(sol2_open),
-			SOL3: get(sol3_open),
-			SOL4: get(sol4_open),
 			PUMP1: get(pmp1_on),
 			PUMP2: get(pmp2_on),
 			PUMP3: get(pmp3_on)
@@ -623,58 +615,6 @@
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv8_display}</SlideToggle
-		>
-	</div>
-
-	<div class="sol1_slider">
-		<SlideToggle
-			name="sol1_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$sol1_open}
-			on:click={(e) => handleLabJackSliderChange(e, 'SOL1_OPEN', 'SOL1_CLOSE')}
-			disabled={["PREFIRE", "EPR_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
-		>
-			{sol1_display}</SlideToggle
-		>
-	</div>
-
-	<div class="sol2_slider">
-		<SlideToggle
-			name="sol2_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$sol2_open}
-			on:click={(e) => handleLabJackSliderChange(e, 'SOL2_OPEN', 'SOL2_CLOSE')}
-			disabled={["PREFIRE", "EPR_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
-		>
-			{sol2_display}</SlideToggle
-		>
-	</div>
-
-	<div class="sol3_slider">
-		<SlideToggle
-			name="sol3_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$sol3_open}
-			on:click={(e) => handleLabJackSliderChange(e, 'SOL3_OPEN', 'SOL3_CLOSE')}
-			disabled={["PREFIRE", "EPR_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
-		>
-			{sol3_display}</SlideToggle
-		>
-	</div>
-
-	<div class="sol4_slider">
-		<SlideToggle
-			name="sol4_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$sol4_open}
-			on:click={(e) => handleLabJackSliderChange(e, 'SOL4_OPEN', 'SOL4_CLOSE')}
-			disabled={["PREFIRE", "EPR_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
-		>
-			{sol4_display}</SlideToggle
 		>
 	</div>
 
@@ -908,32 +848,17 @@
 			style="left: 33%"
 			on:click={() => instantStateChange("GOTO_TEST")}>Go to Test</button
 		>
-	{:else if $currentState == "MANUAL_FILL"}
+	{:else if $currentState == "FILL"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="left: 33%"
 			on:click={() => checkStateAndChangePrefire()}>Go to Pre-Fire</button
 		>
 		<button
-			class="btn variant-filled-primary epr-start-btn"
-			on:click={() => setEPR("EPR_START")}>EPR Start</button
-		>
-		<div class="epr_text">
-        	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
-    	</div>
-	{:else if $currentState == "EPR_FILL"}
-		<button
 			class="btn variant-filled-warning next-state-btn"
 			style="left: 20%"
 			on:click={() => checkStateAndChangeIgnition()}>Go to Ignition</button
 		>
-		<button
-			class="btn variant-ghost-error epr-stop-btn"
-			on:click={() => confirmStateChange("EPR_STOP")}>EPR Stop</button
-		>
-		<div class="epr_text">
-        	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
-    	</div>
 	{:else if $currentState == "IGNITION"}
 		<button
 			class="btn variant-filled next-state-btn fire-btn"
@@ -948,45 +873,20 @@
 		<button
 			class="btn variant-filled-surface next-state-btn"
 			style="left: 33%"
-			on:click={() => confirmStateChange("GOTO_EPR_FILL")}>Go to Fill</button
+			on:click={() => confirmStateChange("GOTO_FILL")}>Go to Fill</button
 		>
-		<button
-			class="btn variant-ghost-error epr-stop-btn"
-			on:click={() => confirmStateChange("EPR_STOP")}>EPR Stop</button
-		>
-		<div class="epr_text">
-        	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
-    	</div>
 	{:else if $currentState == "FIRE"}
 		<button
 			class="btn variant-filled-warning next-state-btn"
 			style="left: 7%"
 			on:click={() => instantStateChange("SOFT_ABORT")}>Soft Abort</button
 		>
-		<button
-			class="btn variant-ghost-error epr-stop-btn"
-			on:click={() => confirmStateChange("EPR_STOP")}>EPR Stop</button
-		>
-		<div class="epr_text">
-        	<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
-    	</div>
 	{:else if $currentState == "TEST"}
 		<button
 		class="btn variant-filled-secondary next-state-btn"
 		style="left: 7%"
 		on:click={() => confirmStateChange("GOTO_PREFIRE")}>Go to Pre-Fire</button
 		>
-		<button
-		class="btn variant-filled-primary epr-start-btn"
-		on:click={() => setEPR("EPR_START")}>EPR Start</button
-		>
-		<button
-		class="btn variant-ghost-error epr-stop-btn"
-		on:click={() => confirmStateChange("EPR_STOP")}>EPR Stop</button
-		>
-		<div class="epr_text">
-			<input class="input" title="EPR Setpoint (PSI)" type="number" bind:value={eprSetPoint}/>
-		</div>
 	{/if}
 </div>
 
@@ -1010,33 +910,8 @@
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
 
-	.epr-start-btn {
-		position: absolute;
-		top: calc(var(--container-width) * 0.42);
-		left: 28%;
-		width: 150px;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
-	}
-
 	.fire-btn {
 		background-color: #d4163c;
-	}
-
-	.epr-stop-btn {
-		position: absolute;
-		top: calc(var(--container-width) * 0.45);
-		left: 28%;
-		width: 150px;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
-	}
-
-	.epr_text {
-		position: absolute;
-		top: calc(var(--container-width) * 0.482);
-		left: 28%;
-		width: 150px;
-		text-align: center;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
 
 	.pbv1_slider {
@@ -1099,38 +974,6 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.273);
 		left: 50%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.sol1_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.197);
-		left: 42.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.sol2_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.197);
-		left: 54.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.sol3_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.288);
-		left: 65.2%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.sol4_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.288);
-		left: 72.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
