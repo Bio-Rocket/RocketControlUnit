@@ -268,7 +268,7 @@
 	// : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
 	let plcitter = 0;
-
+	
 	onMount(async () => {
 		PB.collection('Plc').subscribe('*', function (e) {
 			tc1_temperature.set(e.record.TC1);
@@ -282,15 +282,15 @@
 			tc9_temperature.set(e.record.TC9);
 			lc1_mass.set(e.record.LC1);
 			lc2_mass.set(e.record.LC2);
-			pt1_pressure.set(e.record.PT1_voltage);
-			pt2_pressure.set(e.record.PT2_voltage);
-			pt3_pressure.set(e.record.PT3_voltage);
-			pt4_pressure.set(e.record.PT4_voltage);
-			pt5_pressure.set(e.record.PT5_voltage);
-			pt6_pressure.set(e.record.PT6_voltage);
-			pt15_pressure.set(e.record.PT15_voltage);
-			pt16_pressure.set(e.record.PT16_voltage);
-			pt17_pressure.set(e.record.PT17_voltage);
+			pt1_pressure.set(Math.round(e.record.PT1_voltage) * 145);
+			pt2_pressure.set(Math.round(e.record.PT2_voltage) * 145);
+			pt3_pressure.set(Math.round(e.record.PT3_voltage) * 145);
+			pt4_pressure.set(Math.round(e.record.PT4_voltage) * 145);
+			pt5_pressure.set(Math.round(e.record.PT5_voltage) * 580);
+			pt6_pressure.set(Math.round(e.record.PT6_voltage) * 580);
+			pt15_pressure.set(Math.round(e.record.PT15_voltage) * 14.5);
+			pt16_pressure.set(Math.round(e.record.PT16_voltage) * 14.5);
+			pt17_pressure.set(Math.round(e.record.PT17_voltage) * 14.5);
 			pbv1_open.set(e.record.PBV1);
 			pbv2_open.set(e.record.PBV2);
 			pbv3_open.set(e.record.PBV3);
@@ -306,7 +306,7 @@
 			ign2_on.set(e.record.IGN2);
 			heater_on.set(e.record.HEATER);
 		});
-	});
+	
 			// Query the most recent record from 'LabJack1' collection
 			// const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
 			// const labJack1Data = labJack1Record.lj1_data;
@@ -321,6 +321,8 @@
 			// pt10_pressure.set(labJack1Data[7]);
 			// pt11_pressure.set(labJack1Data[8]);
 			// pt12_pressure.set(labJack1Data[9]);
+
+	});	
 
 	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
 
