@@ -27,8 +27,8 @@
             PBV7: 'OPEN',
             PBV8: 'OPEN',
             PUMP1: 'OFF',
-            PUMP2: 'OFF',
-            PUMP3: 'OFF'
+            SOL12: 'CLOSED',
+            SOL13: 'CLOSED',
         },
 
         Ignition_Valve_State: {
@@ -36,11 +36,13 @@
             PBV2: 'CLOSED',
             PBV3: 'CLOSED',
             PBV4: 'CLOSED',
+			PBV5: 'CLOSED',
+			PBV6: 'CLOSED',
             PBV7: 'CLOSED',
             PBV8: 'CLOSED',
             PUMP1: 'OFF',
-            PUMP2: 'OFF',
-            PUMP3: 'OFF'
+            SOL12: 'CLOSED',
+            SOL13: 'CLOSED',
         }
     };
 
@@ -147,8 +149,6 @@
 	const pbv8_open = writable(undefined);
 
 	const pmp1_on = writable(undefined);
-	const pmp2_on = writable(undefined);
-	const pmp3_on = writable(undefined);
 
 	const ign1_on = writable(undefined);
 	const ign2_on = writable(undefined);
@@ -209,8 +209,6 @@
 	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'CLOSED' : 'OPEN';
 
 	$: pmp1_display = $pmp1_on === undefined ? 'N/A' : $pmp1_on ? 'ON' : 'OFF';
-	$: pmp2_display = $pmp2_on === undefined ? 'N/A' : $pmp2_on ? 'ON' : 'OFF';
-	$: pmp3_display = $pmp3_on === undefined ? 'N/A' : $pmp3_on ? 'ON' : 'OFF';
 
 	$: ign1_display = $ign1_on === undefined ? 'N/A' : $ign1_on ? 'LIVE' : 'DEAD';
 	$: ign2_display = $ign2_on === undefined ? 'N/A' : $ign2_on ? 'LIVE' : 'DEAD';
@@ -324,81 +322,7 @@
 			// pt11_pressure.set(labJack1Data[8]);
 			// pt12_pressure.set(labJack1Data[9]);
 
-
-			// const labJack2Record = await PB.collection('LabJack2').getFirstListItem("", { sort: '-created' })
-			// const labJack2Data = labJack2Record.lj2_data;
-
-			// lc3_mass.set(labJack2Data[0]);
-			// lc4_mass.set(labJack2Data[1]);
-			// lc5_mass.set(labJack2Data[2]);
-			// lc6_mass.set(labJack2Data[3]);
-			// pt13_pressure.set(labJack2Data[4]);
-			// pt14_pressure.set(labJack2Data[5]);
-
-
-			// const plcRecord = await PB.collection('Plc').getFirstListItem("", { sort: '-created' })
-			// const plcData = plcRecord.plc_data;
-
-			// tc1_temperature.set(plcData[0]);
-			// tc2_temperature.set(plcData[1]);
-			// tc3_temperature.set(plcData[2]);
-			// tc4_temperature.set(plcData[3]);
-			// tc5_temperature.set(plcData[4]);
-			// tc6_temperature.set(plcData[5]);
-			// tc7_temperature.set(plcData[6]);
-			// tc8_temperature.set(plcData[7]);
-			// tc9_temperature.set(plcData[8]);
-			// lc1_mass.set(plcData[9]);
-			// lc2_mass.set(plcData[10]);
-			// pt1_pressure.set(plcData[11]);
-			// pt2_pressure.set(plcData[12]);
-			// pt3_pressure.set(plcData[13]);
-			// pt4_pressure.set(plcData[14]);
-			// pt5_pressure.set(plcData[15]);
-			// pt6_pressure.set(plcData[16]);
-			// pt15_pressure.set(plcData[17]);
-			// pt16_pressure.set(plcData[18]);
-			// pbv1_open.set(plcData[19]);
-			// pbv2_open.set(plcData[20]);
-			// pbv3_open.set(plcData[21]);
-			// pbv4_open.set(plcData[22]);
-			// pbv5_open.set(plcData[23]);
-			// pbv6_open.set(plcData[24]);
-			// pbv7_open.set(plcData[25]);
-			// pbv8_open.set(plcData[26]);
-			// pmp1_on.set(plcData[27]);
-			// pmp2_on.set(plcData[28]);
-			// pmp3_on.set(plcData[29]);
-			// ign1_on.set(plcData[30]);
-			// ign2_on.set(plcData[31]);
-			// heater_on.set(plcData[32]);
-
-			// const stateRecord = await PB.collection('StateMachine').getFirstListItem("", { sort: '-created' })
-			// const stateData = stateRecord.stateData;
-			// const warningData = stateRecord.warningData;
-
-			// currentState.set(stateData);
-			// warningState.set(warningData);
-
 	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
-
-	async function handleLabJackSliderChange(
-		e: any,
-		openCommand: string,
-		closeCommand: string
-	) {
-		e.preventDefault();
-
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? openCommand : closeCommand;
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('LabJack1Commands').create({
-			// Write a new record with all current values
-			command: command,
-			value: null
-		});
-	}
 
 	async function handlePlcSliderChange(
 		e: any,
@@ -471,8 +395,8 @@
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
 			PUMP1: get(pmp1_on),
-			PUMP2: get(pmp2_on),
-			PUMP3: get(pmp3_on)
+			SOL12: get(sol12_open),
+			SOL13: get(sol13_open),
 		};
 
     	const prefireState = StateArray.Prefire_Valve_State;
@@ -496,11 +420,13 @@
 			PBV2: get(pbv2_open),
 			PBV3: get(pbv3_open),
 			PBV4: get(pbv4_open),
+			PBV5: get(pbv5_open),
+			PBV6: get(pbv6_open),
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
 			PUMP1: get(pmp1_on),
-			PUMP2: get(pmp2_on),
-			PUMP3: get(pmp3_on)
+			SOL12: get(sol12_open),
+			SOL13: get(sol13_open),
 		};
 
 		const ignitionState = StateArray.Ignition_Valve_State;
@@ -640,29 +566,29 @@
 		>
 	</div>
 
-	<div class="pmp2_slider">
+	<div class="sol12_slider">
 		<SlideToggle
-			name="pmp2_slider"
+			name="sol12_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$pmp2_on}
-			on:click={(e) => handlePlcSliderChange(e, 'PMP2_ON', 'PMP2_OFF')}
+			bind:checked={$sol12_open}
+			on:click={(e) => handlePlcSliderChange(e, 'SOL12_OPEN', 'SOL12_CLOSED')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
-			{pmp2_display}</SlideToggle
+			{sol12_display}</SlideToggle
 		>
 	</div>
 
-	<div class="pmp3_slider">
+	<div class="sol13_slider">
 		<SlideToggle
-			name="pmp3_slider"
+			name="sol13_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$pmp3_on}
-			on:click={(e) => handlePlcSliderChange(e, 'PMP3_ON', 'PMP3_OFF')}
+			bind:checked={$sol13_open}
+			on:click={(e) => handlePlcSliderChange(e, 'SOL13_OPEN', 'SOL13_CLOSED')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
-			{pmp3_display}</SlideToggle
+			{sol13_display}</SlideToggle
 		>
 	</div>
 
@@ -828,6 +754,10 @@
 	<div class="pt16_pressure">
 		<p>{pt16_pressure_display}</p>
 	</div>
+
+	<div class="pt17_pressure">
+		<p>{pt17_pressure_display}</p>
+	</div>
 <!--
 	<div class="system_state">
 		<p>{system_state_display}</p>
@@ -850,7 +780,7 @@
 		<button
 			class="btn variant-filled-primary next-state-btn"
 			style="left: 20%"
-			on:click={() => instantStateChange("GOTO_MANUAL_FILL")}>Go to Fill</button
+			on:click={() => instantStateChange("GOTO_FILL")}>Go to Fill</button
 		>
 		<button
 			class="btn variant-filled-secondary next-state-btn"
@@ -995,7 +925,7 @@
 		font-size: 16px;
 	}
 
-	.pmp2_slider {
+	.sol12_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.331);
 		left: 26.8%;
@@ -1003,7 +933,7 @@
 		font-size: 16px;
 	}
 
-	.pmp3_slider {
+	.sol13_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.321);
 		left: 84%;
@@ -1279,6 +1209,14 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.37);
 		left: 85.38%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.pt17_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.318);
+		left: 97.6%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
