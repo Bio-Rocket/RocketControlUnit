@@ -267,8 +267,8 @@
 	// ? 'N/A' 
 	// : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
-	let plcitter = 0;
-	
+	let labJackItter = 0;
+
 	onMount(async () => {
 		PB.collection('Plc').subscribe('*', function (e) {
 			tc1_temperature.set(e.record.TC1);
@@ -306,22 +306,25 @@
 			ign2_on.set(e.record.IGN2);
 			heater_on.set(e.record.HEATER);
 		});
-	
-			// Query the most recent record from 'LabJack1' collection
-			// const labJack1Record = await PB.collection('LabJack1').getFirstListItem("", { sort: '-created' })
-			// const labJack1Data = labJack1Record.lj1_data;
 
-			// sol1_open.set(labJack1Data[0]);
-			// sol2_open.set(labJack1Data[1]);
-			// sol3_open.set(labJack1Data[2]);
-			// sol4_open.set(labJack1Data[3]);
-			// pt7_pressure.set(labJack1Data[4]);
-			// pt8_pressure.set(labJack1Data[5]);
-			// pt9_pressure.set(labJack1Data[6]);
-			// pt10_pressure.set(labJack1Data[7]);
-			// pt11_pressure.set(labJack1Data[8]);
-			// pt12_pressure.set(labJack1Data[9]);
-
+		PB.collection('LabJack').subscribe('*', function (e) {
+			labJackItter++;
+			if (labJackItter % 100 === 0) { 
+				lc3_mass.set(e.record.LC3);
+				lc4_mass.set(e.record.LC4);
+				lc5_mass.set(e.record.LC5);
+				lc6_mass.set(e.record.LC6);
+				pt7_pressure.set(Math.round(e.record.PT7_voltage) * 145);
+				pt8_pressure.set(Math.round(e.record.PT8_voltage) * 145);
+				pt9_pressure.set(Math.round(e.record.PT9_voltage) * 145);
+				pt10_pressure.set(Math.round(e.record.PT10_voltage) * 145);
+				pt11_pressure.set(Math.round(e.record.PT11_voltage) * 145);
+				pt12_pressure.set(Math.round(e.record.PT12_voltage) * 145);
+				pt13_pressure.set(Math.round(e.record.PT13_voltage) * 145);
+				pt14_pressure.set(Math.round(e.record.PT14_voltage) * 145);
+				labJackItter = 0
+			}
+		});
 	});	
 
 	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
