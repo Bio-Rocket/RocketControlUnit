@@ -282,12 +282,12 @@
 			tc9_temperature.set(e.record.TC9);
 			lc1_mass.set(e.record.LC1);
 			lc2_mass.set(e.record.LC2);
-			pt1_pressure.set(Math.round(e.record.PT1_voltage) * 145);
-			pt2_pressure.set(Math.round(e.record.PT2_voltage) * 145);
-			pt3_pressure.set(Math.round(e.record.PT3_voltage) * 145);
+			pt1_pressure.set(Math.round(e.record.PT1_voltage) * 580);
+			pt2_pressure.set(Math.round(e.record.PT2_voltage) * 580);
+			pt3_pressure.set(Math.round(e.record.PT3_voltage) * 580);
 			pt4_pressure.set(Math.round(e.record.PT4_voltage) * 145);
-			pt5_pressure.set(Math.round(e.record.PT5_voltage) * 580);
-			pt6_pressure.set(Math.round(e.record.PT6_voltage) * 580);
+			pt5_pressure.set(Math.round(e.record.PT5_voltage) * 145);
+			pt6_pressure.set(Math.round(e.record.PT6_voltage) * 145);
 			pt15_pressure.set(Math.round(e.record.PT15_voltage) * 14.5);
 			pt16_pressure.set(Math.round(e.record.PT16_voltage) * 14.5);
 			pt17_pressure.set(Math.round(e.record.PT17_voltage) * 14.5);
@@ -314,8 +314,8 @@
 				lc4_mass.set(e.record.LC4);
 				lc5_mass.set(e.record.LC5);
 				lc6_mass.set(e.record.LC6);
-				pt7_pressure.set(Math.round(e.record.PT7_voltage) * 145);
-				pt8_pressure.set(Math.round(e.record.PT8_voltage) * 145);
+				pt7_pressure.set(Math.round(e.record.PT7_voltage) * 580);
+				pt8_pressure.set(Math.round(e.record.PT8_voltage) * 580);
 				pt9_pressure.set(Math.round(e.record.PT9_voltage) * 145);
 				pt10_pressure.set(Math.round(e.record.PT10_voltage) * 145);
 				pt11_pressure.set(Math.round(e.record.PT11_voltage) * 145);
