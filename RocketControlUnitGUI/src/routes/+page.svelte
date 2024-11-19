@@ -26,9 +26,9 @@
             PBV6: 'CLOSED',
             PBV7: 'OPEN',
             PBV8: 'OPEN',
-            PUMP1: 'OFF',
-            SOL12: 'CLOSED',
+			SOL12: 'CLOSED',
             SOL13: 'CLOSED',
+            PUMP3: 'OFF',
         },
 
         Ignition_Valve_State: {
@@ -40,9 +40,9 @@
 			PBV6: 'CLOSED',
             PBV7: 'CLOSED',
             PBV8: 'CLOSED',
-            PUMP1: 'OFF',
-            SOL12: 'CLOSED',
+			SOL12: 'CLOSED',
             SOL13: 'CLOSED',
+            PUMP3: 'OFF',
         }
     };
 
@@ -148,7 +148,7 @@
 	const pbv7_open = writable(undefined);
 	const pbv8_open = writable(undefined);
 
-	const pmp1_on = writable(undefined);
+	const pmp3_on = writable(undefined);
 
 	const ign1_on = writable(undefined);
 	const ign2_on = writable(undefined);
@@ -208,7 +208,7 @@
 	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'CLOSED' : 'OPEN';
 	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'CLOSED' : 'OPEN';
 
-	$: pmp1_display = $pmp1_on === undefined ? 'N/A' : $pmp1_on ? 'ON' : 'OFF';
+	$: pmp3_display = $pmp3_on === undefined ? 'N/A' : $pmp3_on ? 'ON' : 'OFF';
 
 	$: ign1_display = $ign1_on === undefined ? 'N/A' : $ign1_on ? 'LIVE' : 'DEAD';
 	$: ign2_display = $ign2_on === undefined ? 'N/A' : $ign2_on ? 'LIVE' : 'DEAD';
@@ -299,7 +299,7 @@
 			pbv6_open.set(e.record.PBV6);
 			pbv7_open.set(e.record.PBV7);
 			pbv8_open.set(e.record.PBV8);
-			pmp1_on.set(e.record.PMP1);
+			pmp3_on.set(e.record.PMP3);
 			sol12_open.set(e.record.SOL12);
 			sol13_open.set(e.record.SOL13);
 			ign1_on.set(e.record.IGN1);
@@ -394,9 +394,9 @@
 			PBV6: get(pbv6_open),
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
-			PUMP1: get(pmp1_on),
 			SOL12: get(sol12_open),
 			SOL13: get(sol13_open),
+			PUMP3: get(pmp3_on),
 		};
 
     	const prefireState = StateArray.Prefire_Valve_State;
@@ -424,9 +424,9 @@
 			PBV6: get(pbv6_open),
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
-			PUMP1: get(pmp1_on),
 			SOL12: get(sol12_open),
 			SOL13: get(sol13_open),
+			PUMP3: get(pmp3_on),
 		};
 
 		const ignitionState = StateArray.Ignition_Valve_State;
@@ -553,16 +553,16 @@
 		>
 	</div>
 
-	<div class="pmp1_slider">
+	<div class="pmp3_slider">
 		<SlideToggle
-			name="pmp1_slider"
+			name="pmp3_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$pmp1_on}
-			on:click={(e) => handlePlcSliderChange(e, 'PMP1_ON', 'PMP1_OFF')}
+			bind:checked={$pmp3_on}
+			on:click={(e) => handlePlcSliderChange(e, 'PMP3_ON', 'PMP3_OFF')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
-			{pmp1_display}</SlideToggle
+			{pmp3_display}</SlideToggle
 		>
 	</div>
 
@@ -917,26 +917,26 @@
 		font-size: 16px;
 	}
 
-	.pmp1_slider {
+	.pmp3_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.179);
-		left: 26.3%;
+		top: calc(var(--container-width) * 0.321);
+		left: 84%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.sol12_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.331);
-		left: 26.8%;
+		top: calc(var(--container-width) * 0.395);
+		left: 29%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
 
 	.sol13_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.321);
-		left: 84%;
+		top: calc(var(--container-width) * 0.46);
+		left: 29%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
@@ -959,8 +959,8 @@
 
 	.heater_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.4405);
-		left: 14.5%;
+		top: calc(var(--container-width) * 0.452);
+		left: 10.8%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
 		font-size: 16px;
 	}
@@ -1215,8 +1215,8 @@
 
 	.pt17_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.318);
-		left: 97.6%;
+		top: calc(var(--container-width) * 0.424);
+		left: 21.15%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
