@@ -188,6 +188,10 @@
 	const pt14_pressure: Writable<string | number | undefined> = writable(undefined);
 	const pt15_pressure: Writable<string | number | undefined> = writable(undefined);
 	const pt16_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt17_pressure: Writable<string | number | undefined> = writable(undefined);
+
+	const sol12_open = writable(undefined);
+	const sol13_open = writable(undefined);
 
 	// const system_state: Writable<string | undefined> = writable(undefined);
 
@@ -246,6 +250,10 @@
 	$: pt14_pressure_display = $pt14_pressure === undefined ? 'N/A' : $pt14_pressure;
 	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
 	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
+	$: pt17_pressure_display = $pt17_pressure === undefined ? 'N/A' : $pt17_pressure;
+
+	$: sol12_display = $sol12_open === undefined ? 'N/A' : $sol12_open ? 'OPEN' : 'CLOSED';
+	$: sol13_display = $sol13_open === undefined ? 'N/A' : $sol13_open ? 'OPEN' : 'CLOSED';
 
 	// $: system_state_display = $system_state === undefined 
     // ? 'N/A' 
@@ -284,6 +292,7 @@
 			pt6_pressure.set(e.record.PT6_voltage);
 			pt15_pressure.set(e.record.PT15_voltage);
 			pt16_pressure.set(e.record.PT16_voltage);
+			pt17_pressure.set(e.record.PT17_voltage);
 			pbv1_open.set(e.record.PBV1);
 			pbv2_open.set(e.record.PBV2);
 			pbv3_open.set(e.record.PBV3);
@@ -293,8 +302,8 @@
 			pbv7_open.set(e.record.PBV7);
 			pbv8_open.set(e.record.PBV8);
 			pmp1_on.set(e.record.PMP1);
-			pmp2_on.set(e.record.PMP2);
-			pmp3_on.set(e.record.PMP3);
+			sol12_open.set(e.record.SOL12);
+			sol13_open.set(e.record.SOL13);
 			ign1_on.set(e.record.IGN1);
 			ign2_on.set(e.record.IGN2);
 			heater_on.set(e.record.HEATER);
