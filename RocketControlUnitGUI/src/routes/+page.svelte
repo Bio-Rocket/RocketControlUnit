@@ -282,15 +282,15 @@
 			tc9_temperature.set(e.record.TC9);
 			lc1_mass.set(e.record.LC1);
 			lc2_mass.set(e.record.LC2);
-			pt1_pressure.set(Math.round(e.record.PT1_voltage) * 580);
-			pt2_pressure.set(Math.round(e.record.PT2_voltage) * 580);
-			pt3_pressure.set(Math.round(e.record.PT3_voltage) * 580);
-			pt4_pressure.set(Math.round(e.record.PT4_voltage) * 145);
-			pt5_pressure.set(Math.round(e.record.PT5_voltage) * 145);
-			pt6_pressure.set(Math.round(e.record.PT6_voltage) * 145);
-			pt15_pressure.set(Math.round(e.record.PT15_voltage) * 14.5);
-			pt16_pressure.set(Math.round(e.record.PT16_voltage) * 14.5);
-			pt17_pressure.set(Math.round(e.record.PT17_voltage) * 14.5);
+			pt1_pressure.set(Math.round(e.record.PT1) * 580);
+			pt2_pressure.set(Math.round(e.record.PT2) * 580);
+			pt3_pressure.set(Math.round(e.record.PT3) * 580);
+			pt4_pressure.set(Math.round(e.record.PT4) * 145);
+			pt5_pressure.set(Math.round(e.record.PT5) * 145);
+			pt6_pressure.set(Math.round(e.record.PT6) * 145);
+			pt15_pressure.set(Math.round(e.record.PT15) * 14.5);
+			pt16_pressure.set(Math.round(e.record.PT16) * 14.5);
+			pt17_pressure.set(Math.round(e.record.PT17) * 14.5);
 			pbv1_open.set(e.record.PBV1);
 			pbv2_open.set(e.record.PBV2);
 			pbv3_open.set(e.record.PBV3);
@@ -310,18 +310,18 @@
 		PB.collection('LabJack').subscribe('*', function (e) {
 			labJackItter++;
 			if (labJackItter % 100 === 0) { 
-				lc3_mass.set(e.record.LC3);
-				lc4_mass.set(e.record.LC4);
-				lc5_mass.set(e.record.LC5);
-				lc6_mass.set(e.record.LC6);
-				pt7_pressure.set(Math.round(e.record.PT7_voltage) * 580);
-				pt8_pressure.set(Math.round(e.record.PT8_voltage) * 580);
-				pt9_pressure.set(Math.round(e.record.PT9_voltage) * 145);
-				pt10_pressure.set(Math.round(e.record.PT10_voltage) * 145);
-				pt11_pressure.set(Math.round(e.record.PT11_voltage) * 145);
-				pt12_pressure.set(Math.round(e.record.PT12_voltage) * 145);
-				pt13_pressure.set(Math.round(e.record.PT13_voltage) * 145);
-				pt14_pressure.set(Math.round(e.record.PT14_voltage) * 145);
+				lc3_mass.set(e.record.lj_data[0][0]);
+				lc4_mass.set(e.record.lj_data[0][1]);
+				lc5_mass.set(e.record.lj_data[0][2]);
+				lc6_mass.set(e.record.lj_data[0][3]);
+				pt7_pressure.set(Math.round(e.record.lj_data[0][4]) * 580);
+				pt8_pressure.set(Math.round(e.record.lj_data[0][5]) * 580);
+				pt9_pressure.set(Math.round(e.record.lj_data[0][6]) * 145);
+				pt10_pressure.set(Math.round(e.record.lj_data[0][7]) * 145);
+				pt11_pressure.set(Math.round(e.record.lj_data[0][8]) * 145);
+				pt12_pressure.set(Math.round(e.record.lj_data[0][9]) * 145);
+				pt13_pressure.set(Math.round(e.record.lj_data[0][10]) * 145);
+				pt14_pressure.set(Math.round(e.record.lj_data[0][11]) * 145);
 				labJackItter = 0
 			}
 		});
