@@ -12,7 +12,8 @@
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://192.168.0.69:8090');
+	//const PB = new PocketBase('http://192.168.0.69:8090');
+	const PB = new PocketBase('http://127.0.0.1:8090');
 
 	let intervalId: ReturnType<typeof setInterval> | void;
 
@@ -62,7 +63,7 @@
 			response: (r: boolean) => {
 				if (r) {
 					async function writeStateChange(state: string) {
-						await PB.collection('StateCommand').create({
+						await PB.collection('StateCommands').create({
 							command: state
 						});
 					}
@@ -78,7 +79,7 @@
 		nextStatePending = state;
 		async function writeStateChange(state: string) {
 			// state string : contains the state to transition to
-			await PB.collection('StateCommand').create({
+			await PB.collection('StateCommands').create({
 				command: state
 			});
 		}
