@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getModalStore, modeCurrent } from '@skeletonlabs/skeleton';
+	import { getModalStore } from '@skeletonlabs/skeleton';
     import SlideToggle from "./SlideToggle.svelte"; 
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
@@ -62,7 +62,7 @@
 			response: (r: boolean) => {
 				if (r) {
 					async function writeStateChange(state: string) {
-						await PB.collection('CommandMessage').create({
+						await PB.collection('StateCommand').create({
 							command: state
 						});
 					}
@@ -78,7 +78,7 @@
 		nextStatePending = state;
 		async function writeStateChange(state: string) {
 			// state string : contains the state to transition to
-			await PB.collection('CommandMessage').create({
+			await PB.collection('StateCommand').create({
 				command: state
 			});
 		}
@@ -136,8 +136,6 @@
 			window.removeEventListener('resize', handleResize);
 		};
 	});
-
-	const warningState = writable("N/A");
 
 	const pbv1_open = writable(undefined);
 	const pbv2_open = writable(undefined);
@@ -324,6 +322,10 @@
 				pt14_pressure.set(Math.round(e.record.lj_data[0][11]) * 145);
 				labJackItter = 0
 			}
+		});
+
+		PB.collection('SystemState').subscribe('*', function (e) {
+			currentState.set(e.record.system_state);
 		});
 	});	
 
