@@ -92,7 +92,7 @@
 		PREFIRE: 'GOTO_PREFIRE',
 		FILL: 'GOTO_FILL',
 		IGNITION: "GOTO_IGNITION",
-		POSTFIRE: "SOFT_ABORT",
+		POSTFIRE: "GOTO_POSTFIRE",
 		TEST: "GOTO_TEST"
 	};
 
@@ -815,7 +815,7 @@
 		<button
 			class="btn variant-filled-warning next-state-btn"
 			style="left: 7%"
-			on:click={() => instantStateChange("SOFT_ABORT")}>Soft Abort</button
+			on:click={() => instantStateChange("GOTO_POSTFIRE")}>Soft Abort</button
 		>
 		<button
 			class="btn variant-filled-surface next-state-btn"
@@ -826,7 +826,7 @@
 		<button
 			class="btn variant-filled-warning next-state-btn"
 			style="left: 7%"
-			on:click={() => instantStateChange("SOFT_ABORT")}>Soft Abort</button
+			on:click={() => instantStateChange("GOTO_POSTFIRE")}>Soft Abort</button
 		>
 	{:else if $currentState == "TEST"}
 		<button
