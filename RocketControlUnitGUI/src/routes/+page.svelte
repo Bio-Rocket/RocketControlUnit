@@ -580,7 +580,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol12_open}
-			on:click={(e) => handlePlcSliderChange(e, 'SOL12_OPEN', 'SOL12_CLOSED')}
+			on:click={(e) => handlePlcSliderChange(e, 'SOL12_OPEN', 'SOL12_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{sol12_display}</SlideToggle
@@ -593,7 +593,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol13_open}
-			on:click={(e) => handlePlcSliderChange(e, 'SOL13_OPEN', 'SOL13_CLOSED')}
+			on:click={(e) => handlePlcSliderChange(e, 'SOL13_OPEN', 'SOL13_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{sol13_display}</SlideToggle
