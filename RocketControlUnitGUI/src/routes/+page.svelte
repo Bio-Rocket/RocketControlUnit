@@ -309,18 +309,18 @@
 		PB.collection('LabJack').subscribe('*', function (e) {
 			labJackItter++;
 			if (labJackItter % 100 === 0) { 
-				lc3_mass.set(e.record.lj_data[0][0]);
-				lc4_mass.set(e.record.lj_data[0][1]);
-				lc5_mass.set(e.record.lj_data[0][2]);
-				lc6_mass.set(e.record.lj_data[0][3]);
-				pt7_pressure.set(Math.round(e.record.lj_data[0][4]) * 580);
-				pt8_pressure.set(Math.round(e.record.lj_data[0][5]) * 580);
-				pt9_pressure.set(Math.round(e.record.lj_data[0][6]) * 145);
-				pt10_pressure.set(Math.round(e.record.lj_data[0][7]) * 145);
-				pt11_pressure.set(Math.round(e.record.lj_data[0][8]) * 145);
-				pt12_pressure.set(Math.round(e.record.lj_data[0][9]) * 145);
-				pt13_pressure.set(Math.round(e.record.lj_data[0][10]) * 145);
-				pt14_pressure.set(Math.round(e.record.lj_data[0][11]) * 145);
+				lc3_mass.set(e.record.LC3[0]);
+				lc4_mass.set(e.record.LC4[0]);
+				lc5_mass.set(e.record.LC5[0]);
+				lc6_mass.set(e.record.LC6[0]);
+				pt7_pressure.set(Math.round(e.record.PT7[0]) * 580);
+				pt8_pressure.set(Math.round(e.record.PT8[0]) * 580);
+				pt9_pressure.set(Math.round(e.record.PT9[0]) * 145);
+				pt10_pressure.set(Math.round(e.record.PT10[0]) * 145);
+				pt11_pressure.set(Math.round(e.record.PT11[0]) * 145);
+				pt12_pressure.set(Math.round(e.record.PT12[0]) * 145);
+				pt13_pressure.set(Math.round(e.record.PT13[0]) * 145);
+				pt14_pressure.set(Math.round(e.record.PT14[0]) * 145);
 				labJackItter = 0
 			}
 		});
