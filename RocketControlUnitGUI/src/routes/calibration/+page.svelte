@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import PocketBase from 'pocketbase';
@@ -317,4 +317,4 @@
 		left: 82%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
-</style>
+</style> -->

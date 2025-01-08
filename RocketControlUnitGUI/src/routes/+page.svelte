@@ -1,21 +1,109 @@
 <script lang="ts">
-	import { getModalStore } from '@skeletonlabs/skeleton';
-    import SlideToggle from "./SlideToggle.svelte"; 
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { currentState } from '../store';
-	import { onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
-	import type { Writable } from 'svelte/store';
-	import PocketBase from 'pocketbase';
-	import BackgroundLight from './background.svelte';
-	import { get } from 'svelte/store';
+	import "../styles/display.postcss";
+	import Diagram from '$lib/components/Diagram.svelte';
+	import { initTimestamps, type Timestamps } from '$lib/timestamps';
+	import { usePocketbase } from '$lib/hooks/usePocketbase';
+	import { initStores, auth, currentState } from '$lib/stores';
+	import { useInteraction } from '$lib/hooks/useInteraction';
+	import { onMount } from 'svelte';
+	import { SlideToggle } from '@skeletonlabs/skeleton';
+	import { get } from "svelte/store";
 
-	const modalStore = getModalStore();
+	const timestamps = initTimestamps();
+	const stores = initStores();
+	const usePocketbaseHook = usePocketbase(timestamps, stores);
+	const useInteractionHook = useInteraction(usePocketbaseHook);
 
-	//const PB = new PocketBase('http://192.168.0.69:8090');
-	const PB = new PocketBase('http://127.0.0.1:8090');
+	const {
+		authenticate,
+		sendHeartbeat,
+		subscribeToCollections,
+		writeStateChange,
+		writeGroundSystemsCommand,
+		writeRocketCommand,
+		writeLoadCellCommand
+	} = usePocketbaseHook;
 
-	let intervalId: ReturnType<typeof setInterval> | void;
+	const {
+		confirmStateChange,
+		instantStateChange,
+		resumeConfirmRemoveWeight
+	} = useInteractionHook;
+
+	// Destructor stores for later use
+	const {
+        pbv1_open,
+        pbv2_open,
+        pbv3_open,
+        pbv4_open,
+		pbv5_open,
+		pbv6_open,
+		pbv7_open,
+		pbv8_open,
+		pbv9_open,
+		pbv10_open,
+		pbv11_open,
+		sol1_open,
+		sol2_open,
+		sol3_open,
+		sol4_open,
+        sol5_open,
+        sol6_open,
+        sol7_open,
+        sol8_open,
+		sol9_open,
+		sol10_open,
+		sol11_open,
+		sol12_open,
+		sol13_open,
+		sol14_open,
+		heater_on,
+		pmp3_on,
+		ign1_on,
+		ign2_on,
+		pt1_pressure,
+		pt2_pressure,
+		pt3_pressure,
+		pt4_pressure,
+		pt5_pressure,
+		pt6_pressure,
+		pt7_pressure,
+		pt8_pressure,
+		pt9_pressure,
+		pt10_pressure,
+		pt11_pressure,
+		pt12_pressure,
+		pt13_pressure,
+		pt14_pressure,
+		pt15_pressure,
+		pt16_pressure,
+		pt17_pressure,
+		pt18_pressure,
+		pt19_pressure,
+		tc1_temperature,
+		tc2_temperature,
+		tc3_temperature,
+		tc4_temperature,
+		tc5_temperature,
+		tc6_temperature,
+		tc7_temperature,
+		tc8_temperature,
+		tc9_temperature,
+		tc10_temperature,
+		tc11_temperature,
+		tc12_temperature,
+		lc1_mass,
+		lc2_mass,
+		lc3_mass,
+		lc4_mass,
+		lc5_mass,
+		lc6_mass,
+		lc7_mass,
+		system_state,
+		timer_state,
+		timer_period,
+		timer_remaining,
+	} = stores;
 
 	const StateArray = {
         Prefire_Valve_State: {
@@ -47,67 +135,44 @@
         }
     };
 
-	intervalId = setInterval(async () => {
-		await PB.collection('Heartbeat').create({
-			message: 'heartbeat'
-		});
-	}, 5000); // 5000 milliseconds = 5 seconds
-
-	let nextStatePending: string = '';
-	function confirmStateChange(state: string): void {
-		nextStatePending = state;
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: 'Please Confirm',
-			body: `Are you sure you wish to proceed to ${commandToState[state]}?`,
-			response: (r: boolean) => {
-				if (r) {
-					async function writeStateChange(state: string) {
-						await PB.collection('StateCommands').create({
-							command: state
-						});
-					}
-					writeStateChange(nextStatePending);
-				}
-				nextStatePending = '';
-			}
-		};
-		modalStore.trigger(modal);
-	}
-	
-	function instantStateChange(state: string): void {
-		nextStatePending = state;
-		async function writeStateChange(state: string) {
-			// state string : contains the state to transition to
-			await PB.collection('StateCommands').create({
-				command: state
-			});
-		}
-		writeStateChange(nextStatePending);
-		nextStatePending = '';
-	}
-
-	const stateToCommand: { [key: string]: string } = {
-		ABORT: 'GOTO_ABORT',
-		PREFIRE: 'GOTO_PREFIRE',
-		FILL: 'GOTO_FILL',
-		IGNITION: "GOTO_IGNITION",
-		POSTFIRE: "GOTO_POSTFIRE",
-		TEST: "GOTO_TEST"
-	};
-
-	const commandToState = Object.fromEntries(
-    	Object.entries(stateToCommand).map(([key, value]) => [value, key])
-  	);
-
-	let containerElement: any;
-
-    onDestroy(() => {
-        clearInterval(intervalId); // Stop the interval when the component is destroyed
-    });
-
 	onMount(() => {
-		containerElement = document.querySelector('.container') as HTMLElement;
+		let heartbeatInterval: NodeJS.Timeout;
+
+		// Handle pocketbase authentication
+		const handleAuth = async () => {
+			$auth = await authenticate();
+
+			if ($auth === true) {
+				heartbeatInterval = setInterval(async () => {
+					await sendHeartbeat();
+				}, 5000); // 5000 milliseconds = 5 seconds
+			}
+		}
+
+		handleAuth();
+
+		// Subscribe to pocket base events
+		subscribeToCollections();
+
+		// Handle displaying outdated data
+		let containerElement = document.querySelector('.container') as HTMLElement;
+
+		let timestampInterval = setInterval(() => {
+			for (let variable in timestamps) {
+				let elements = document.getElementsByClassName(variable);
+				if (!elements.length) continue;
+
+				for(let i = 0; i < elements.length; i++) {
+					let element = elements[i];
+
+					if (Date.now() - timestamps[variable as keyof Timestamps] > 5000) {
+						element.classList.add('outdated');
+					} else {
+						element.classList.remove('outdated');
+					}
+				}
+			}
+		}, 1000);
 
 		// Define the resize handler
 		const handleResize = () => {
@@ -132,71 +197,14 @@
 		// Attach the resize handler to the resize event
 		window.addEventListener('resize', handleResize);
 
-		// Return a cleanup function to remove the event listener when the component is destroyed
+		// Return a cleanup function
 		return () => {
+			clearInterval(heartbeatInterval); // Stop the interval when the component is destroyed
+			clearInterval(timestampInterval);
+
 			window.removeEventListener('resize', handleResize);
 		};
 	});
-
-	const pbv1_open = writable(undefined);
-	const pbv2_open = writable(undefined);
-	const pbv3_open = writable(undefined);
-	const pbv4_open = writable(undefined);
-	const pbv5_open = writable(undefined);
-	const pbv6_open = writable(undefined);
-	const pbv7_open = writable(undefined);
-	const pbv8_open = writable(undefined);
-
-	const pmp3_on = writable(undefined);
-
-	const ign1_on = writable(undefined);
-	const ign2_on = writable(undefined);
-
-	const heater_on = writable(undefined);
-
-	const tc1_temperature: Writable<string | number | undefined> = writable(undefined);
-	const tc2_temperature: Writable<string | number | undefined> = writable(undefined);
-	const tc3_temperature: Writable<string | number | undefined> = writable(undefined);
-	const tc4_temperature: Writable<string | number | undefined> = writable(undefined);
-	const tc5_temperature: Writable<string | number | undefined> = writable(undefined);
-	const tc6_temperature: Writable<string | number | undefined> = writable(undefined);
-	const tc7_temperature: Writable<string | number | undefined> = writable(undefined);
-	const tc8_temperature: Writable<string | number | undefined> = writable(undefined);
-	const tc9_temperature: Writable<string | number | undefined> = writable(undefined);
-
-	const lc1_mass = writable(undefined);
-	const lc2_mass = writable(undefined);
-	const lc3_mass = writable(undefined);
-	const lc4_mass = writable(undefined);
-	const lc5_mass = writable(undefined);
-	const lc6_mass = writable(undefined);
-
-	const pt1_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt2_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt3_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt4_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt5_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt6_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt7_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt8_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt9_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt10_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt11_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt12_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt13_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt14_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt15_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt16_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt17_pressure: Writable<string | number | undefined> = writable(undefined);
-
-	const sol12_open = writable(undefined);
-	const sol13_open = writable(undefined);
-
-	// const system_state: Writable<string | undefined> = writable(undefined);
-
-	// const timer_state: Writable<string | undefined> = writable(undefined);
-	// const timer_period: Writable<number | undefined> = writable(undefined);
-	// const timer_remaining: Writable<number | undefined> = writable(undefined);
 
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSED';
 	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'CLOSED' : 'OPEN';
@@ -252,83 +260,24 @@
 	$: sol12_display = $sol12_open === undefined ? 'N/A' : $sol12_open ? 'OPEN' : 'CLOSED';
 	$: sol13_display = $sol13_open === undefined ? 'N/A' : $sol13_open ? 'OPEN' : 'CLOSED';
 
-	// $: system_state_display = $system_state === undefined 
-    // ? 'N/A' 
-    // : $system_state.replace('SYS_', '');
+	$: system_state_display = $system_state === undefined ? 'N/A' : $system_state.replace('SYS_', '');
 
-	// $: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
+	$: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
+	$: timer_period_display = $timer_period === undefined ? 'N/A' : ($timer_period / 1000).toFixed(0); // Convert to seconds
+	$: timer_remaining_display = $timer_remaining === undefined ? 'N/A' : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
-	// $: timer_period_display = $timer_period === undefined 
-    // ? 'N/A' 
-    // : ($timer_period / 1000).toFixed(0); // Convert to seconds
-
-	// $: timer_remaining_display = $timer_remaining === undefined 
-	// ? 'N/A' 
-	// : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
-
-	let labJackItter = 0;
-
-	onMount(async () => {
-		PB.collection('Plc').subscribe('*', function (e) {
-			tc1_temperature.set(e.record.TC1);
-			tc2_temperature.set(e.record.TC2);
-			tc3_temperature.set(e.record.TC3);
-			tc4_temperature.set(e.record.TC4);
-			tc5_temperature.set(e.record.TC5);
-			tc6_temperature.set(e.record.TC6);
-			tc7_temperature.set(e.record.TC7);
-			tc8_temperature.set(e.record.TC8);
-			tc9_temperature.set(e.record.TC9);
-			lc1_mass.set(e.record.LC1);
-			lc2_mass.set(e.record.LC2);
-			pt1_pressure.set(Math.round(e.record.PT1) * 580);
-			pt2_pressure.set(Math.round(e.record.PT2) * 580);
-			pt3_pressure.set(Math.round(e.record.PT3) * 580);
-			pt4_pressure.set(Math.round(e.record.PT4) * 145);
-			pt5_pressure.set(Math.round(e.record.PT5) * 145);
-			pt6_pressure.set(Math.round(e.record.PT6) * 145);
-			pt15_pressure.set(Math.round(e.record.PT15) * 14.5);
-			pt16_pressure.set(Math.round(e.record.PT16) * 14.5);
-			pt17_pressure.set(Math.round(e.record.PT17) * 14.5);
-			pbv1_open.set(e.record.PBV1);
-			pbv2_open.set(e.record.PBV2);
-			pbv3_open.set(e.record.PBV3);
-			pbv4_open.set(e.record.PBV4);
-			pbv5_open.set(e.record.PBV5);
-			pbv6_open.set(e.record.PBV6);
-			pbv7_open.set(e.record.PBV7);
-			pbv8_open.set(e.record.PBV8);
-			pmp3_on.set(e.record.PMP3);
-			sol12_open.set(e.record.SOL12);
-			sol13_open.set(e.record.SOL13);
-			ign1_on.set(e.record.IGN1);
-			ign2_on.set(e.record.IGN2);
-			heater_on.set(e.record.HEATER);
-		});
-
-		PB.collection('LabJack').subscribe('*', function (e) {
-			labJackItter++;
-			if (labJackItter % 100 === 0) { 
-				lc3_mass.set(e.record.LC3[0]);
-				lc4_mass.set(e.record.LC4[0]);
-				lc5_mass.set(e.record.LC5[0]);
-				lc6_mass.set(e.record.LC6[0]);
-				pt7_pressure.set(Math.round(e.record.PT7[0]) * 580);
-				pt8_pressure.set(Math.round(e.record.PT8[0]) * 580);
-				pt9_pressure.set(Math.round(e.record.PT9[0]) * 145);
-				pt10_pressure.set(Math.round(e.record.PT10[0]) * 145);
-				pt11_pressure.set(Math.round(e.record.PT11[0]) * 145);
-				pt12_pressure.set(Math.round(e.record.PT12[0]) * 145);
-				pt13_pressure.set(Math.round(e.record.PT13[0]) * 145);
-				pt14_pressure.set(Math.round(e.record.PT14[0]) * 145);
-				labJackItter = 0
-			}
-		});
-
-		PB.collection('SystemState').subscribe('*', function (e) {
-			currentState.set(e.record.system_state);
-		});
-	});	
+	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
+	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
+	$: rcuTempOutdated = Date.now() - timestamps.rcu_temp > 5000;
+	$: batteryOutdated = Date.now() - timestamps.battery > 5000;
+	$: launchRailLoadCellOutdated = Date.now() - timestamps.launch_rail_load_cell > 5000;
+	$: nosLoadCellOutdated = Date.now() - timestamps.nos_load_cell > 5000;
+	$: pbbPressureOutdated = Date.now() - timestamps.pbb_pressure > 5000;
+	$: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
+	$: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
+	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
+	$: sysStateOutdated = Date.now() - timestamps.sys_state > 5000;
+	$: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
 
 	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
 
@@ -343,12 +292,7 @@
 		const command = e.target.checked ? openCommand : closeCommand;
 
 		// Create a change on the 'RelayStatus' collection
-		await PB.collection('PlcCommands').create({
-			// Write a new record with all current values
-			loadcell: null,
-			command: command,
-			value: null
-		});
+		writeGroundSystemsCommand(command);
 	}
 
 	let wasLiveAtAnyPoint = false;
@@ -359,29 +303,22 @@
 		}
 	}
 
-	async function handleLaunchSequence() {
-		await PB.collection('PlcCommands').create({
-			command: 'IGN1_ON'
-		});
-
-		await PB.collection('PlcCommands').create({
-			command: 'IGN2_ON'
-		});
+	const handleLaunchSequence = async () => {
+		await writeGroundSystemsCommand('RC_IGNITE_PAD_BOX1');
+		await writeGroundSystemsCommand('RC_IGNITE_PAD_BOX2');
 
 		const pollInterval = setInterval(pollIgnitors, 100);
-
 		await new Promise(resolve => setTimeout(resolve, 3500));
 
 		clearInterval(pollInterval);
 
 		if (wasLiveAtAnyPoint) {
 			for (let i = 0; i < 3; i++) {
-				await PB.collection('PlcCommands').create({
-					command: 'RSC_IGNITION_TO_LAUNCH'
-				});
+				await writeStateChange('RSC_IGNITION_TO_LAUNCH');
 				await new Promise(resolve => setTimeout(resolve, 100));
 			} 
 		}
+
 		wasLiveAtAnyPoint = false;
 	}
 
@@ -455,7 +392,7 @@
 </script>
 
 <div class="container">
-	<svelte:component this={BackgroundLight} />
+	<Diagram />
 
 	<div class="pbv1_slider">
 		<SlideToggle
