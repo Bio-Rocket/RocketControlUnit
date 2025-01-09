@@ -115,9 +115,26 @@
             PBV6: false,
             PBV7: false,
             PBV8: false,
+			PBV9: false,
+			PBV10: false,
+			PBV11: false,
+			SOL1: false,
+			SOL2: false,
+			SOL3: false,
+			SOL4: false,
+			SOL5: false,
+			SOL6: false,
+			SOL7: false,
+			SOL8: false,
+			SOL9: false,
+			SOL10: false,
+			SOL11: false,
 			SOL12: false,
             SOL13: false,
+			SOL14: false,
             PUMP3: false,
+			IGN1: false,
+			IGN2: false,
         },
 
         Ignition_Valve_State: {
@@ -151,7 +168,6 @@
 
 		handleAuth();
 
-		// Subscribe to pocket base events
 		subscribeToCollections();
 
 		// Handle displaying outdated data
@@ -210,34 +226,35 @@
 	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'CLOSED' : 'OPEN';
 	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSED';
 	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSED' : 'OPEN';
-	$: pbv5_display = $pbv5_open === undefined ? 'N/A' : $pbv5_open ? 'OPEN' : 'CLOSED';
+	$: pbv5_display = $pbv5_open === undefined ? 'N/A' : $pbv5_open ? 'CLOSED' : 'OPEN';
 	$: pbv6_display = $pbv6_open === undefined ? 'N/A' : $pbv6_open ? 'OPEN' : 'CLOSED';
-	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'CLOSED' : 'OPEN';
-	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'CLOSED' : 'OPEN';
+	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'OPEM' : 'CLOSED';
+	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'OPEN' : 'CLOSED';
+	$: pbv9_display = $pbv9_open === undefined ? 'N/A' : $pbv9_open ? 'CLOSED' : 'OPEN';
+	$: pbv10_display = $pbv10_open === undefined ? 'N/A' : $pbv10_open ? 'OPEN' : 'CLOSED';
+	$: pbv11_display = $pbv11_open === undefined ? 'N/A' : $pbv11_open ? 'OPEN' : 'CLOSED';
+
+	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSED';
+	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSED';
+	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
+	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSED';
+	$: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSED';
+	$: sol6_display = $sol6_open === undefined ? 'N/A' : $sol6_open ? 'OPEN' : 'CLOSED';
+	$: sol7_display = $sol7_open === undefined ? 'N/A' : $sol7_open ? 'OPEN' : 'CLOSED';
+	$: sol8_display = $sol8_open === undefined ? 'N/A' : $sol8_open ? 'OPEN' : 'CLOSED';
+	$: sol9_display = $sol9_open === undefined ? 'N/A' : $sol9_open ? 'OPEN' : 'CLOSED';
+	$: sol10_display = $sol10_open === undefined ? 'N/A' : $sol10_open ? 'OPEN' : 'CLOSED';
+	$: sol11_display = $sol11_open === undefined ? 'N/A' : $sol11_open ? 'CLOSED' : 'OPEN';
+	$: sol12_display = $sol12_open === undefined ? 'N/A' : $sol12_open ? 'CLOSED' : 'OPEN';
+	$: sol13_display = $sol13_open === undefined ? 'N/A' : $sol13_open ? 'OPEN' : 'CLOSED';
+	$: sol14_display = $sol14_open === undefined ? 'N/A' : $sol14_open ? 'OPEN' : 'CLOSED';
+
+	$: heater_display = $heater_on === undefined ? 'N/A' : $heater_on ? 'ON' : 'OFF';
 
 	$: pmp3_display = $pmp3_on === undefined ? 'N/A' : $pmp3_on ? 'ON' : 'OFF';
 
 	$: ign1_display = $ign1_on === undefined ? 'N/A' : $ign1_on ? 'LIVE' : 'DEAD';
 	$: ign2_display = $ign2_on === undefined ? 'N/A' : $ign2_on ? 'LIVE' : 'DEAD';
-
-	$: heater_display = $heater_on === undefined ? 'N/A' : $heater_on ? 'ON' : 'OFF';
-
-	$: tc1_display = $tc1_temperature === undefined ? 'N/A' : $tc1_temperature;
-	$: tc2_display = $tc2_temperature === undefined ? 'N/A' : $tc2_temperature;
-	$: tc3_display = $tc3_temperature === undefined ? 'N/A' : $tc3_temperature;
-	$: tc4_display = $tc4_temperature === undefined ? 'N/A' : $tc4_temperature;
-	$: tc5_display = $tc5_temperature === undefined ? 'N/A' : $tc5_temperature;
-	$: tc6_display = $tc6_temperature === undefined ? 'N/A' : $tc6_temperature;
-	$: tc7_display = $tc7_temperature === undefined ? 'N/A' : $tc7_temperature;
-	$: tc8_display = $tc8_temperature === undefined ? 'N/A' : $tc8_temperature;
-	$: tc9_display = $tc9_temperature === undefined ? 'N/A' : $tc9_temperature;
-
-	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : Number($lc1_mass).toFixed(2);
-	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : Number($lc2_mass).toFixed(2);
-	$: lc3_mass_display = $lc3_mass === undefined ? 'N/A' : Number($lc3_mass).toFixed(2);
-	$: lc4_mass_display = $lc4_mass === undefined ? 'N/A' : Number($lc4_mass).toFixed(2);
-	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
-	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
 
 	$: pt1_pressure_display = $pt1_pressure === undefined ? 'N/A' : $pt1_pressure;
 	$: pt2_pressure_display = $pt2_pressure === undefined ? 'N/A' : $pt2_pressure;
@@ -256,28 +273,35 @@
 	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
 	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
 	$: pt17_pressure_display = $pt17_pressure === undefined ? 'N/A' : $pt17_pressure;
+	$: pt18_pressure_display = $pt18_pressure === undefined ? 'N/A' : $pt18_pressure;
+	$: pt19_pressure_display = $pt19_pressure === undefined ? 'N/A' : $pt19_pressure;
 
-	$: sol12_display = $sol12_open === undefined ? 'N/A' : $sol12_open ? 'OPEN' : 'CLOSED';
-	$: sol13_display = $sol13_open === undefined ? 'N/A' : $sol13_open ? 'OPEN' : 'CLOSED';
+	$: tc1_display = $tc1_temperature === undefined ? 'N/A' : $tc1_temperature;
+	$: tc2_display = $tc2_temperature === undefined ? 'N/A' : $tc2_temperature;
+	$: tc3_display = $tc3_temperature === undefined ? 'N/A' : $tc3_temperature;
+	$: tc4_display = $tc4_temperature === undefined ? 'N/A' : $tc4_temperature;
+	$: tc5_display = $tc5_temperature === undefined ? 'N/A' : $tc5_temperature;
+	$: tc6_display = $tc6_temperature === undefined ? 'N/A' : $tc6_temperature;
+	$: tc7_display = $tc7_temperature === undefined ? 'N/A' : $tc7_temperature;
+	$: tc8_display = $tc8_temperature === undefined ? 'N/A' : $tc8_temperature;
+	$: tc9_display = $tc9_temperature === undefined ? 'N/A' : $tc9_temperature;
+	$: tc10_display = $tc10_temperature === undefined ? 'N/A' : $tc10_temperature;
+	$: tc11_display = $tc11_temperature === undefined ? 'N/A' : $tc11_temperature;
+	$: tc12_display = $tc12_temperature === undefined ? 'N/A' : $tc12_temperature;
+
+	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : Number($lc1_mass).toFixed(2);
+	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : Number($lc2_mass).toFixed(2);
+	$: lc3_mass_display = $lc3_mass === undefined ? 'N/A' : Number($lc3_mass).toFixed(2);
+	$: lc4_mass_display = $lc4_mass === undefined ? 'N/A' : Number($lc4_mass).toFixed(2);
+	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
+	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
+	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
 
 	$: system_state_display = $system_state === undefined ? 'N/A' : $system_state.replace('SYS_', '');
 
 	$: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
 	$: timer_period_display = $timer_period === undefined ? 'N/A' : ($timer_period / 1000).toFixed(0); // Convert to seconds
 	$: timer_remaining_display = $timer_remaining === undefined ? 'N/A' : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
-
-	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
-	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
-	$: rcuTempOutdated = Date.now() - timestamps.rcu_temp > 5000;
-	$: batteryOutdated = Date.now() - timestamps.battery > 5000;
-	$: launchRailLoadCellOutdated = Date.now() - timestamps.launch_rail_load_cell > 5000;
-	$: nosLoadCellOutdated = Date.now() - timestamps.nos_load_cell > 5000;
-	$: pbbPressureOutdated = Date.now() - timestamps.pbb_pressure > 5000;
-	$: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
-	$: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
-	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
-	$: sysStateOutdated = Date.now() - timestamps.sys_state > 5000;
-	$: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
 
 	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
 

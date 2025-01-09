@@ -21,7 +21,7 @@ export class ThemeData {
             return;
         }
 
-        this.logo = `/logo/soar-logo-${theme}.svg`;
+        this.logo = `/logo/biorocketfull.svg`;
 
         let rootStyle = document.documentElement.style;
 

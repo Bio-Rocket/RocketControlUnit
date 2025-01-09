@@ -2,7 +2,6 @@ import PocketBase from 'pocketbase';
 import type { Timestamps } from '../timestamps';
 import type { Stores } from '../stores';
 import { currentState, operationConfig } from '../stores';
-//import { get } from 'svelte/store';
 
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
@@ -105,37 +104,33 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
             stores.lc7_mass.set(e.record.LC7);
 		});
 
-  
-		// pocketbase.collection('LabJack').subscribe('*', (e) => {
-		// 	stores.lc3_mass.set(e.record.LC3[0]);
-		// 	stores.lc4_mass.set(e.record.LC4[0]);
-		// 	stores.lc5_mass.set(e.record.LC5[0]);
-		// 	stores.lc6_mass.set(e.record.LC6[0]);
-		// 	stores.pt6_pressure.set(Math.round(e.record.PT6[0]) * 580);
-		// 	stores.pt7_pressure.set(Math.round(e.record.PT7[0]) * 580);
-		// 	stores.pt8_pressure.set(Math.round(e.record.PT8[0]) * 145);
-		// 	stores.pt9_pressure.set(Math.round(e.record.PT9[0]) * 145);
-		// 	stores.pt10_pressure.set(Math.round(e.record.PT10[0]) * 145);
-		// 	stores.pt11_pressure.set(Math.round(e.record.PT11[0]) * 145);
-		// 	stores.pt12_pressure.set(Math.round(e.record.PT12[0]) * 145);
-		// });
-     
+		pocketbase.collection('LabJack').subscribe('*', (e) => {
+			stores.lc3_mass.set(e.record.LC3[0]);
+			stores.lc4_mass.set(e.record.LC4[0]);
+			stores.lc5_mass.set(e.record.LC5[0]);
+			stores.lc6_mass.set(e.record.LC6[0]);
+			stores.pt6_pressure.set(Math.round(e.record.PT6[0]) * 580);
+			stores.pt7_pressure.set(Math.round(e.record.PT7[0]) * 580);
+			stores.pt8_pressure.set(Math.round(e.record.PT8[0]) * 145);
+			stores.pt9_pressure.set(Math.round(e.record.PT9[0]) * 145);
+			stores.pt10_pressure.set(Math.round(e.record.PT10[0]) * 145);
+			stores.pt11_pressure.set(Math.round(e.record.PT11[0]) * 145);
+			stores.pt12_pressure.set(Math.round(e.record.PT12[0]) * 145);
+		});
 
-		// // Subscribe to changes in the 'SystemState' collection
-		// pocketbase.collection('SystemState').subscribe('*', (e) => {
-		// 	stores.system_state.set(e.record.sys_state);
-		// 	currentState.set(e.record.rocket_state);
-		// 	timestamps.sys_state = Date.now();
-		// });
+		pocketbase.collection('SystemState').subscribe('*', (e) => {
+			stores.system_state.set(e.record.sys_state);
+			currentState.set(e.record.rocket_state);
+			timestamps.sys_state = Date.now();
+		});
 
-		// // Subscribe to changes in the 'HeartbeatTelemetry' collection
-		// pocketbase.collection('HeartbeatTelemetry').subscribe('*', (e) => {
-		// 	stores.timer_state.set(e.record.timer_state);
-		// 	stores.timer_period.set(e.record.timer_period);
-		// 	stores.timer_remaining.set(e.record.timer_remaining);
+		pocketbase.collection('HeartbeatTelemetry').subscribe('*', (e) => {
+			stores.timer_state.set(e.record.timer_state);
+			stores.timer_period.set(e.record.timer_period);
+			stores.timer_remaining.set(e.record.timer_remaining);
 
-		// 	timestamps.heartbeat = Date.now();
-		// });
+			timestamps.heartbeat = Date.now();
+		});
 	};
 
 	return {
