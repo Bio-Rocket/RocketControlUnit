@@ -15,6 +15,7 @@
     "@skeletonlabs/skeleton": "2.5.1",
     "@skeletonlabs/tw-plugin": "0.2.4",
     "@sveltejs/adapter-node": "^2.1.2",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tailwindcss/forms": "0.5.7",
     "@tailwindcss/typography": "0.5.10",
     "@types/node": "20.10.0",
@@ -33,14 +34,14 @@
     "tailwindcss": "3.3.5",
     "tslib": "^2.4.1",
     "typescript": "^5.0.0",
-    "vite-plugin-tailwind-purgecss": "^0.2.1",
     "vite": "^5.0.0",
-    "@sveltejs/vite-plugin-svelte": "^3.1.2"
+    "vite-plugin-tailwind-purgecss": "^0.2.1"
   },
   "type": "module",
   "dependencies": {
     "@floating-ui/dom": "1.5.3",
     "@sveltejs/kit": "^2.15.2",
+    "esm-env": "^1.2.2",
     "pocketbase": "^0.20.3"
   }
 }

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import "../styles/display.postcss";
-	import Diagram from '$lib/components/Diagram.svelte';
+	import "../styles/static-fire.postcss";
+	import Diagram from '$lib/components/StaticFire.svelte';
+	import SlideToggle from '$lib/components/SlideToggle.svelte';
 	import { initTimestamps, type Timestamps } from '$lib/timestamps';
 	import { usePocketbase } from '$lib/hooks/usePocketbase';
 	import { initStores, auth, currentState } from '$lib/stores';
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
-	import { SlideToggle } from '@skeletonlabs/skeleton';
 	import { get } from "svelte/store";
 
 	const timestamps = initTimestamps();
@@ -18,16 +18,12 @@
 		authenticate,
 		sendHeartbeat,
 		subscribeToCollections,
-		writeStateChange,
 		writeGroundSystemsCommand,
-		writeRocketCommand,
-		writeLoadCellCommand
 	} = usePocketbaseHook;
 
 	const {
 		confirmStateChange,
 		instantStateChange,
-		resumeConfirmRemoveWeight
 	} = useInteractionHook;
 
 	// Destructor stores for later use
@@ -45,18 +41,6 @@
 		pbv11_open,
 		sol1_open,
 		sol2_open,
-		sol3_open,
-		sol4_open,
-        sol5_open,
-        sol6_open,
-        sol7_open,
-        sol8_open,
-		sol9_open,
-		sol10_open,
-		sol11_open,
-		sol12_open,
-		sol13_open,
-		sol14_open,
 		heater_on,
 		pmp3_on,
 		ign1_on,
@@ -75,11 +59,6 @@
 		pt12_pressure,
 		pt13_pressure,
 		pt14_pressure,
-		pt15_pressure,
-		pt16_pressure,
-		pt17_pressure,
-		pt18_pressure,
-		pt19_pressure,
 		tc1_temperature,
 		tc2_temperature,
 		tc3_temperature,
@@ -89,16 +68,12 @@
 		tc7_temperature,
 		tc8_temperature,
 		tc9_temperature,
-		tc10_temperature,
-		tc11_temperature,
-		tc12_temperature,
 		lc1_mass,
 		lc2_mass,
 		lc3_mass,
 		lc4_mass,
 		lc5_mass,
 		lc6_mass,
-		lc7_mass,
 		system_state,
 		timer_state,
 		timer_period,
@@ -120,19 +95,6 @@
 			PBV11: false,
 			SOL1: false,
 			SOL2: false,
-			SOL3: false,
-			SOL4: false,
-			SOL5: false,
-			SOL6: false,
-			SOL7: false,
-			SOL8: false,
-			SOL9: false,
-			SOL10: false,
-			SOL11: false,
-			SOL12: false,
-            SOL13: false,
-			SOL14: false,
-            PUMP3: false,
 			IGN1: false,
 			IGN2: false,
         },
@@ -142,13 +104,17 @@
             PBV2: true,
             PBV3: false,
             PBV4: true,
-			PBV5: false,
+			PBV5: true,
 			PBV6: false,
             PBV7: true,
             PBV8: true,
-			SOL12: false,
-            SOL13: false,
-            PUMP3: false,
+			PBV9: true,
+			PBV10: false,
+			PBV11: false,
+			SOL1: false,
+            SOL2: false,
+            IGN1: false,
+			IGN2: false,
         }
     };
 
@@ -236,18 +202,6 @@
 
 	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSED';
 	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSED';
-	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
-	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSED';
-	$: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSED';
-	$: sol6_display = $sol6_open === undefined ? 'N/A' : $sol6_open ? 'OPEN' : 'CLOSED';
-	$: sol7_display = $sol7_open === undefined ? 'N/A' : $sol7_open ? 'OPEN' : 'CLOSED';
-	$: sol8_display = $sol8_open === undefined ? 'N/A' : $sol8_open ? 'OPEN' : 'CLOSED';
-	$: sol9_display = $sol9_open === undefined ? 'N/A' : $sol9_open ? 'OPEN' : 'CLOSED';
-	$: sol10_display = $sol10_open === undefined ? 'N/A' : $sol10_open ? 'OPEN' : 'CLOSED';
-	$: sol11_display = $sol11_open === undefined ? 'N/A' : $sol11_open ? 'CLOSED' : 'OPEN';
-	$: sol12_display = $sol12_open === undefined ? 'N/A' : $sol12_open ? 'CLOSED' : 'OPEN';
-	$: sol13_display = $sol13_open === undefined ? 'N/A' : $sol13_open ? 'OPEN' : 'CLOSED';
-	$: sol14_display = $sol14_open === undefined ? 'N/A' : $sol14_open ? 'OPEN' : 'CLOSED';
 
 	$: heater_display = $heater_on === undefined ? 'N/A' : $heater_on ? 'ON' : 'OFF';
 
@@ -270,11 +224,6 @@
 	$: pt12_pressure_display = $pt12_pressure === undefined ? 'N/A' : $pt12_pressure;
 	$: pt13_pressure_display = $pt13_pressure === undefined ? 'N/A' : $pt13_pressure;
 	$: pt14_pressure_display = $pt14_pressure === undefined ? 'N/A' : $pt14_pressure;
-	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
-	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
-	$: pt17_pressure_display = $pt17_pressure === undefined ? 'N/A' : $pt17_pressure;
-	$: pt18_pressure_display = $pt18_pressure === undefined ? 'N/A' : $pt18_pressure;
-	$: pt19_pressure_display = $pt19_pressure === undefined ? 'N/A' : $pt19_pressure;
 
 	$: tc1_display = $tc1_temperature === undefined ? 'N/A' : $tc1_temperature;
 	$: tc2_display = $tc2_temperature === undefined ? 'N/A' : $tc2_temperature;
@@ -285,9 +234,6 @@
 	$: tc7_display = $tc7_temperature === undefined ? 'N/A' : $tc7_temperature;
 	$: tc8_display = $tc8_temperature === undefined ? 'N/A' : $tc8_temperature;
 	$: tc9_display = $tc9_temperature === undefined ? 'N/A' : $tc9_temperature;
-	$: tc10_display = $tc10_temperature === undefined ? 'N/A' : $tc10_temperature;
-	$: tc11_display = $tc11_temperature === undefined ? 'N/A' : $tc11_temperature;
-	$: tc12_display = $tc12_temperature === undefined ? 'N/A' : $tc12_temperature;
 
 	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : Number($lc1_mass).toFixed(2);
 	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : Number($lc2_mass).toFixed(2);
@@ -295,7 +241,6 @@
 	$: lc4_mass_display = $lc4_mass === undefined ? 'N/A' : Number($lc4_mass).toFixed(2);
 	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
 	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
-	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
 
 	$: system_state_display = $system_state === undefined ? 'N/A' : $system_state.replace('SYS_', '');
 
@@ -305,7 +250,7 @@
 
 	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
 
-	async function handlePlcSliderChange(
+	async function handleSliderChange(
 		e: any,
 		openCommand: string,
 		closeCommand: string
@@ -315,42 +260,7 @@
 		// Determine the command based on the current value of the slider
 		const command = e.target.checked ? openCommand : closeCommand;
 
-		// Create a change on the 'RelayStatus' collection
 		writeGroundSystemsCommand(command);
-	}
-
-	let wasLiveAtAnyPoint = false;
-
-	async function pollIgnitors() {
-		if (ign1_display === 'LIVE' || ign2_display === 'LIVE') {
-			wasLiveAtAnyPoint = true;
-		}
-	}
-
-	const handleLaunchSequence = async () => {
-		await writeGroundSystemsCommand('RC_IGNITE_PAD_BOX1');
-		await writeGroundSystemsCommand('RC_IGNITE_PAD_BOX2');
-
-		const pollInterval = setInterval(pollIgnitors, 100);
-		await new Promise(resolve => setTimeout(resolve, 3500));
-
-		clearInterval(pollInterval);
-
-		if (wasLiveAtAnyPoint) {
-			for (let i = 0; i < 3; i++) {
-				await writeStateChange('RSC_IGNITION_TO_LAUNCH');
-				await new Promise(resolve => setTimeout(resolve, 100));
-			} 
-		}
-
-		wasLiveAtAnyPoint = false;
-	}
-
-	// NOTE: This seems odd but since the event will switch these MUST be swapped
-	// Open to alternate ways of doing it. Everything I tried didn't work.
-	async function handleIgnition(e: MouseEvent) {
-		await handlePlcSliderChange(e, 'IGN1_ON', 'IGN1_OFF');
-		await handlePlcSliderChange(e, 'IGN2_OFF', 'IGN2_ON');
 	}
 
 	function checkStateAndChangePrefire() {
@@ -363,9 +273,13 @@
 			PBV6: get(pbv6_open),
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
-			SOL12: get(sol12_open),
-			SOL13: get(sol13_open),
-			PUMP3: get(pmp3_on),
+			PBV9: get(pbv9_open),
+			PBV10: get(pbv10_open),
+			PBV11: get(pbv11_open),
+			SOL1: get(sol1_open),
+			SOL2: get(sol2_open),
+			IGN1: get(ign1_on),
+			IGN2: get(ign2_on),
 		};
 
     	const prefireState = StateArray.Prefire_Valve_State;
@@ -393,9 +307,13 @@
 			PBV6: get(pbv6_open),
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
-			SOL12: get(sol12_open),
-			SOL13: get(sol13_open),
-			PUMP3: get(pmp3_on),
+			PBV9: get(pbv9_open),
+			PBV10: get(pbv10_open),
+			PBV11: get(pbv11_open),
+			SOL1: get(sol1_open),
+			SOL2: get(sol2_open),
+			IGN1: get(ign1_on),
+			IGN2: get(ign2_on),
 		};
 
 		const ignitionState = StateArray.Ignition_Valve_State;
@@ -424,7 +342,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv1_open}
-			on:click={(e) => handlePlcSliderChange(e, 'PBV1_OPEN', 'PBV1_CLOSE')}
+			on:click={(e) => handleSliderChange(e, 'PBV1_OPEN', 'PBV1_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv1_display}</SlideToggle
@@ -437,7 +355,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv2_open}
-			on:click={(e) => handlePlcSliderChange(e, 'PBV2_OPEN', 'PBV2_CLOSE')}
+			on:click={(e) => handleSliderChange(e, 'PBV2_OPEN', 'PBV2_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv2_display}</SlideToggle
@@ -450,7 +368,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv3_open}
-			on:click={(e) => handlePlcSliderChange(e, 'PBV3_OPEN', 'PBV3_CLOSE')}
+			on:click={(e) => handleSliderChange(e, 'PBV3_OPEN', 'PBV3_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv3_display}</SlideToggle
@@ -463,7 +381,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv4_open}
-			on:click={(e) => handlePlcSliderChange(e, 'PBV4_OPEN', 'PBV4_CLOSE')}
+			on:click={(e) => handleSliderChange(e, 'PBV4_OPEN', 'PBV4_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv4_display}</SlideToggle
@@ -476,7 +394,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv5_open}
-			on:click={(e) => handlePlcSliderChange(e, 'PBV5_OPEN', 'PBV5_CLOSE')}
+			on:click={(e) => handleSliderChange(e, 'PBV5_OPEN', 'PBV5_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv5_display}</SlideToggle
@@ -489,7 +407,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv6_open}
-			on:click={(e) => handlePlcSliderChange(e, 'PBV6_OPEN', 'PBV6_CLOSE')}
+			on:click={(e) => handleSliderChange(e, 'PBV6_OPEN', 'PBV6_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv6_display}</SlideToggle
@@ -502,7 +420,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv7_open}
-			on:click={(e) => handlePlcSliderChange(e, 'PBV7_OPEN', 'PBV7_CLOSE')}
+			on:click={(e) => handleSliderChange(e, 'PBV7_OPEN', 'PBV7_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv7_display}</SlideToggle
@@ -515,10 +433,75 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv8_open}
-			on:click={(e) => handlePlcSliderChange(e, 'PBV8_OPEN', 'PBV8_CLOSE')}
+			on:click={(e) => handleSliderChange(e, 'PBV8_OPEN', 'PBV8_CLOSE')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pbv8_display}</SlideToggle
+		>
+	</div>
+
+	<div class="pbv9_slider">
+		<SlideToggle
+			name="pbv9_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pbv9_open}
+			on:click={(e) => handleSliderChange(e, 'PBV9_OPEN', 'PBV9_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{pbv9_display}</SlideToggle
+		>
+	</div>
+
+	<div class="pbv10_slider">
+		<SlideToggle
+			name="pbv10_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pbv10_open}
+			on:click={(e) => handleSliderChange(e, 'PBV10_OPEN', 'PBV10_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{pbv10_display}</SlideToggle
+		>
+	</div>
+
+	<div class="pbv11_slider">
+		<SlideToggle
+			name="pbv11_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pbv11_open}
+			on:click={(e) => handleSliderChange(e, 'PBV11_OPEN', 'PBV11_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{pbv11_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol1_slider">
+		<SlideToggle
+			name="sol1_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol1_open}
+			on:click={(e) => handleSliderChange(e, 'SOL1_OPEN', 'SOL1_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol1_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol2_slider">
+		<SlideToggle
+			name="sol2_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol2_open}
+			on:click={(e) => handleSliderChange(e, 'SOL2_OPEN', 'SOL2_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol2_display}</SlideToggle
 		>
 	</div>
 
@@ -528,36 +511,10 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pmp3_on}
-			on:click={(e) => handlePlcSliderChange(e, 'PMP3_ON', 'PMP3_OFF')}
+			on:click={(e) => handleSliderChange(e, 'PMP3_ON', 'PMP3_OFF')}
 			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{pmp3_display}</SlideToggle
-		>
-	</div>
-
-	<div class="sol12_slider">
-		<SlideToggle
-			name="sol12_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$sol12_open}
-			on:click={(e) => handlePlcSliderChange(e, 'SOL12_OPEN', 'SOL12_CLOSE')}
-			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
-		>
-			{sol12_display}</SlideToggle
-		>
-	</div>
-
-	<div class="sol13_slider">
-		<SlideToggle
-			name="sol13_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$sol13_open}
-			on:click={(e) => handlePlcSliderChange(e, 'SOL13_OPEN', 'SOL13_CLOSE')}
-			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
-		>
-			{sol13_display}</SlideToggle
 		>
 	</div>
 
@@ -567,12 +524,11 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$heater_on}
-			on:click={(e) => handlePlcSliderChange(e, 'HEATER_ON', 'HEATER_OFF')}
+			on:click={(e) => handleSliderChange(e, 'HEATER_ON', 'HEATER_OFF')}
 		>
 			{heater_display}</SlideToggle
 		>
 	</div>
-
 
 	<div class="ign1_slider">
 		<SlideToggle
@@ -580,7 +536,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$ign1_on}
-			on:click={handleIgnition}
+			on:click={(e) => handleSliderChange(e, 'IGN1_ON', 'IGN1_OFF')}
 			disabled={["PREFIRE", "MANUAL_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{ign1_display}</SlideToggle
@@ -593,7 +549,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$ign2_on}
-			on:click={handleIgnition}
+			on:click={(e) => handleSliderChange(e, 'IGN2_ON', 'IGN2_OFF')}
 			disabled={["PREFIRE", "MANUAL_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{ign2_display}</SlideToggle
@@ -715,18 +671,6 @@
 	<div class="pt14_pressure">
 		<p>{pt14_pressure_display}</p>
 	</div>
-
-	<div class="pt15_pressure">
-		<p>{pt15_pressure_display}</p>
-	</div>
-
-	<div class="pt16_pressure">
-		<p>{pt16_pressure_display}</p>
-	</div>
-
-	<div class="pt17_pressure">
-		<p>{pt17_pressure_display}</p>
-	</div>
 <!--
 	<div class="system_state">
 		<p>{system_state_display}</p>
@@ -771,7 +715,7 @@
 		<button
 			class="btn variant-filled next-state-btn fire-btn"
 			style="left:20%"
-			on:click={() => handleLaunchSequence()}>FIRE</button
+			on:click={() => instantStateChange("GOTO_FIRE")}>FIRE</button
 		>
 		<button
 			class="btn variant-filled-warning next-state-btn"
@@ -800,426 +744,14 @@
 
 <style>
 	.container {
-		position: relative;
-		width: 100%;
-		height: 100%;
+    	position: relative;
+    	width: 100%;
+    	height: 100%;
 	}
 
 	@media (min-width: 576px) {
-		.container {
-			max-width: 100%;
-		}
+    	.container {
+       		max-width: 100%;
+    	}
 	}
-
-	.next-state-btn {
-		position: absolute;
-		top: calc(var(--container-width) * 0.532);
-		width: 200px;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
-	}
-
-	.fire-btn {
-		background-color: #d4163c;
-	}
-
-	.pbv1_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.125);
-		left: 17%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.pbv2_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.055);
-		left: 34%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.pbv3_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.275);
-		left: 19%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.pbv4_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.23);
-		left: 34%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.pbv5_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.107);
-		left: 84%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.pbv6_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.109);
-		left: 95.8%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.pbv7_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.345);
-		left: 42.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.pbv8_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.273);
-		left: 50%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.pmp3_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.321);
-		left: 84%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.sol12_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.395);
-		left: 29%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.sol13_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.46);
-		left: 29%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.ign1_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.41);
-		left: 86%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.ign2_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.425);
-		left: 86%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.heater_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.452);
-		left: 10.8%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2000));
-		font-size: 16px;
-	}
-
-	.tc1_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 10.75%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.tc2_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.441);
-		left: 55.45%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.tc3_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.218);
-		left: 87.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.tc4_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.218);
-		left: 96.4%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.tc5_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.2635);
-		left: 89%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.tc6_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.37);
-		left: 89%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.tc7_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.318);
-		left: 97.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.tc8_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.363);
-		left: 95.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.tc9_temperature {
-		position: absolute;
-		top: calc(var(--container-width) * 0.4115);
-		left: 10.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.lc1_mass {
-		position: absolute;
-		top: calc(var(--container-width) * 0.385);
-		left: 5.4%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.lc2_mass {
-		position: absolute;
-		top: calc(var(--container-width) * 0.485);
-		left: 5.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.lc3_mass {
-		position: absolute;
-		top: calc(var(--container-width) * 0.175);
-		left: 60.2%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.lc4_mass {
-		position: absolute;
-		top: calc(var(--container-width) * 0.298);
-		left: 60.2%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.lc5_mass {
-		position: absolute;
-		top: calc(var(--container-width) * 0.42);
-		left: 60.2%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.lc6_mass {
-		position: absolute;
-		top: calc(var(--container-width) * 0.313);
-		left: 92.05%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt1_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.12);
-		left: 9.25%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt2_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.1205);
-		left: 22.4%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt3_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.122);
-		left: 29.15%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt4_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 7.1%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt5_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.3421);
-		left: 22.4%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt6_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.274);
-		left: 29%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt7_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.111);
-		left: 56.75%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt8_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.111);
-		left: 63.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt9_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.3145);
-		left: 51.35%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt10_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.3145);
-		left: 54.85%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt11_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.441);
-		left: 48.25%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt12_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.44);
-		left: 51.83%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt13_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.183);
-		left: 87.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt14_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.183);
-		left: 96.4%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt15_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.264);
-		left: 85.38%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt16_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.37);
-		left: 85.38%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.pt17_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.424);
-		left: 21.15%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-/*
-	.system_state {
-		position: absolute;
-		top: calc(var(--container-width) * 0.373);
-		left: 42%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 12px;
-	}
-
-	.timer_state {
-		position: absolute;
-		top: calc(var(--container-width) * 0.386);
-		left: 42%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 12px;
-	}
-
-	.timer_period {
-		position: absolute;
-		top: calc(var(--container-width) * 0.399);
-		left: 44%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 12px;
-	}
-
-	.timer_remaining {
-		position: absolute;
-		top: calc(var(--container-width) * 0.413);
-		left: 45%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 12px;
-	} */
 </style>

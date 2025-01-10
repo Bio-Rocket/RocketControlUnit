@@ -2,7 +2,7 @@
 	import '../styles/app.postcss';
 	import ReadOnlySvg from '$lib/components/ReadOnlySvg.svelte';
 	import { ThemeData, ThemeType } from '$lib/theme';
-	import { auth, currentState } from "$lib/stores";
+	import { auth, currentState, operationConfig } from "$lib/stores";
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { page } from '$app/stores';
 	import {
@@ -41,13 +41,20 @@
 						/>
 					</div>
 				</div>
+
+
+					
 			</svelte:fragment>
 
 			<svelte:fragment>
-				<h1 class="text-xl">Current Rocket State: {$currentState}</h1>
+				<h1 class="text-xl">Current System State: {$currentState}</h1>
 			</svelte:fragment>
 
 			<svelte:fragment slot="trail">
+				<select class="select" bind:value={$operationConfig}>
+					<option value="Static Fire">Static Fire</option>
+					<option value="Launch">Launch</option>
+				</select>
 				<LightSwitch class="ml-auto" />
 				{#if $auth === false}
 					<ReadOnlySvg />
@@ -85,5 +92,8 @@
 		margin-right: auto;
 		width: 30%;
 		height: width;
+	}
+	.select {
+		width: 35%;
 	}
 </style>

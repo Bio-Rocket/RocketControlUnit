@@ -5,9 +5,11 @@ import PausablePromptModal, { type PausablePromptResponse } from '$lib/component
 const stateToCommand: { [key: string]: string } = {
     ABORT: 'GOTO_ABORT',
     PREFIRE: 'GOTO_PREFIRE',
+	PRELAUNCH: 'GOTO_PRELAUNCH',
     FILL: 'GOTO_FILL',
     IGNITION: "GOTO_IGNITION",
     POSTFIRE: "GOTO_POSTFIRE",
+	POSTLAUNCH: "GOTO_POSTLAUNCH",
     TEST: "GOTO_TEST"
 };
 

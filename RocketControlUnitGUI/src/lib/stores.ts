@@ -1,8 +1,17 @@
 import { writable, type Writable } from 'svelte/store';
 
 export const currentState = writable('N/A');
-export const operationConfig = writable('Static Fire');
 export const auth = writable(false);
+
+const isBrowser = typeof window !== 'undefined';
+const storedOperationConfig = isBrowser ? localStorage.getItem('operationConfig') || 'Static Fire' : 'Static Fire';
+export const operationConfig = writable(storedOperationConfig);
+
+if (isBrowser) {
+    operationConfig.subscribe(value => {
+        localStorage.setItem('operationConfig', value);
+    });
+}
 
 export interface Stores {
 	pbv1_open: Writable<any>;
@@ -72,7 +81,6 @@ export interface Stores {
     lc5_mass: Writable<string | number | undefined>;
     lc6_mass: Writable<string | number | undefined>;
     lc7_mass: Writable<string | number | undefined>;
-	system_state: Writable<string | undefined>;
 	timer_state: Writable<string | undefined>;
 	timer_period: Writable<number | undefined>;
 	timer_remaining: Writable<number | undefined>;
@@ -147,7 +155,6 @@ export const initStores = () => {
         lc5_mass: writable<string | number | undefined>(undefined),
         lc6_mass: writable<string | number | undefined>(undefined),
         lc7_mass: writable<string | number | undefined>(undefined),
-        system_state: writable<string | undefined>(undefined),
         timer_state: writable<string | undefined>(undefined),
         timer_period: writable<number | undefined>(undefined),
         timer_remaining: writable<number | undefined>(undefined)

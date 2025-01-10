@@ -10,12 +10,11 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 	const pocketbase = new PocketBase('http://127.0.0.1:8090');
 
 	const authenticate = async () => {
-		const email = import.meta.env.VITE_EMAIL;
-		const password = import.meta.env.VITE_PASSWORD;
+		const email = 'jgerbrandt@live.com';
+		const password = 'avionicsSOAR'
 
 		if (email && password) {
-			pocketbase.authStore.clear();
-			await pocketbase.admins.authWithPassword(email, password);
+			await pocketbase.collection("_superusers").authWithPassword(email, password);
 
 			return true;
 		}
@@ -119,8 +118,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		});
 
 		pocketbase.collection('SystemState').subscribe('*', (e) => {
-			stores.system_state.set(e.record.sys_state);
-			currentState.set(e.record.rocket_state);
+			currentState.set(e.record.system_state);
 			timestamps.sys_state = Date.now();
 		});
 
