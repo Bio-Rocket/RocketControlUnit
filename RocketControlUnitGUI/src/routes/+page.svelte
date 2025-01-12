@@ -1,10 +1,8 @@
 <script lang="ts">
-	import "../styles/static-fire.postcss";
-	import Diagram from '$lib/components/StaticFire.svelte';
 	import SlideToggle from '$lib/components/SlideToggle.svelte';
 	import { initTimestamps, type Timestamps } from '$lib/timestamps';
 	import { usePocketbase } from '$lib/hooks/usePocketbase';
-	import { initStores, auth, currentState } from '$lib/stores';
+	import { initStores, auth, currentState, operationConfig } from '$lib/stores';
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
 	import { get } from "svelte/store";
@@ -41,6 +39,18 @@
 		pbv11_open,
 		sol1_open,
 		sol2_open,
+		sol3_open,
+		sol4_open,
+		sol5_open,
+		sol6_open,
+		sol7_open,
+		sol8_open,
+		sol9_open,
+		sol10_open,
+		sol11_open,
+		sol12_open,
+		sol13_open,
+		sol14_open,
 		heater_on,
 		pmp3_on,
 		ign1_on,
@@ -59,6 +69,11 @@
 		pt12_pressure,
 		pt13_pressure,
 		pt14_pressure,
+		pt15_pressure,
+		pt16_pressure,
+		pt17_pressure,
+		pt18_pressure,
+		pt19_pressure,
 		tc1_temperature,
 		tc2_temperature,
 		tc3_temperature,
@@ -68,12 +83,16 @@
 		tc7_temperature,
 		tc8_temperature,
 		tc9_temperature,
+		tc10_temperature,
+		tc11_temperature,
+		tc12_temperature,
 		lc1_mass,
 		lc2_mass,
 		lc3_mass,
 		lc4_mass,
 		lc5_mass,
 		lc6_mass,
+		lc7_mass,
 		system_state,
 		timer_state,
 		timer_period,
@@ -118,7 +137,44 @@
         }
     };
 
+	const loadStylesheet = (path: string) => {
+		const link = document.createElement("link");
+		link.rel = "stylesheet";
+		link.type = "text/css";
+		link.href = path;
+
+		// Remove previously added dynamic styles
+		document.querySelectorAll('link[data-dynamic="true"]').forEach((el) => el.remove());
+
+		// Add new stylesheet
+		link.dataset.dynamic = "true";
+		document.head.appendChild(link);
+	};
+
+	// Updated paths for stylesheets
+	const staticFireCSS = "src/styles/static-fire.postcss";
+	const launchCSS = "src/styles/launch.postcss";
+
+	let DiagramComponent: typeof import('svelte').SvelteComponent | null = null;
+
+	$: {
+		if (typeof window !== "undefined") {
+			loadStylesheet($operationConfig === "Static Fire" ? staticFireCSS : launchCSS);
+		}
+		if ($operationConfig === "Static Fire") {
+			import('$lib/components/StaticFire.svelte').then(module => {
+				DiagramComponent = module.default;
+			});
+		} else {
+			import('$lib/components/Launch.svelte').then(module => {
+				DiagramComponent = module.default;
+			});
+		}
+	}
+
+
 	onMount(() => {
+
 		let heartbeatInterval: NodeJS.Timeout;
 
 		// Handle pocketbase authentication
@@ -194,7 +250,7 @@
 	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSED' : 'OPEN';
 	$: pbv5_display = $pbv5_open === undefined ? 'N/A' : $pbv5_open ? 'CLOSED' : 'OPEN';
 	$: pbv6_display = $pbv6_open === undefined ? 'N/A' : $pbv6_open ? 'OPEN' : 'CLOSED';
-	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'OPEM' : 'CLOSED';
+	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'OPEN' : 'CLOSED';
 	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'OPEN' : 'CLOSED';
 	$: pbv9_display = $pbv9_open === undefined ? 'N/A' : $pbv9_open ? 'CLOSED' : 'OPEN';
 	$: pbv10_display = $pbv10_open === undefined ? 'N/A' : $pbv10_open ? 'OPEN' : 'CLOSED';
@@ -202,6 +258,18 @@
 
 	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSED';
 	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSED';
+	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
+	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSED';
+	$: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSED';
+	$: sol6_display = $sol6_open === undefined ? 'N/A' : $sol6_open ? 'OPEN' : 'CLOSED';
+	$: sol7_display = $sol7_open === undefined ? 'N/A' : $sol7_open ? 'OPEN' : 'CLOSED';
+	$: sol8_display = $sol8_open === undefined ? 'N/A' : $sol8_open ? 'OPEN' : 'CLOSED';
+	$: sol9_display = $sol9_open === undefined ? 'N/A' : $sol9_open ? 'OPEN' : 'CLOSED';
+	$: sol10_display = $sol10_open === undefined ? 'N/A' : $sol10_open ? 'OPEN' : 'CLOSED';
+	$: sol11_display = $sol11_open === undefined ? 'N/A' : $sol11_open ? 'OPEN' : 'CLOSED';
+	$: sol12_display = $sol12_open === undefined ? 'N/A' : $sol12_open ? 'OPEN' : 'CLOSED';
+	$: sol13_display = $sol13_open === undefined ? 'N/A' : $sol13_open ? 'OPEN' : 'CLOSED';
+	$: sol14_display = $sol14_open === undefined ? 'N/A' : $sol14_open ? 'OPEN' : 'CLOSED';
 
 	$: heater_display = $heater_on === undefined ? 'N/A' : $heater_on ? 'ON' : 'OFF';
 
@@ -224,6 +292,11 @@
 	$: pt12_pressure_display = $pt12_pressure === undefined ? 'N/A' : $pt12_pressure;
 	$: pt13_pressure_display = $pt13_pressure === undefined ? 'N/A' : $pt13_pressure;
 	$: pt14_pressure_display = $pt14_pressure === undefined ? 'N/A' : $pt14_pressure;
+	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
+	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
+	$: pt17_pressure_display = $pt17_pressure === undefined ? 'N/A' : $pt17_pressure;
+	$: pt18_pressure_display = $pt18_pressure === undefined ? 'N/A' : $pt18_pressure;
+	$: pt19_pressure_display = $pt19_pressure === undefined ? 'N/A' : $pt19_pressure;
 
 	$: tc1_display = $tc1_temperature === undefined ? 'N/A' : $tc1_temperature;
 	$: tc2_display = $tc2_temperature === undefined ? 'N/A' : $tc2_temperature;
@@ -234,6 +307,9 @@
 	$: tc7_display = $tc7_temperature === undefined ? 'N/A' : $tc7_temperature;
 	$: tc8_display = $tc8_temperature === undefined ? 'N/A' : $tc8_temperature;
 	$: tc9_display = $tc9_temperature === undefined ? 'N/A' : $tc9_temperature;
+	$: tc10_display = $tc10_temperature === undefined ? 'N/A' : $tc10_temperature;
+	$: tc11_display = $tc11_temperature === undefined ? 'N/A' : $tc11_temperature;
+	$: tc12_display = $tc12_temperature === undefined ? 'N/A' : $tc12_temperature;
 
 	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : Number($lc1_mass).toFixed(2);
 	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : Number($lc2_mass).toFixed(2);
@@ -241,6 +317,7 @@
 	$: lc4_mass_display = $lc4_mass === undefined ? 'N/A' : Number($lc4_mass).toFixed(2);
 	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
 	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
+	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
 
 	$: system_state_display = $system_state === undefined ? 'N/A' : $system_state.replace('SYS_', '');
 
@@ -334,7 +411,9 @@
 </script>
 
 <div class="container">
-	<Diagram />
+	{#if DiagramComponent}
+		<svelte:component this={DiagramComponent} />
+	{/if}
 
 	<div class="pbv1_slider">
 		<SlideToggle
@@ -505,6 +584,162 @@
 		>
 	</div>
 
+	<div class="sol3_slider">
+		<SlideToggle
+			name="sol3_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol3_open}
+			on:click={(e) => handleSliderChange(e, 'SOL3_OPEN', 'SOL3_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol3_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol4_slider">
+		<SlideToggle
+			name="sol4_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol4_open}
+			on:click={(e) => handleSliderChange(e, 'SOL4_OPEN', 'SOL4_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol4_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol5_slider">
+		<SlideToggle
+			name="sol5_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol5_open}
+			on:click={(e) => handleSliderChange(e, 'SOL5_OPEN', 'SOL5_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol5_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol6_slider">
+		<SlideToggle
+			name="sol6_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol6_open}
+			on:click={(e) => handleSliderChange(e, 'SOL6_OPEN', 'SOL6_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol6_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol7_slider">
+		<SlideToggle
+			name="sol7_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol7_open}
+			on:click={(e) => handleSliderChange(e, 'SOL7_OPEN', 'SOL7_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol7_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol8_slider">
+		<SlideToggle
+			name="sol8_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol8_open}
+			on:click={(e) => handleSliderChange(e, 'SOL8_OPEN', 'SOL8_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol8_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol9_slider">
+		<SlideToggle
+			name="sol9_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol9_open}
+			on:click={(e) => handleSliderChange(e, 'SOL9_OPEN', 'SOL9_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol9_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol10_slider">
+		<SlideToggle
+			name="sol10_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol10_open}
+			on:click={(e) => handleSliderChange(e, 'SOL10_OPEN', 'SOL10_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol10_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol11_slider">
+		<SlideToggle
+			name="sol11_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol11_open}
+			on:click={(e) => handleSliderChange(e, 'SOL11_OPEN', 'SOL11_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol11_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol12_slider">
+		<SlideToggle
+			name="sol12_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol12_open}
+			on:click={(e) => handleSliderChange(e, 'SOL12_OPEN', 'SOL12_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol12_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol13_slider">
+		<SlideToggle
+			name="sol13_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol13_open}
+			on:click={(e) => handleSliderChange(e, 'SOL13_OPEN', 'SOL13_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol13_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol14_slider">
+		<SlideToggle
+			name="sol14_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol14_open}
+			on:click={(e) => handleSliderChange(e, 'SOL14_OPEN', 'SOL14_CLOSE')}
+			disabled={["PREFIRE", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+		>
+			{sol14_display}</SlideToggle
+		>
+	</div>
+
 	<div class="pmp3_slider">
 		<SlideToggle
 			name="pmp3_slider"
@@ -592,6 +827,18 @@
 		<p>{tc9_display}</p>
 	</div>
 
+	<div class="tc10_temperature">
+		<p>{tc10_display}</p>
+	</div>
+
+	<div class="tc11_temperature">
+		<p>{tc11_display}</p>
+	</div>
+
+	<div class="tc12_temperature">
+		<p>{tc12_display}</p>
+	</div>
+
 	<div class="lc1_mass">
 		<p>{lc1_mass_display}</p>
 	</div>
@@ -614,6 +861,10 @@
 
 	<div class="lc6_mass">
 		<p>{lc6_mass_display}</p>
+	</div>
+
+	<div class="lc7_mass">
+		<p>{lc7_mass_display}</p>
 	</div>
 
 	<div class="pt1_pressure">
@@ -670,6 +921,26 @@
 
 	<div class="pt14_pressure">
 		<p>{pt14_pressure_display}</p>
+	</div>
+
+	<div class="pt15_pressure">
+		<p>{pt15_pressure_display}</p>
+	</div>
+
+	<div class="pt16_pressure">
+		<p>{pt16_pressure_display}</p>
+	</div>
+
+	<div class="pt17_pressure">
+		<p>{pt17_pressure_display}</p>
+	</div>
+
+	<div class="pt18_pressure">
+		<p>{pt18_pressure_display}</p>
+	</div>
+
+	<div class="pt19_pressure">
+		<p>{pt19_pressure_display}</p>
 	</div>
 <!--
 	<div class="system_state">

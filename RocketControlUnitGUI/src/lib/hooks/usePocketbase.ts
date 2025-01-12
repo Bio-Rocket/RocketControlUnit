@@ -7,14 +7,21 @@ export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
 export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 	//const pocketbase = new PocketBase('http://192.168.0.69:8090');
-	const pocketbase = new PocketBase('http://127.0.0.1:8090');
+	const pocketbase = new PocketBase('http://127.0.0.1:8090/');
 
 	const authenticate = async () => {
-		const email = 'jgerbrandt@live.com';
-		const password = 'avionicsSOAR'
+		const email = 'ethan.subasic@gmail.com';
+		const password = '1234567890'
 
 		if (email && password) {
-			await pocketbase.collection("_superusers").authWithPassword(email, password);
+			try{
+				console.log(pocketbase.collection("_superusers"))
+				await pocketbase.admins.authWithPassword(email, password);
+				console.log('Logged in as super user');
+			} catch (error) {
+				console.error(`Error logging in as super user ${email}: `, error);
+				return false;
+			}
 
 			return true;
 		}
