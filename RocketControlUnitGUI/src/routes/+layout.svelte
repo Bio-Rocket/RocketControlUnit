@@ -2,7 +2,7 @@
 	import '../styles/app.postcss';
 	import ReadOnlySvg from '$lib/components/ReadOnlySvg.svelte';
 	import { ThemeData, ThemeType } from '$lib/theme';
-	import { auth, currentState, operationConfig } from "$lib/stores";
+	import { auth, currentState } from "$lib/stores";
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { page } from '$app/stores';
 	import {
@@ -43,7 +43,7 @@
 				</div>
 
 
-					
+
 			</svelte:fragment>
 
 			<svelte:fragment>
@@ -51,10 +51,6 @@
 			</svelte:fragment>
 
 			<svelte:fragment slot="trail">
-				<select class="select" bind:value={$operationConfig}>
-					<option value="Static Fire">Static Fire</option>
-					<option value="Launch">Launch</option>
-				</select>
 				<LightSwitch class="ml-auto" />
 				{#if $auth === false}
 					<ReadOnlySvg />
@@ -62,23 +58,23 @@
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
-	
+
 	<svelte:fragment slot="sidebarLeft">
 		<AppRail>
 			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}>
 				<img src="/icons/rocket.png" class="sideBar-center" alt="Icon" />
 			</AppRailAnchor>
-			
+
 			<AppRailAnchor href="/calibration" selected={$page.url.pathname === "/calibration"}>
 				<img src="/icons/stats.png" class="sideBar-center" alt="Icon" />
 			</AppRailAnchor>
-			
+
 			<AppRailAnchor href="/launch" selected={$page.url.pathname === "/launch"}>
 				<img src="/icons/info.png" class="sideBar-center" alt="Icon" />
 			</AppRailAnchor>
 		</AppRail>
 	</svelte:fragment>
-	
+
 	<slot />
 
 </AppShell>

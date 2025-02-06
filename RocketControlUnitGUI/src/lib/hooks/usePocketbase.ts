@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 import type { Timestamps } from '../timestamps';
 import type { Stores } from '../stores';
-import { currentState, operationConfig } from '../stores';
+import { currentState } from '../stores';
 
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
@@ -16,7 +16,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		if (email && password) {
 			try{
 				console.log(pocketbase.collection("_superusers"))
-				await pocketbase.admins.authWithPassword(email, password);
+				await pocketbase.collection("_superusers").authWithPassword(email, password);
 				console.log('Logged in as super user');
 			} catch (error) {
 				console.error(`Error logging in as super user ${email}: `, error);
@@ -36,27 +36,19 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 	};
 
 	const writeStateChange = async (state: string) => {
-		await pocketbase.collection('StateCommands').create({
+		await pocketbase.collection('StateCommand').create({
 			command: state,
-            config : operationConfig
 		});
 	};
 
 	const writeGroundSystemsCommand = async (command: string) => {
 		await pocketbase.collection('GroundSystemsCommand').create({
-			command
-		});
-	};
-
-    const writeRocketCommand = async (target: string, command: string) => {
-		await pocketbase.collection('RocketCommands').create({
-            target: target,
-			command
+			command: command
 		});
 	};
 
 	const writeLoadCellCommand = async (target: string, command: string, weight_kg: number) => {
-		await pocketbase.collection('LoadCellCommands').create({
+		await pocketbase.collection('LoadCellCommand').create({
 			target: target,
 			command: command,
 			weight: weight_kg
@@ -76,6 +68,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
             stores.pbv9_open.set(e.record.PBV9);
             stores.pbv10_open.set(e.record.PBV10);
             stores.pbv11_open.set(e.record.PBV11);
+
             stores.sol1_open.set(e.record.SOL1);
             stores.sol2_open.set(e.record.SOL2);
             stores.sol3_open.set(e.record.SOL3);
@@ -85,17 +78,22 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
             stores.sol7_open.set(e.record.SOL7);
             stores.sol8_open.set(e.record.SOL8);
             stores.sol9_open.set(e.record.SOL9);
+
             stores.heater_on.set(e.record.HEATER);
+
             stores.pmp3_on.set(e.record.PMP3);
+
             stores.ign1_on.set(e.record.IGN1);
             stores.ign2_on.set(e.record.IGN2);
+
             stores.pt1_pressure.set(Math.round(e.record.PT1) * 580);
 			stores.pt2_pressure.set(Math.round(e.record.PT2) * 580);
 			stores.pt3_pressure.set(Math.round(e.record.PT3) * 580);
 			stores.pt4_pressure.set(Math.round(e.record.PT4) * 145);
 			stores.pt5_pressure.set(Math.round(e.record.PT5) * 145);
-			stores.pt13_pressure.set(Math.round(e.record.PT15) * 14.5);
-			stores.pt14_pressure.set(Math.round(e.record.PT16) * 14.5);
+			stores.pt13_pressure.set(Math.round(e.record.PT13) * 14.5);
+			stores.pt14_pressure.set(Math.round(e.record.PT14) * 14.5);
+
 			stores.tc1_temperature.set(e.record.TC1);
 			stores.tc2_temperature.set(e.record.TC2);
 			stores.tc3_temperature.set(e.record.TC3);
@@ -105,6 +103,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			stores.tc7_temperature.set(e.record.TC7);
 			stores.tc8_temperature.set(e.record.TC8);
 			stores.tc9_temperature.set(e.record.TC9);
+
 			stores.lc1_mass.set(e.record.LC1);
 			stores.lc2_mass.set(e.record.LC2);
             stores.lc7_mass.set(e.record.LC7);
@@ -115,6 +114,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			stores.lc4_mass.set(e.record.LC4[0]);
 			stores.lc5_mass.set(e.record.LC5[0]);
 			stores.lc6_mass.set(e.record.LC6[0]);
+
 			stores.pt6_pressure.set(Math.round(e.record.PT6[0]) * 580);
 			stores.pt7_pressure.set(Math.round(e.record.PT7[0]) * 580);
 			stores.pt8_pressure.set(Math.round(e.record.PT8[0]) * 145);
@@ -128,14 +128,6 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			currentState.set(e.record.system_state);
 			timestamps.sys_state = Date.now();
 		});
-
-		pocketbase.collection('HeartbeatTelemetry').subscribe('*', (e) => {
-			stores.timer_state.set(e.record.timer_state);
-			stores.timer_period.set(e.record.timer_period);
-			stores.timer_remaining.set(e.record.timer_remaining);
-
-			timestamps.heartbeat = Date.now();
-		});
 	};
 
 	return {
@@ -143,7 +135,6 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		sendHeartbeat,
 		writeStateChange,
         writeGroundSystemsCommand,
-		writeRocketCommand,
 		writeLoadCellCommand,
 		subscribeToCollections
 	};

@@ -1,29 +1,30 @@
 <script lang="ts">
-	import SlideToggle from '$lib/components/SlideToggle.svelte';
+	import "../styles/static-fire.postcss";
+	import Diagram from '$lib/components/StaticFire.svelte';
 	import { initTimestamps, type Timestamps } from '$lib/timestamps';
 	import { usePocketbase } from '$lib/hooks/usePocketbase';
-	import { initStores, auth, currentState, operationConfig } from '$lib/stores';
+	import { initStores, auth, currentState } from '$lib/stores';
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
+	import { SlideToggle } from '@skeletonlabs/skeleton';
 	import { get } from "svelte/store";
-
 	const timestamps = initTimestamps();
 	const stores = initStores();
 	const usePocketbaseHook = usePocketbase(timestamps, stores);
 	const useInteractionHook = useInteraction(usePocketbaseHook);
-
 	const {
 		authenticate,
 		sendHeartbeat,
 		subscribeToCollections,
+		writeStateChange,
 		writeGroundSystemsCommand,
+		writeLoadCellCommand
 	} = usePocketbaseHook;
-
 	const {
 		confirmStateChange,
 		instantStateChange,
+		resumeConfirmRemoveWeight
 	} = useInteractionHook;
-
 	// Destructor stores for later use
 	const {
         pbv1_open,
@@ -41,10 +42,10 @@
 		sol2_open,
 		sol3_open,
 		sol4_open,
-		sol5_open,
-		sol6_open,
-		sol7_open,
-		sol8_open,
+        sol5_open,
+        sol6_open,
+        sol7_open,
+        sol8_open,
 		sol9_open,
 		sol10_open,
 		sol11_open,
@@ -114,6 +115,19 @@
 			PBV11: false,
 			SOL1: false,
 			SOL2: false,
+			SOL3: false,
+			SOL4: false,
+			SOL5: false,
+			SOL6: false,
+			SOL7: false,
+			SOL8: false,
+			SOL9: false,
+			SOL10: false,
+			SOL11: false,
+			SOL12: false,
+            SOL13: false,
+			SOL14: false,
+            PUMP3: false,
 			IGN1: false,
 			IGN2: false,
         },
@@ -123,86 +137,39 @@
             PBV2: true,
             PBV3: false,
             PBV4: true,
-			PBV5: true,
+			PBV5: false,
 			PBV6: false,
             PBV7: true,
             PBV8: true,
-			PBV9: true,
-			PBV10: false,
-			PBV11: false,
-			SOL1: false,
-            SOL2: false,
-            IGN1: false,
-			IGN2: false,
+			SOL12: false,
+            SOL13: false,
+            PUMP3: false,
         }
     };
 
-	const loadStylesheet = (path: string) => {
-		const link = document.createElement("link");
-		link.rel = "stylesheet";
-		link.type = "text/css";
-		link.href = path;
-
-		// Remove previously added dynamic styles
-		document.querySelectorAll('link[data-dynamic="true"]').forEach((el) => el.remove());
-
-		// Add new stylesheet
-		link.dataset.dynamic = "true";
-		document.head.appendChild(link);
-	};
-
-	// Updated paths for stylesheets
-	const staticFireCSS = "src/styles/static-fire.postcss";
-	const launchCSS = "src/styles/launch.postcss";
-
-	let DiagramComponent: typeof import('svelte').SvelteComponent | null = null;
-
-	$: {
-		if (typeof window !== "undefined") {
-			loadStylesheet($operationConfig === "Static Fire" ? staticFireCSS : launchCSS);
-		}
-		if ($operationConfig === "Static Fire") {
-			import('$lib/components/StaticFire.svelte').then(module => {
-				DiagramComponent = module.default;
-			});
-		} else {
-			import('$lib/components/Launch.svelte').then(module => {
-				DiagramComponent = module.default;
-			});
-		}
-	}
-
-
 	onMount(() => {
-
 		let heartbeatInterval: NodeJS.Timeout;
 
 		// Handle pocketbase authentication
 		const handleAuth = async () => {
 			$auth = await authenticate();
-
 			if ($auth === true) {
 				heartbeatInterval = setInterval(async () => {
 					await sendHeartbeat();
 				}, 5000); // 5000 milliseconds = 5 seconds
 			}
 		}
-
 		handleAuth();
-
 		subscribeToCollections();
 
 		// Handle displaying outdated data
 		let containerElement = document.querySelector('.container') as HTMLElement;
-
 		let timestampInterval = setInterval(() => {
 			for (let variable in timestamps) {
 				let elements = document.getElementsByClassName(variable);
 				if (!elements.length) continue;
-
 				for(let i = 0; i < elements.length; i++) {
 					let element = elements[i];
-
 					if (Date.now() - timestamps[variable as keyof Timestamps] > 5000) {
 						element.classList.add('outdated');
 					} else {
@@ -217,7 +184,6 @@
 			if (containerElement) {
 				let containerWidth = containerElement.offsetWidth;
 				let containerHeight = containerElement.offsetHeight;
-
 				document.documentElement.style.setProperty('--container-width', `${containerWidth}px`);
 				document.documentElement.style.setProperty('--container-height', `${containerHeight}px`);
 				document.documentElement.style.setProperty(
@@ -228,8 +194,6 @@
 				console.error('No element with class "container" found');
 			}
 		};
-
-		// Call the resize handler once on mount
 		handleResize();
 
 		// Attach the resize handler to the resize event
@@ -239,7 +203,6 @@
 		return () => {
 			clearInterval(heartbeatInterval); // Stop the interval when the component is destroyed
 			clearInterval(timestampInterval);
-
 			window.removeEventListener('resize', handleResize);
 		};
 	});
@@ -250,12 +213,11 @@
 	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSED' : 'OPEN';
 	$: pbv5_display = $pbv5_open === undefined ? 'N/A' : $pbv5_open ? 'CLOSED' : 'OPEN';
 	$: pbv6_display = $pbv6_open === undefined ? 'N/A' : $pbv6_open ? 'OPEN' : 'CLOSED';
-	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'OPEN' : 'CLOSED';
+	$: pbv7_display = $pbv7_open === undefined ? 'N/A' : $pbv7_open ? 'OPEM' : 'CLOSED';
 	$: pbv8_display = $pbv8_open === undefined ? 'N/A' : $pbv8_open ? 'OPEN' : 'CLOSED';
 	$: pbv9_display = $pbv9_open === undefined ? 'N/A' : $pbv9_open ? 'CLOSED' : 'OPEN';
 	$: pbv10_display = $pbv10_open === undefined ? 'N/A' : $pbv10_open ? 'OPEN' : 'CLOSED';
 	$: pbv11_display = $pbv11_open === undefined ? 'N/A' : $pbv11_open ? 'OPEN' : 'CLOSED';
-
 	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSED';
 	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSED';
 	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
@@ -266,18 +228,14 @@
 	$: sol8_display = $sol8_open === undefined ? 'N/A' : $sol8_open ? 'OPEN' : 'CLOSED';
 	$: sol9_display = $sol9_open === undefined ? 'N/A' : $sol9_open ? 'OPEN' : 'CLOSED';
 	$: sol10_display = $sol10_open === undefined ? 'N/A' : $sol10_open ? 'OPEN' : 'CLOSED';
-	$: sol11_display = $sol11_open === undefined ? 'N/A' : $sol11_open ? 'OPEN' : 'CLOSED';
-	$: sol12_display = $sol12_open === undefined ? 'N/A' : $sol12_open ? 'OPEN' : 'CLOSED';
+	$: sol11_display = $sol11_open === undefined ? 'N/A' : $sol11_open ? 'CLOSED' : 'OPEN';
+	$: sol12_display = $sol12_open === undefined ? 'N/A' : $sol12_open ? 'CLOSED' : 'OPEN';
 	$: sol13_display = $sol13_open === undefined ? 'N/A' : $sol13_open ? 'OPEN' : 'CLOSED';
 	$: sol14_display = $sol14_open === undefined ? 'N/A' : $sol14_open ? 'OPEN' : 'CLOSED';
-
 	$: heater_display = $heater_on === undefined ? 'N/A' : $heater_on ? 'ON' : 'OFF';
-
 	$: pmp3_display = $pmp3_on === undefined ? 'N/A' : $pmp3_on ? 'ON' : 'OFF';
-
 	$: ign1_display = $ign1_on === undefined ? 'N/A' : $ign1_on ? 'LIVE' : 'DEAD';
 	$: ign2_display = $ign2_on === undefined ? 'N/A' : $ign2_on ? 'LIVE' : 'DEAD';
-
 	$: pt1_pressure_display = $pt1_pressure === undefined ? 'N/A' : $pt1_pressure;
 	$: pt2_pressure_display = $pt2_pressure === undefined ? 'N/A' : $pt2_pressure;
 	$: pt3_pressure_display = $pt3_pressure === undefined ? 'N/A' : $pt3_pressure;
@@ -297,7 +255,6 @@
 	$: pt17_pressure_display = $pt17_pressure === undefined ? 'N/A' : $pt17_pressure;
 	$: pt18_pressure_display = $pt18_pressure === undefined ? 'N/A' : $pt18_pressure;
 	$: pt19_pressure_display = $pt19_pressure === undefined ? 'N/A' : $pt19_pressure;
-
 	$: tc1_display = $tc1_temperature === undefined ? 'N/A' : $tc1_temperature;
 	$: tc2_display = $tc2_temperature === undefined ? 'N/A' : $tc2_temperature;
 	$: tc3_display = $tc3_temperature === undefined ? 'N/A' : $tc3_temperature;
@@ -310,7 +267,6 @@
 	$: tc10_display = $tc10_temperature === undefined ? 'N/A' : $tc10_temperature;
 	$: tc11_display = $tc11_temperature === undefined ? 'N/A' : $tc11_temperature;
 	$: tc12_display = $tc12_temperature === undefined ? 'N/A' : $tc12_temperature;
-
 	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : Number($lc1_mass).toFixed(2);
 	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : Number($lc2_mass).toFixed(2);
 	$: lc3_mass_display = $lc3_mass === undefined ? 'N/A' : Number($lc3_mass).toFixed(2);
@@ -318,14 +274,12 @@
 	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
 	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
 	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
-
 	$: system_state_display = $system_state === undefined ? 'N/A' : $system_state.replace('SYS_', '');
-
 	$: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
 	$: timer_period_display = $timer_period === undefined ? 'N/A' : ($timer_period / 1000).toFixed(0); // Convert to seconds
 	$: timer_remaining_display = $timer_remaining === undefined ? 'N/A' : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
-
 	$: classesDisabled = $currentState === "PREFIRE" ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-[105%] dark:hover:brightness-110 cursor-pointer';
+
 
 	async function handleSliderChange(
 		e: any,
@@ -333,10 +287,9 @@
 		closeCommand: string
 	) {
 		e.preventDefault();
-
 		// Determine the command based on the current value of the slider
 		const command = e.target.checked ? openCommand : closeCommand;
-
+		// Create a change on the 'RelayStatus' collection
 		writeGroundSystemsCommand(command);
 	}
 
@@ -350,23 +303,16 @@
 			PBV6: get(pbv6_open),
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
-			PBV9: get(pbv9_open),
-			PBV10: get(pbv10_open),
-			PBV11: get(pbv11_open),
-			SOL1: get(sol1_open),
-			SOL2: get(sol2_open),
-			IGN1: get(ign1_on),
-			IGN2: get(ign2_on),
+			SOL12: get(sol12_open),
+			SOL13: get(sol13_open),
+			PUMP3: get(pmp3_on),
 		};
-
     	const prefireState = StateArray.Prefire_Valve_State;
-
 		const isEqual = Object.keys(prefireState).every(key => {
 		const currentValue = currentState[key as keyof typeof currentState];
 		const prefireValue = prefireState[key as keyof typeof prefireState];
 		return currentValue === prefireValue || (currentValue === undefined && prefireValue === undefined);
 		});
-
 		if (isEqual) {
 			instantStateChange("GOTO_PREFIRE");
 		} else {
@@ -384,23 +330,16 @@
 			PBV6: get(pbv6_open),
 			PBV7: get(pbv7_open),
 			PBV8: get(pbv8_open),
-			PBV9: get(pbv9_open),
-			PBV10: get(pbv10_open),
-			PBV11: get(pbv11_open),
-			SOL1: get(sol1_open),
-			SOL2: get(sol2_open),
-			IGN1: get(ign1_on),
-			IGN2: get(ign2_on),
+			SOL12: get(sol12_open),
+			SOL13: get(sol13_open),
+			PUMP3: get(pmp3_on),
 		};
-
 		const ignitionState = StateArray.Ignition_Valve_State;
-
 		const isEqual = Object.keys(ignitionState).every(key => {
 		const currentValue = currentState[key as keyof typeof currentState];
 		const ignitionValue = ignitionState[key as keyof typeof ignitionState];
 		return currentValue === ignitionValue || (currentValue === undefined && ignitionValue === undefined);
 		});
-
 		if (isEqual) {
 			instantStateChange("GOTO_IGNITION");
 		} else {
@@ -410,14 +349,13 @@
 
 </script>
 
-<div class="container">
-	{#if DiagramComponent}
-		<svelte:component this={DiagramComponent} />
-	{/if}
 
-	<div class="pbv1_slider">
+<div class="container">
+	<Diagram />
+
+	<div class="static_pbv1_slider">
 		<SlideToggle
-			name="pbv1_slider"
+			name="static_pbv1_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv1_open}
@@ -428,9 +366,9 @@
 		>
 	</div>
 
-	<div class="pbv2_slider">
+	<div class="static_pbv2_slider">
 		<SlideToggle
-			name="pbv2_slider"
+			name="static_pbv2_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv2_open}
@@ -441,9 +379,9 @@
 		>
 	</div>
 
-	<div class="pbv3_slider">
+	<div class="static_pbv3_slider">
 		<SlideToggle
-			name="pbv3_slider"
+			name="static_pbv3_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv3_open}
@@ -454,9 +392,9 @@
 		>
 	</div>
 
-	<div class="pbv4_slider">
+	<div class="static_pbv4_slider">
 		<SlideToggle
-			name="pbv4_slider"
+			name="static_pbv4_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv4_open}
@@ -467,9 +405,9 @@
 		>
 	</div>
 
-	<div class="pbv5_slider">
+	<div class="static_pbv5_slider">
 		<SlideToggle
-			name="pbv5_slider"
+			name="static_pbv5_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv5_open}
@@ -480,9 +418,9 @@
 		>
 	</div>
 
-	<div class="pbv6_slider">
+	<div class="static_pbv6_slider">
 		<SlideToggle
-			name="pbv6_slider"
+			name="static_pbv6_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv6_open}
@@ -493,9 +431,9 @@
 		>
 	</div>
 
-	<div class="pbv7_slider">
+	<div class="static_pbv7_slider">
 		<SlideToggle
-			name="pbv7_slider"
+			name="static_pbv7_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv7_open}
@@ -506,9 +444,9 @@
 		>
 	</div>
 
-	<div class="pbv8_slider">
+	<div class="static_pbv8_slider">
 		<SlideToggle
-			name="pbv8_slider"
+			name="static_pbv8_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv8_open}
@@ -519,9 +457,9 @@
 		>
 	</div>
 
-	<div class="pbv9_slider">
+	<div class="static_pbv9_slider">
 		<SlideToggle
-			name="pbv9_slider"
+			name="static_pbv9_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv9_open}
@@ -532,9 +470,9 @@
 		>
 	</div>
 
-	<div class="pbv10_slider">
+	<div class="static_pbv10_slider">
 		<SlideToggle
-			name="pbv10_slider"
+			name="static_pbv10_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv10_open}
@@ -545,9 +483,9 @@
 		>
 	</div>
 
-	<div class="pbv11_slider">
+	<div class="static_pbv11_slider">
 		<SlideToggle
-			name="pbv11_slider"
+			name="static_pbv11_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv11_open}
@@ -558,9 +496,9 @@
 		>
 	</div>
 
-	<div class="sol1_slider">
+	<div class="static_sol1_slider">
 		<SlideToggle
-			name="sol1_slider"
+			name="static_sol1_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol1_open}
@@ -571,9 +509,9 @@
 		>
 	</div>
 
-	<div class="sol2_slider">
+	<div class="static_sol2_slider">
 		<SlideToggle
-			name="sol2_slider"
+			name="static_sol2_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol2_open}
@@ -584,9 +522,9 @@
 		>
 	</div>
 
-	<div class="sol3_slider">
+	<div class="static_sol3_slider">
 		<SlideToggle
-			name="sol3_slider"
+			name="static_sol3_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol3_open}
@@ -597,9 +535,9 @@
 		>
 	</div>
 
-	<div class="sol4_slider">
+	<div class="static_sol4_slider">
 		<SlideToggle
-			name="sol4_slider"
+			name="static_sol4_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol4_open}
@@ -610,9 +548,9 @@
 		>
 	</div>
 
-	<div class="sol5_slider">
+	<div class="static_sol5_slider">
 		<SlideToggle
-			name="sol5_slider"
+			name="static_sol5_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol5_open}
@@ -623,9 +561,9 @@
 		>
 	</div>
 
-	<div class="sol6_slider">
+	<div class="static_sol6_slider">
 		<SlideToggle
-			name="sol6_slider"
+			name="static_sol6_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol6_open}
@@ -636,9 +574,9 @@
 		>
 	</div>
 
-	<div class="sol7_slider">
+	<div class="static_sol7_slider">
 		<SlideToggle
-			name="sol7_slider"
+			name="static_sol7_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol7_open}
@@ -649,9 +587,9 @@
 		>
 	</div>
 
-	<div class="sol8_slider">
+	<div class="static_sol8_slider">
 		<SlideToggle
-			name="sol8_slider"
+			name="static_sol8_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol8_open}
@@ -662,9 +600,9 @@
 		>
 	</div>
 
-	<div class="sol9_slider">
+	<div class="static_sol9_slider">
 		<SlideToggle
-			name="sol9_slider"
+			name="static_sol9_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol9_open}
@@ -675,9 +613,9 @@
 		>
 	</div>
 
-	<div class="sol10_slider">
+	<div class="static_sol10_slider">
 		<SlideToggle
-			name="sol10_slider"
+			name="static_sol10_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol10_open}
@@ -688,9 +626,9 @@
 		>
 	</div>
 
-	<div class="sol11_slider">
+	<div class="static_sol11_slider">
 		<SlideToggle
-			name="sol11_slider"
+			name="static_sol11_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol11_open}
@@ -701,9 +639,9 @@
 		>
 	</div>
 
-	<div class="sol12_slider">
+	<div class="static_sol12_slider">
 		<SlideToggle
-			name="sol12_slider"
+			name="static_sol12_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol12_open}
@@ -714,9 +652,9 @@
 		>
 	</div>
 
-	<div class="sol13_slider">
+	<div class="static_sol13_slider">
 		<SlideToggle
-			name="sol13_slider"
+			name="static_sol13_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol13_open}
@@ -727,9 +665,9 @@
 		>
 	</div>
 
-	<div class="sol14_slider">
+	<div class="static_sol14_slider">
 		<SlideToggle
-			name="sol14_slider"
+			name="static_sol14_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol14_open}
@@ -740,9 +678,9 @@
 		>
 	</div>
 
-	<div class="pmp3_slider">
+	<div class="static_pmp3_slider">
 		<SlideToggle
-			name="pmp3_slider"
+			name="static_pmp3_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pmp3_on}
@@ -753,7 +691,7 @@
 		>
 	</div>
 
-	<div class="heater_slider">
+	<div class="static_heater_slider">
 		<SlideToggle
 			name="heater_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -765,9 +703,9 @@
 		>
 	</div>
 
-	<div class="ign1_slider">
+	<div class="static_ign1_slider">
 		<SlideToggle
-			name="ign1_slider"
+			name="static_ign1_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$ign1_on}
@@ -778,9 +716,9 @@
 		>
 	</div>
 
-	<div class="ign2_slider">
+	<div class="static_ign2_slider">
 		<SlideToggle
-			name="ign2_slider"
+			name="static_ign2_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$ign2_on}
@@ -791,171 +729,171 @@
 		>
 	</div>
 
-	<div class="tc1_temperature">
+	<div class="static_tc1_temperature">
 		<p>{tc1_display}</p>
 	</div>
 
-	<div class="tc2_temperature">
+	<div class="static_tc2_temperature">
 		<p>{tc2_display}</p>
 	</div>
 
-	<div class="tc3_temperature">
+	<div class="static_tc3_temperature">
 		<p>{tc3_display}</p>
 	</div>
 
-	<div class="tc4_temperature">
+	<div class="static_tc4_temperature">
 		<p>{tc4_display}</p>
 	</div>
 
-	<div class="tc5_temperature">
+	<div class="static_tc5_temperature">
 		<p>{tc5_display}</p>
 	</div>
 
-	<div class="tc6_temperature">
+	<div class="static_tc6_temperature">
 		<p>{tc6_display}</p>
 	</div>
 
-	<div class="tc7_temperature">
+	<div class="static_tc7_temperature">
 		<p>{tc7_display}</p>
 	</div>
 
-	<div class="tc8_temperature">
+	<div class="static_tc8_temperature">
 		<p>{tc8_display}</p>
 	</div>
 
-	<div class="tc9_temperature">
+	<div class="static_tc9_temperature">
 		<p>{tc9_display}</p>
 	</div>
 
-	<div class="tc10_temperature">
+	<div class="static_tc10_temperature">
 		<p>{tc10_display}</p>
 	</div>
 
-	<div class="tc11_temperature">
+	<div class="static_tc11_temperature">
 		<p>{tc11_display}</p>
 	</div>
 
-	<div class="tc12_temperature">
+	<div class="static_tc12_temperature">
 		<p>{tc12_display}</p>
 	</div>
 
-	<div class="lc1_mass">
+	<div class="static_lc1_mass">
 		<p>{lc1_mass_display}</p>
 	</div>
 
-	<div class="lc2_mass">
+	<div class="static_lc2_mass">
 		<p>{lc2_mass_display}</p>
 	</div>
 
-	<div class="lc3_mass">
+	<div class="static_lc3_mass">
 		<p>{lc3_mass_display}</p>
 	</div>
 
-	<div class="lc4_mass">
+	<div class="static_lc4_mass">
 		<p>{lc4_mass_display}</p>
 	</div>
 
-	<div class="lc5_mass">
+	<div class="static_lc5_mass">
 		<p>{lc5_mass_display}</p>
 	</div>
 
-	<div class="lc6_mass">
+	<div class="static_lc6_mass">
 		<p>{lc6_mass_display}</p>
 	</div>
 
-	<div class="lc7_mass">
+	<div class="static_lc7_mass">
 		<p>{lc7_mass_display}</p>
 	</div>
 
-	<div class="pt1_pressure">
+	<div class="static_pt1_pressure">
 		<p>{pt1_pressure_display}</p>
 	</div>
 
-	<div class="pt2_pressure">
+	<div class="static_pt2_pressure">
 		<p>{pt2_pressure_display}</p>
 	</div>
 
-	<div class="pt3_pressure">
+	<div class="static_pt3_pressure">
 		<p>{pt3_pressure_display}</p>
 	</div>
 
-	<div class="pt4_pressure">
+	<div class="static_pt4_pressure">
 		<p>{pt4_pressure_display}</p>
 	</div>
 
-	<div class="pt5_pressure">
+	<div class="static_pt5_pressure">
 		<p>{pt5_pressure_display}</p>
 	</div>
 
-	<div class="pt6_pressure">
+	<div class="static_pt6_pressure">
 		<p>{pt6_pressure_display}</p>
 	</div>
 
-	<div class="pt7_pressure">
+	<div class="static_pt7_pressure">
 		<p>{pt7_pressure_display}</p>
 	</div>
 
-	<div class="pt8_pressure">
+	<div class="static_pt8_pressure">
 		<p>{pt8_pressure_display}</p>
 	</div>
 
-	<div class="pt9_pressure">
+	<div class="static_pt9_pressure">
 		<p>{pt9_pressure_display}</p>
 	</div>
 
-	<div class="pt10_pressure">
+	<div class="static_pt10_pressure">
 		<p>{pt10_pressure_display}</p>
 	</div>
 
-	<div class="pt11_pressure">
+	<div class="static_pt11_pressure">
 		<p>{pt11_pressure_display}</p>
 	</div>
 
-	<div class="pt12_pressure">
+	<div class="static_pt12_pressure">
 		<p>{pt12_pressure_display}</p>
 	</div>
 
-	<div class="pt13_pressure">
+	<div class="static_pt13_pressure">
 		<p>{pt13_pressure_display}</p>
 	</div>
 
-	<div class="pt14_pressure">
+	<div class="static_pt14_pressure">
 		<p>{pt14_pressure_display}</p>
 	</div>
 
-	<div class="pt15_pressure">
+	<div class="static_pt15_pressure">
 		<p>{pt15_pressure_display}</p>
 	</div>
 
-	<div class="pt16_pressure">
+	<div class="static_pt16_pressure">
 		<p>{pt16_pressure_display}</p>
 	</div>
 
-	<div class="pt17_pressure">
+	<div class="static_pt17_pressure">
 		<p>{pt17_pressure_display}</p>
 	</div>
 
-	<div class="pt18_pressure">
+	<div class="static_pt18_pressure">
 		<p>{pt18_pressure_display}</p>
 	</div>
 
-	<div class="pt19_pressure">
+	<div class="static_pt19_pressure">
 		<p>{pt19_pressure_display}</p>
 	</div>
 <!--
-	<div class="system_state">
+	<div class="static_system_state">
 		<p>{system_state_display}</p>
 	</div>
 
-	<div class="timer_state">
+	<div class="static_timer_state">
 		<p>{timer_state_display}</p>
 	</div>
 
-	<div class="timer_period">
+	<div class="static_timer_period">
 		<p>{timer_period_display}</p>
 	</div>
 
-	<div class="timer_remaining">
+	<div class="static_timer_remaining">
 		<p>{timer_remaining_display}</p>
 	</div> -->
 
