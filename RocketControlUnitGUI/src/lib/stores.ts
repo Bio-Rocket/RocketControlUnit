@@ -30,17 +30,6 @@ export interface Stores {
     sol3_open: Writable<any>;
     sol4_open: Writable<any>;
 	sol5_open: Writable<any>;
-	sol6_open: Writable<any>;
-	sol7_open: Writable<any>;
-	sol8_open: Writable<any>;
-    sol9_open: Writable<any>;
-    sol10_open: Writable<any>;
-    sol11_open: Writable<any>;
-    sol12_open: Writable<any>;
-    sol13_open: Writable<any>;
-    sol14_open: Writable<any>;
-	heater_on: Writable<any>;
-    pmp3_on: Writable<any>;
     ign1_on: Writable<any>;
     ign2_on: Writable<any>;
     pt1_pressure: Writable<string | number | undefined>;
@@ -55,8 +44,6 @@ export interface Stores {
     pt10_pressure: Writable<string | number | undefined>;
     pt11_pressure: Writable<string | number | undefined>;
     pt12_pressure: Writable<string | number | undefined>;
-    pt13_pressure: Writable<string | number | undefined>;
-    pt14_pressure: Writable<string | number | undefined>;
     pt15_pressure: Writable<string | number | undefined>;
     pt16_pressure: Writable<string | number | undefined>;
     pt17_pressure: Writable<string | number | undefined>;
@@ -68,9 +55,6 @@ export interface Stores {
     tc4_temperature: Writable<string | number | undefined>;
     tc5_temperature: Writable<string | number | undefined>;
     tc6_temperature: Writable<string | number | undefined>;
-    tc7_temperature: Writable<string | number | undefined>;
-    tc8_temperature: Writable<string | number | undefined>;
-    tc9_temperature: Writable<string | number | undefined>;
     tc10_temperature: Writable<string | number | undefined>;
     tc11_temperature: Writable<string | number | undefined>;
     tc12_temperature: Writable<string | number | undefined>;
@@ -81,9 +65,6 @@ export interface Stores {
     lc5_mass: Writable<string | number | undefined>;
     lc6_mass: Writable<string | number | undefined>;
     lc7_mass: Writable<string | number | undefined>;
-	timer_state: Writable<string | undefined>;
-	timer_period: Writable<number | undefined>;
-	timer_remaining: Writable<number | undefined>;
 }
 
 export const initStores = () => {
@@ -104,17 +85,6 @@ export const initStores = () => {
         sol3_open: writable(undefined),
         sol4_open: writable(undefined),
 		sol5_open: writable(undefined),
-		sol6_open: writable(undefined),
-		sol7_open: writable(undefined),
-		sol8_open: writable(undefined),
-        sol9_open: writable(undefined),
-        sol10_open: writable(undefined),
-        sol11_open: writable(undefined),
-        sol12_open: writable(undefined),
-        sol13_open: writable(undefined),
-        sol14_open: writable(undefined),
-        heater_on: writable(undefined),
-        pmp3_on: writable(undefined),
         ign1_on: writable(undefined),
         ign2_on: writable(undefined),
         pt1_pressure: writable<string | number | undefined>(undefined),
@@ -129,8 +99,6 @@ export const initStores = () => {
         pt10_pressure: writable<string | number | undefined>(undefined),
         pt11_pressure: writable<string | number | undefined>(undefined),
         pt12_pressure: writable<string | number | undefined>(undefined),
-        pt13_pressure: writable<string | number | undefined>(undefined),
-        pt14_pressure: writable<string | number | undefined>(undefined),
         pt15_pressure: writable<string | number | undefined>(undefined),
         pt16_pressure: writable<string | number | undefined>(undefined),
         pt17_pressure: writable<string | number | undefined>(undefined),
@@ -142,9 +110,6 @@ export const initStores = () => {
         tc4_temperature: writable<string | number | undefined>(undefined),
         tc5_temperature: writable<string | number | undefined>(undefined),
         tc6_temperature: writable<string | number | undefined>(undefined),
-        tc7_temperature: writable<string | number | undefined>(undefined),
-        tc8_temperature: writable<string | number | undefined>(undefined),
-        tc9_temperature: writable<string | number | undefined>(undefined),
         tc10_temperature: writable<string | number | undefined>(undefined),
         tc11_temperature: writable<string | number | undefined>(undefined),
         tc12_temperature: writable<string | number | undefined>(undefined),
@@ -155,8 +120,5 @@ export const initStores = () => {
         lc5_mass: writable<string | number | undefined>(undefined),
         lc6_mass: writable<string | number | undefined>(undefined),
         lc7_mass: writable<string | number | undefined>(undefined),
-        timer_state: writable<string | undefined>(undefined),
-        timer_period: writable<number | undefined>(undefined),
-        timer_remaining: writable<number | undefined>(undefined)
 	};
 };
