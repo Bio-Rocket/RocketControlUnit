@@ -240,29 +240,29 @@
 		writeGroundSystemsCommand(command);
 	}
 
-	function checkStateAndChangeIgnition() {
-		const currentState = {
-			PBV1: get(pbv1_open),
-			PBV2: get(pbv2_open),
-			PBV3: get(pbv3_open),
-			PBV4: get(pbv4_open),
-			PBV5: get(pbv5_open),
-			PBV6: get(pbv6_open),
-			PBV7: get(pbv7_open),
-			PBV8: get(pbv8_open),
-		};
-		const ignitionState = StateArray.Ignition_Valve_State;
-		const isEqual = Object.keys(ignitionState).every(key => {
-		const currentValue = currentState[key as keyof typeof currentState];
-		const ignitionValue = ignitionState[key as keyof typeof ignitionState];
-		return currentValue === ignitionValue || (currentValue === undefined && ignitionValue === undefined);
-		});
-		if (isEqual) {
-			instantStateChange("GOTO_IGNITION");
-		} else {
-			confirmStateChange("GOTO_IGNITION");
-		}
-  	}
+	// function checkStateAndChangeIgnition() {
+	// 	const currentState = {
+	// 		PBV1: get(pbv1_open),
+	// 		PBV2: get(pbv2_open),
+	// 		PBV3: get(pbv3_open),
+	// 		PBV4: get(pbv4_open),
+	// 		PBV5: get(pbv5_open),
+	// 		PBV6: get(pbv6_open),
+	// 		PBV7: get(pbv7_open),
+	// 		PBV8: get(pbv8_open),
+	// 	};
+	// 	const ignitionState = StateArray.Ignition_Valve_State;
+	// 	const isEqual = Object.keys(ignitionState).every(key => {
+	// 	const currentValue = currentState[key as keyof typeof currentState];
+	// 	const ignitionValue = ignitionState[key as keyof typeof ignitionState];
+	// 	return currentValue === ignitionValue || (currentValue === undefined && ignitionValue === undefined);
+	// 	});
+	// 	if (isEqual) {
+	// 		instantStateChange("GOTO_IGNITION");
+	// 	} else {
+	// 		confirmStateChange("GOTO_IGNITION");
+	// 	}
+  	// }
 
 </script>
 
@@ -666,7 +666,7 @@
 			<button
 				class="btn variant-filled-warning next-state-btn"
 				style="left: 12%"
-				on:click={() => checkStateAndChangeIgnition()}>Go to Ignition</button
+				on:click={() => confirmStateChange("GOTO_IGNITION")}>Go to Ignition</button
 			>
 		{:else if $currentState == "IGNITION"}
 			<button

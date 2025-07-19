@@ -104,8 +104,8 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			stores.pt10_pressure.set(Math.round(e.record.PT10[0] * 580));
 			stores.pt11_pressure.set(Math.round(e.record.PT11[0] * 145));
 			stores.pt12_pressure.set(Math.round(e.record.PT12[0] * 145));
-			stores.pt13_pressure.set(Math.round(e.record.PT13[0])); //TODO: CHECK THE SCALING
-			stores.pt14_pressure.set(Math.round(e.record.PT14[0])); //TODO: CHECK THE SCALING
+			stores.pt13_pressure.set(Math.round(e.record.PT13[0]* 145));
+			stores.pt14_pressure.set(Math.round(e.record.PT14[0]* 145));
 		});
 
 		pocketbase.collection('SystemState').subscribe('*', (e) => {
