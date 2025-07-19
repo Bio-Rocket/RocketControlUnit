@@ -83,8 +83,11 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			stores.tc5_temperature.set(e.record.TC5[0]);
 			stores.tc6_temperature.set(e.record.TC6[0]);
 
-			stores.lc1_mass.set(e.record.LC1[0]);
-			stores.lc2_mass.set(e.record.LC2[0]);
+			// stores.lc1_mass.set(e.record.LC1[0]);
+			// stores.lc2_mass.set(e.record.LC2[0]);
+			stores.lc1_mass.set("Nan");
+			stores.lc2_mass.set("Nan");
+
             stores.lc7_mass.set(e.record.LC7[0]);
 		});
 
@@ -94,13 +97,15 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			stores.lc5_mass.set(e.record.LC5[0]);
 			stores.lc6_mass.set(e.record.LC6[0]);
 
-			stores.pt6_pressure.set(Math.round(e.record.PT6[0]) * 145);
-			stores.pt7_pressure.set(Math.round(e.record.PT7[0]) * 145);
-			stores.pt8_pressure.set(Math.round(e.record.PT8[0]) * 145);
-			stores.pt9_pressure.set(Math.round(e.record.PT9[0]) * 580);
-			stores.pt10_pressure.set(Math.round(e.record.PT10[0]) * 580);
-			stores.pt11_pressure.set(Math.round(e.record.PT11[0]) * 145);
-			stores.pt12_pressure.set(Math.round(e.record.PT12[0]) * 145);
+			stores.pt6_pressure.set(Math.round(e.record.PT6[0] * 145));
+			stores.pt7_pressure.set(Math.round(e.record.PT7[0] * 145));
+			stores.pt8_pressure.set(Math.round(e.record.PT8[0] * 145));
+			stores.pt9_pressure.set(Math.round(e.record.PT9[0] * 580));
+			stores.pt10_pressure.set(Math.round(e.record.PT10[0] * 580));
+			stores.pt11_pressure.set(Math.round(e.record.PT11[0] * 145));
+			stores.pt12_pressure.set(Math.round(e.record.PT12[0] * 145));
+			stores.pt13_pressure.set(Math.round(e.record.PT13[0])); //TODO: CHECK THE SCALING
+			stores.pt14_pressure.set(Math.round(e.record.PT14[0])); //TODO: CHECK THE SCALING
 		});
 
 		pocketbase.collection('SystemState').subscribe('*', (e) => {

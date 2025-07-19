@@ -64,14 +64,6 @@
 			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}>
 				<img src="/icons/rocket.png" class="sideBar-center" alt="Icon" />
 			</AppRailAnchor>
-
-			<AppRailAnchor href="/calibration" selected={$page.url.pathname === "/calibration"}>
-				<img src="/icons/stats.png" class="sideBar-center" alt="Icon" />
-			</AppRailAnchor>
-
-			<AppRailAnchor href="/launch" selected={$page.url.pathname === "/launch"}>
-				<img src="/icons/info.png" class="sideBar-center" alt="Icon" />
-			</AppRailAnchor>
 		</AppRail>
 	</svelte:fragment>
 

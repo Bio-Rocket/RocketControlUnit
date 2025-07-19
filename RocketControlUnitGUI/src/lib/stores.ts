@@ -44,6 +44,8 @@ export interface Stores {
     pt10_pressure: Writable<string | number | undefined>;
     pt11_pressure: Writable<string | number | undefined>;
     pt12_pressure: Writable<string | number | undefined>;
+    pt13_pressure: Writable<string | number | undefined>;
+    pt14_pressure: Writable<string | number | undefined>;
     pt15_pressure: Writable<string | number | undefined>;
     pt16_pressure: Writable<string | number | undefined>;
     pt17_pressure: Writable<string | number | undefined>;
@@ -99,6 +101,8 @@ export const initStores = () => {
         pt10_pressure: writable<string | number | undefined>(undefined),
         pt11_pressure: writable<string | number | undefined>(undefined),
         pt12_pressure: writable<string | number | undefined>(undefined),
+        pt13_pressure: writable<string | number | undefined>(undefined),
+        pt14_pressure: writable<string | number | undefined>(undefined),
         pt15_pressure: writable<string | number | undefined>(undefined),
         pt16_pressure: writable<string | number | undefined>(undefined),
         pt17_pressure: writable<string | number | undefined>(undefined),

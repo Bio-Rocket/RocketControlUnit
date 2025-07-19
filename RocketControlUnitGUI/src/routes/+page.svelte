@@ -54,6 +54,8 @@
 		pt10_pressure,
 		pt11_pressure,
 		pt12_pressure,
+		pt13_pressure,
+		pt14_pressure,
 		pt15_pressure,
 		pt16_pressure,
 		pt17_pressure,
@@ -201,6 +203,8 @@
 	$: pt10_pressure_display = $pt10_pressure === undefined ? 'N/A' : $pt10_pressure;
 	$: pt11_pressure_display = $pt11_pressure === undefined ? 'N/A' : $pt11_pressure;
 	$: pt12_pressure_display = $pt12_pressure === undefined ? 'N/A' : $pt12_pressure;
+	$: pt13_pressure_display = $pt13_pressure === undefined ? 'N/A' : $pt13_pressure;
+	$: pt14_pressure_display = $pt14_pressure === undefined ? 'N/A' : $pt14_pressure;
 	$: pt15_pressure_display = $pt15_pressure === undefined ? 'N/A' : $pt15_pressure;
 	$: pt16_pressure_display = $pt16_pressure === undefined ? 'N/A' : $pt16_pressure;
 	$: pt17_pressure_display = $pt17_pressure === undefined ? 'N/A' : $pt17_pressure;
@@ -385,14 +389,14 @@
 
 	<div class="static_pbv10_slider">
 		<SlideToggle
-			name="static_pbv11_slider"
+			name="static_pbv10_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
-			bind:checked={$pbv11_open}
-			on:click={(e) => handleSliderChange(e, 'PBV11_OPEN', 'PBV11_CLOSE')}
+			bind:checked={$pbv10_open}
+			on:click={(e) => handleSliderChange(e, 'PBV10_OPEN', 'PBV10_CLOSE')}
 			disabled={["IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
-			{pbv11_display}</SlideToggle
+			{pbv10_display}</SlideToggle
 		>
 	</div>
 
@@ -481,7 +485,7 @@
 			size="sm"
 			bind:checked={$ign1_on}
 			on:click={(e) => handleSliderChange(e, 'IGN1_ON', 'IGN1_OFF')}
-			disabled={["MANUAL_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+			disabled={["IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{ign1_display}</SlideToggle
 		>
@@ -494,7 +498,7 @@
 			size="sm"
 			bind:checked={$ign2_on}
 			on:click={(e) => handleSliderChange(e, 'IGN2_ON', 'IGN2_OFF')}
-			disabled={["MANUAL_FILL", "IGNITION", "FIRE", "ABORT"].includes($currentState)}
+			disabled={["IGNITION", "FIRE", "ABORT"].includes($currentState)}
 		>
 			{ign2_display}</SlideToggle
 		>
@@ -610,6 +614,14 @@
 
 	<div class="static_pt12_pressure">
 		<p>{pt12_pressure_display}</p>
+	</div>
+
+	<div class="static_pt13_pressure">
+		<p>{pt13_pressure_display}</p>
+	</div>
+
+	<div class="static_pt14_pressure">
+		<p>{pt14_pressure_display}</p>
 	</div>
 
 	<div class="static_pt15_pressure">
