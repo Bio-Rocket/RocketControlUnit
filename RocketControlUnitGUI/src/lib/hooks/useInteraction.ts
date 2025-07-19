@@ -4,6 +4,22 @@ import { initStores } from '../stores';
 
 const stores = initStores();
 
+const {
+	pbv1_open,
+	pbv2_open,
+	pbv3_open,
+	pbv4_open,
+	pbv5_open,
+	pbv6_open,
+	pbv7_open,
+	pbv8_open,
+	pbv9_open,
+	pbv10_open,
+	pbv11_open,
+	sol1_open,
+	sol2_open
+} = stores;
+
 const stateToCommand: { [key: string]: string } = {
     ABORT: 'GOTO_ABORT',
 	TEST: 'GOTO_TEST',
@@ -94,54 +110,45 @@ const expected_valve_states: {[key: string]: {[key: string]: string}} = {
 Object.freeze(stateToCommand);
 Object.freeze(commandToState);
 
-const getValveState = (valve: string): number => {
+const getValveState = (valve: string): any => {
 	if (valve == 'PBV1') {
-		return Number(stores.pbv1_open);
+		return String(pbv1_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV2') {
-		return Number(stores.pbv2_open);
+		return String(pbv2_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV3') {
-		return Number(stores.pbv3_open);
+		return String(pbv3_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV4') {
-		return Number(stores.pbv4_open);
+		return String(pbv4_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV5') {
-		return Number(stores.pbv5_open);
+		return String(pbv5_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV6') {
-		return Number(stores.pbv6_open);
+		return String(pbv6_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV7') {
-		return Number(stores.pbv7_open);
+		return String(pbv7_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV8') {
-		return Number(stores.pbv8_open);
+		return String(pbv8_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV9') {
-		return Number(stores.pbv9_open);
+		return String(pbv9_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV10') {
-		return Number(stores.pbv10_open);
+		return String(pbv10_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'PBV11') {
-		return Number(stores.pbv11_open);
+		return String(pbv11_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'SOL1') {
-		return Number(stores.sol1_open);
+		return String(sol1_open).includes('OPEN') ? 1 : 0;
 	}
 	if (valve == 'SOL2') {
-		return Number(stores.sol2_open);
-	}
-	if (valve == 'SOL3') {
-		return Number(stores.sol3_open);
-	}
-	if (valve == 'SOL4') {
-		return Number(stores.sol4_open);
-	}
-	if (valve == 'SOL5') {
-		return Number(stores.sol5_open);
+		return String(sol2_open).includes('OPEN') ? 1 : 0;
 	}
 	console.error(`Valve ${valve} not found in store`);
 	return -1; // Return an invalid state if valve not found
@@ -156,9 +163,34 @@ const validateStateChange = (stateCommand: string): string[] => {
 
 	const nonCompliantValves: string[] = [];
 
+	console.log(`Validating state change for command: ${stateCommand}`);
+	console.log('Expected valve states:', expected_valves);
+	console.log(pbv1_open,
+		pbv2_open,
+		pbv3_open,
+		pbv4_open,
+		pbv5_open,
+		pbv6_open,
+		pbv7_open,
+		pbv8_open,
+		pbv9_open,
+		pbv10_open,
+		pbv11_open,
+		sol1_open,
+		sol2_open,)
+
 	for (const [valve, expectedState] of Object.entries(expected_valves)) {
 		const currentStateValve = getValveState(valve);
 		const expectedStateValve = expectedState.includes('OPEN') ? 1 : 0;
+
+		if (currentStateValve == -1){
+			console.log(`Unknown valve`, valve);
+			continue;
+		}
+
+		// console.log('Valve:', valve, 'Current State:', currentStateValve, 'Expected State:', expectedStateValve);
+		console.log('Valve:', valve, 'Current State:', currentStateValve, 'Expected State:', expectedState);
+
 
 		if (currentStateValve !== expectedStateValve) {
 			console.log(`Mismatch for ${valve}: expected ${expectedState}, got ${currentStateValve}`);

@@ -16,7 +16,8 @@
 		authenticate,
 		sendHeartbeat,
 		subscribeToCollections,
-		writeGroundSystemsCommand
+		writeGroundSystemsCommand,
+		exportDataToFile
 	} = usePocketbaseHook;
 	const {
 		confirmStateChange,
@@ -716,6 +717,16 @@
 			>
 		{/if}
 	</div>
+<!--
+	<div style="position: absolute; right: 1%; top: 1%;">
+		<button
+			class="btn variant-filled-success"
+			on:click={() => exportDataToFile()}
+		>
+			Download Data
+		</button>
+	</div> -->
+
 </div>
 
 <style>
