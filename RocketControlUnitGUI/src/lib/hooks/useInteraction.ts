@@ -1,24 +1,5 @@
 import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 import type { PocketbaseHook } from './usePocketbase';
-import { initStores } from '../stores';
-
-const stores = initStores();
-
-const {
-	pbv1_open,
-	pbv2_open,
-	pbv3_open,
-	pbv4_open,
-	pbv5_open,
-	pbv6_open,
-	pbv7_open,
-	pbv8_open,
-	pbv9_open,
-	pbv10_open,
-	pbv11_open,
-	sol1_open,
-	sol2_open
-} = stores;
 
 const stateToCommand: { [key: string]: string } = {
     ABORT: 'GOTO_ABORT',
@@ -32,7 +13,6 @@ const stateToCommand: { [key: string]: string } = {
 const commandToState = Object.fromEntries(
 	Object.entries(stateToCommand).map(([key, value]) => [value, key])
 );
-
 
 const expected_valve_states: {[key: string]: {[key: string]: string}} = {
 	'GOTO_ABORT': {
@@ -109,96 +89,33 @@ const expected_valve_states: {[key: string]: {[key: string]: string}} = {
 
 Object.freeze(stateToCommand);
 Object.freeze(commandToState);
+Object.freeze(expected_valve_states);
 
-const getValveState = (valve: string): any => {
-	if (valve == 'PBV1') {
-		return String(pbv1_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV2') {
-		return String(pbv2_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV3') {
-		return String(pbv3_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV4') {
-		return String(pbv4_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV5') {
-		return String(pbv5_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV6') {
-		return String(pbv6_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV7') {
-		return String(pbv7_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV8') {
-		return String(pbv8_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV9') {
-		return String(pbv9_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV10') {
-		return String(pbv10_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'PBV11') {
-		return String(pbv11_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'SOL1') {
-		return String(sol1_open).includes('OPEN') ? 1 : 0;
-	}
-	if (valve == 'SOL2') {
-		return String(sol2_open).includes('OPEN') ? 1 : 0;
-	}
-	console.error(`Valve ${valve} not found in store`);
-	return -1; // Return an invalid state if valve not found
-};
+const validateStateChange = (stateCommand: string, current_valve_states: { [key: string]: string }): string[] => {
+    const expected_valves = expected_valve_states[stateCommand];
+    if (!expected_valves) {
+        console.log(`No expected states defined for command: ${stateCommand}`);
+        return [];
+    }
 
-const validateStateChange = (stateCommand: string): string[] => {
-	const expected_valves = expected_valve_states[stateCommand];
-	if (!expected_valves) {
-		console.log(`No expected states defined for command: ${stateCommand}`);
-		return [];
-	}
+    const nonCompliantValves: string[] = [];
 
-	const nonCompliantValves: string[] = [];
+    for (const [valve, expectedState] of Object.entries(expected_valves)) {
+        const currentStateValve = Number(current_valve_states[valve]);
+        const expectedStateValve = expectedState.includes('OPEN') ? 1 : 0;
 
-	console.log(`Validating state change for command: ${stateCommand}`);
-	console.log('Expected valve states:', expected_valves);
-	console.log(pbv1_open,
-		pbv2_open,
-		pbv3_open,
-		pbv4_open,
-		pbv5_open,
-		pbv6_open,
-		pbv7_open,
-		pbv8_open,
-		pbv9_open,
-		pbv10_open,
-		pbv11_open,
-		sol1_open,
-		sol2_open,)
-
-	for (const [valve, expectedState] of Object.entries(expected_valves)) {
-		const currentStateValve = getValveState(valve);
-		const expectedStateValve = expectedState.includes('OPEN') ? 1 : 0;
-
-		if (currentStateValve == -1){
-			console.log(`Unknown valve`, valve);
-			continue;
+		if (Number.isNaN(currentStateValve)) {
+			console.error(`Valve ${valve} not found in current valve states`);
+			continue; // Skip if valve state is not found
 		}
 
-		// console.log('Valve:', valve, 'Current State:', currentStateValve, 'Expected State:', expectedStateValve);
-		console.log('Valve:', valve, 'Current State:', currentStateValve, 'Expected State:', expectedState);
+        if (currentStateValve !== expectedStateValve) {
+            console.log(`Mismatch for ${valve}: expected_state ${expectedState}, current_state ${currentStateValve}`);
+            nonCompliantValves.push(valve);
+        }
+    }
 
-
-		if (currentStateValve !== expectedStateValve) {
-			console.log(`Mismatch for ${valve}: expected ${expectedState}, got ${currentStateValve}`);
-			nonCompliantValves.push(valve);
-		}
-	}
-
-	return nonCompliantValves;
+    return nonCompliantValves;
 };
 
 export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
@@ -206,9 +123,9 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 
 	let nextStatePending: string = '';
 
-	const confirmStateChange = (state: string) => {
+	const confirmStateChange = (state: string, current_valve_states: {[key: string]: string}) => {
 		nextStatePending = state;
-		const nonCompliantValves = validateStateChange(state);
+		const nonCompliantValves = validateStateChange(state, current_valve_states);
 
 		const modal: ModalSettings = {
 			type: 'confirm',

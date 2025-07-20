@@ -174,6 +174,27 @@
 		};
 	});
 
+	$: current_valve_states = {
+		'PBV1': $pbv1_open,
+		'PBV2': $pbv2_open,
+		'PBV3': $pbv3_open,
+		'PBV4': $pbv4_open,
+		'PBV5': $pbv5_open,
+		'PBV6': $pbv6_open,
+		'PBV7': $pbv7_open,
+		'PBV8': $pbv8_open,
+		'PBV9': $pbv9_open,
+		'PBV10': $pbv10_open,
+		'PBV11': $pbv11_open,
+		'SOL1': $sol1_open,
+		'SOL2': $sol2_open,
+		'SOL3': $sol3_open,
+		'SOL4': $sol4_open,
+		'SOL5': $sol5_open,
+		'IGN1': $ign1_on,
+		'IGN2': $ign2_on
+	};
+
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSED';
 	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'CLOSED' : 'OPEN';
 	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSED';
@@ -667,7 +688,7 @@
 			<button
 				class="btn variant-filled-warning next-state-btn"
 				style="left: 12%"
-				on:click={() => confirmStateChange("GOTO_IGNITION")}>Go to Ignition</button
+				on:click={() => confirmStateChange("GOTO_IGNITION", current_valve_states)}>Go to Ignition</button
 			>
 		{:else if $currentState == "IGNITION"}
 			<button
@@ -716,16 +737,12 @@
 			on:click={() => instantStateChange("GOTO_ABORT")}>Go to Abort</button
 			>
 		{/if}
-	</div>
-<!--
-	<div style="position: absolute; right: 1%; top: 1%;">
 		<button
-			class="btn variant-filled-success"
-			on:click={() => exportDataToFile()}
+		class="btn btn variant-filled-secondary next-state-btn"
+		style="left: 85%"
+		on:click={() => exportDataToFile()}>Download Database</button
 		>
-			Download Data
-		</button>
-	</div> -->
+	</div>
 
 </div>
 
