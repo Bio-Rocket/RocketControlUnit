@@ -126,56 +126,11 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		})();
 	};
 
-	const exportDataToFile = async () => {
-		try {
-			// Fetch all records from the 'Plc' collection
-			const plcRecords = await pocketbase.collection('Plc').getFullList();
-
-			// Fetch all records from the 'LabJack' collection
-			const labJackRecords = await pocketbase.collection('LabJack').getFullList();
-
-			// Combine the data into a single object
-			const data = {
-				plc: plcRecords,
-				labJack: labJackRecords,
-			};
-
-			// Convert the data to a JSON string
-			const jsonData = JSON.stringify(data, null, 2);
-
-			// Create a Blob from the JSON string
-			const blob = new Blob([jsonData], { type: 'application/json' });
-
-			// Create a link element
-			const link = document.createElement('a');
-
-			// Set the download attribute with a filename
-			link.download = 'exported_data.json';
-
-			// Create a URL for the Blob and set it as the href
-			link.href = URL.createObjectURL(blob);
-
-			// Append the link to the document body
-			document.body.appendChild(link);
-
-			// Programmatically click the link to trigger the download
-			link.click();
-
-			// Remove the link from the document
-			document.body.removeChild(link);
-
-			console.log('Data exported successfully');
-		} catch (error) {
-			console.error('Error exporting data:', error);
-		}
-	};
-
 	return {
 		authenticate,
 		sendHeartbeat,
 		writeStateChange,
         writeGroundSystemsCommand,
-		subscribeToCollections,
-		exportDataToFile
+		subscribeToCollections
 	};
 };

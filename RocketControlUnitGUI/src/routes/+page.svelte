@@ -7,7 +7,6 @@
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
 	import { SlideToggle } from '@skeletonlabs/skeleton';
-	import { get } from "svelte/store";
 	const timestamps = initTimestamps();
 	const stores = initStores();
 	const usePocketbaseHook = usePocketbase(timestamps, stores);
@@ -17,7 +16,6 @@
 		sendHeartbeat,
 		subscribeToCollections,
 		writeGroundSystemsCommand,
-		exportDataToFile
 	} = usePocketbaseHook;
 	const {
 		confirmStateChange,
@@ -79,40 +77,6 @@
 		lc6_mass,
 		lc7_mass
 	} = stores;
-
-	const StateArray = {
-        Abort_Valve_State: {
-            PBV1: false,
-            PBV2: false,
-            PBV3: false,
-            PBV4: false,
-            PBV5: false,
-            PBV6: false,
-            PBV7: false,
-            PBV8: false,
-			PBV9: false,
-			PBV10: false,
-			PBV11: false,
-			SOL1: false,
-			SOL2: false,
-			SOL3: false,
-			SOL4: false,
-			SOL5: false,
-			IGN1: false,
-			IGN2: false,
-        },
-
-        Ignition_Valve_State: {
-            PBV1: false,
-            PBV2: true,
-            PBV3: false,
-            PBV4: true,
-			PBV5: false,
-			PBV6: false,
-            PBV7: true,
-            PBV8: true,
-        }
-    };
 
 	onMount(() => {
 		let heartbeatInterval: NodeJS.Timeout;
@@ -206,8 +170,8 @@
 	$: pbv9_display = $pbv9_open === undefined ? 'N/A' : $pbv9_open ? 'CLOSED' : 'OPEN';
 	$: pbv10_display = $pbv10_open === undefined ? 'N/A' : $pbv10_open ? 'OPEN' : 'CLOSED';
 	$: pbv11_display = $pbv11_open === undefined ? 'N/A' : $pbv11_open ? 'OPEN' : 'CLOSED';
-	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSED';
-	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSED';
+	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'ON' : 'OFF';
+	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'ON' : 'OFF';
 	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSED';
 	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSED';
 	$: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSED';
@@ -261,30 +225,6 @@
 		// Create a change on the 'RelayStatus' collection
 		writeGroundSystemsCommand(command);
 	}
-
-	// function checkStateAndChangeIgnition() {
-	// 	const currentState = {
-	// 		PBV1: get(pbv1_open),
-	// 		PBV2: get(pbv2_open),
-	// 		PBV3: get(pbv3_open),
-	// 		PBV4: get(pbv4_open),
-	// 		PBV5: get(pbv5_open),
-	// 		PBV6: get(pbv6_open),
-	// 		PBV7: get(pbv7_open),
-	// 		PBV8: get(pbv8_open),
-	// 	};
-	// 	const ignitionState = StateArray.Ignition_Valve_State;
-	// 	const isEqual = Object.keys(ignitionState).every(key => {
-	// 	const currentValue = currentState[key as keyof typeof currentState];
-	// 	const ignitionValue = ignitionState[key as keyof typeof ignitionState];
-	// 	return currentValue === ignitionValue || (currentValue === undefined && ignitionValue === undefined);
-	// 	});
-	// 	if (isEqual) {
-	// 		instantStateChange("GOTO_IGNITION");
-	// 	} else {
-	// 		confirmStateChange("GOTO_IGNITION");
-	// 	}
-  	// }
 
 </script>
 
@@ -737,11 +677,6 @@
 			on:click={() => instantStateChange("GOTO_ABORT")}>Go to Abort</button
 			>
 		{/if}
-		<button
-		class="btn btn variant-filled-secondary next-state-btn"
-		style="left: 85%"
-		on:click={() => exportDataToFile()}>Download Database</button
-		>
 	</div>
 
 </div>
