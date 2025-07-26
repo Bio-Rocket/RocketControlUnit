@@ -89,6 +89,12 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			stores.lc2_mass.set("Nan");
 
             stores.lc7_mass.set(e.record.LC7[0]);
+
+			stores.cold_flow_valve_1_open.set(e.record.COLD_FLOW_VALVE_1[0]);
+			stores.cold_flow_valve_2_open.set(e.record.COLD_FLOW_VALVE_2[0]);
+			stores.cold_flow_valve_3_open.set(e.record.COLD_FLOW_VALVE_3[0]);
+			stores.cold_flow_valve_4_open.set(e.record.COLD_FLOW_VALVE_4[0]);
+			stores.cold_flow_valve_5_open.set(e.record.COLD_FLOW_VALVE_5[0]);
 		});
 
 		pocketbase.collection('LabJack').subscribe('*', (e) => {

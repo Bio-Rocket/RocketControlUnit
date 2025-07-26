@@ -75,7 +75,12 @@
 		lc4_mass,
 		lc5_mass,
 		lc6_mass,
-		lc7_mass
+		lc7_mass,
+		cold_flow_valve_1_open,
+		cold_flow_valve_2_open,
+		cold_flow_valve_3_open,
+		cold_flow_valve_4_open,
+		cold_flow_valve_5_open
 	} = stores;
 
 	onMount(() => {
@@ -212,6 +217,14 @@
 	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
 	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
 	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
+
+
+	// The cold_flow_valve is temporary for the cold flow test and will only be available during that test
+	$: cold_flow_valve_1_slider_display = $cold_flow_valve_1_open === undefined ? 'N/A' : $cold_flow_valve_1_open ? 'CLOSED' : 'OPEN';
+	$: cold_flow_valve_2_slider_display = $cold_flow_valve_2_open === undefined ? 'N/A' : $cold_flow_valve_2_open ? 'CLOSED' : 'OPEN';
+	$: cold_flow_valve_3_slider_display = $cold_flow_valve_3_open === undefined ? 'N/A' : $cold_flow_valve_3_open ? 'CLOSED' : 'OPEN';
+	$: cold_flow_valve_4_slider_display = $cold_flow_valve_4_open === undefined ? 'N/A' : $cold_flow_valve_4_open ? 'CLOSED' : 'OPEN';
+	$: cold_flow_valve_5_slider_display = $cold_flow_valve_5_open === undefined ? 'N/A' : $cold_flow_valve_5_open ? 'CLOSED' : 'OPEN';
 
 
 	async function handleSliderChange(
@@ -677,6 +690,61 @@
 			on:click={() => instantStateChange("GOTO_ABORT")}>Go to Abort</button
 			>
 		{/if}
+		<div class="cold_flow_valve_1_slider">
+			<SlideToggle
+				name="cold_flow_valve_1_slider"
+				active="bg-primary-500 dark:bg-primary-500"
+				size="sm"
+				bind:checked={$cold_flow_valve_1_open}
+				on:click={(e) => handleSliderChange(e, 'COLD_FLOW_VALVE_1_OPEN', 'COLD_FLOW_VALVE_1_CLOSE')}
+			>
+				{cold_flow_valve_1_slider_display}  Valve 1</SlideToggle
+			>
+		</div>
+		<div class="cold_flow_valve_2_slider">
+			<SlideToggle
+				name="cold_flow_valve_2_slider"
+				active="bg-primary-500 dark:bg-primary-500"
+				size="sm"
+				bind:checked={$cold_flow_valve_2_open}
+				on:click={(e) => handleSliderChange(e, 'COLD_FLOW_VALVE_2_OPEN', 'COLD_FLOW_VALVE_2_CLOSE')}
+			>
+				{cold_flow_valve_2_slider_display}  Valve 2</SlideToggle
+			>
+		</div>
+		<div class="cold_flow_valve_3_slider">
+			<SlideToggle
+				name="cold_flow_valve_3_slider"
+				active="bg-primary-500 dark:bg-primary-500"
+				size="sm"
+				bind:checked={$cold_flow_valve_3_open}
+				on:click={(e) => handleSliderChange(e, 'COLD_FLOW_VALVE_3_OPEN', 'COLD_FLOW_VALVE_3_CLOSE')}
+			>
+				{cold_flow_valve_3_slider_display}  Valve 3</SlideToggle
+			>
+		</div>
+		<div class="cold_flow_valve_4_slider">
+			<SlideToggle
+				name="cold_flow_valve_4_slider"
+				active="bg-primary-500 dark:bg-primary-500"
+				size="sm"
+				bind:checked={$cold_flow_valve_4_open}
+				on:click={(e) => handleSliderChange(e, 'COLD_FLOW_VALVE_4_OPEN', 'COLD_FLOW_VALVE_4_CLOSE')}
+			>
+				{cold_flow_valve_4_slider_display}  Valve 4</SlideToggle
+			>
+		</div>
+		<div class="cold_flow_valve_5_slider">
+			<SlideToggle
+				name="cold_flow_valve_5_slider"
+				active="bg-primary-500 dark:bg-primary-500"
+				size="sm"
+				bind:checked={$cold_flow_valve_5_open}
+				on:click={(e) => handleSliderChange(e, 'COLD_FLOW_VALVE_5_OPEN', 'COLD_FLOW_VALVE_5_CLOSE')}
+			>
+				{cold_flow_valve_5_slider_display}  Valve 4</SlideToggle
+			>
+		</div>
 	</div>
 
 </div>

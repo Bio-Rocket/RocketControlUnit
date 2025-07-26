@@ -67,6 +67,12 @@ export interface Stores {
     lc5_mass: Writable<string | number | undefined>;
     lc6_mass: Writable<string | number | undefined>;
     lc7_mass: Writable<string | number | undefined>;
+
+    cold_flow_valve_1_open: Writable<string | number | undefined>;
+    cold_flow_valve_2_open: Writable<string | number | undefined>;
+    cold_flow_valve_3_open: Writable<string | number | undefined>;
+    cold_flow_valve_4_open: Writable<string | number | undefined>;
+    cold_flow_valve_5_open: Writable<string | number | undefined>;
 }
 
 export const initStores = () => {
@@ -124,5 +130,10 @@ export const initStores = () => {
         lc5_mass: writable<string | number | undefined>(undefined),
         lc6_mass: writable<string | number | undefined>(undefined),
         lc7_mass: writable<string | number | undefined>(undefined),
+        cold_flow_valve_1_open: writable<string | number | undefined>(undefined),
+		cold_flow_valve_2_open: writable<string | number | undefined>(undefined),
+		cold_flow_valve_3_open: writable<string | number | undefined>(undefined),
+		cold_flow_valve_4_open: writable<string | number | undefined>(undefined),
+		cold_flow_valve_5_open: writable<string | number | undefined>(undefined),
 	};
 };
