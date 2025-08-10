@@ -68,6 +68,13 @@ export interface Stores {
     lc5_mass: Writable<string | number | undefined>;
     lc6_mass: Writable<string | number | undefined>;
     lc7_mass: Writable<string | number | undefined>;
+    lc1_tare: Writable<number | undefined>;
+    lc2_tare: Writable<number | undefined>;
+    lc3_tare: Writable<number | undefined>;
+    lc4_tare: Writable<number | undefined>;
+    lc5_tare: Writable<number | undefined>;
+    lc6_tare: Writable<number | undefined>;
+    lc7_tare: Writable<number | undefined>;
 }
 
 export const initStores = () => {
@@ -125,5 +132,12 @@ export const initStores = () => {
         lc5_mass: writable<string | number | undefined>(undefined),
         lc6_mass: writable<string | number | undefined>(undefined),
         lc7_mass: writable<string | number | undefined>(undefined),
+        lc1_tare: writable<number | undefined>(undefined),
+        lc2_tare: writable<number | undefined>(undefined),
+        lc3_tare: writable<number | undefined>(undefined),
+        lc4_tare: writable<number | undefined>(undefined),
+        lc5_tare: writable<number | undefined>(undefined),
+        lc6_tare: writable<number | undefined>(undefined),
+        lc7_tare: writable<number | undefined>(undefined)
 	};
 };

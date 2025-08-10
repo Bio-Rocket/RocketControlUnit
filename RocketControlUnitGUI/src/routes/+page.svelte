@@ -17,6 +17,7 @@
 		sendHeartbeat,
 		subscribeToCollections,
 		writeGroundSystemsCommand,
+		writeLoadCellTares,
 	} = usePocketbaseHook;
 	const {
 		confirmStateChange,
@@ -77,7 +78,14 @@
 		lc4_mass,
 		lc5_mass,
 		lc6_mass,
-		lc7_mass
+		lc7_mass,
+		lc1_tare,
+		lc2_tare,
+		lc3_tare,
+		lc4_tare,
+		lc5_tare,
+		lc6_tare,
+		lc7_tare
 	} = stores;
 
 	onMount(() => {
@@ -212,26 +220,42 @@
 	$: tc10_display = $tc10_temperature === undefined ? 'N/A' : $tc10_temperature;
 	$: tc11_display = $tc11_temperature === undefined ? 'N/A' : $tc11_temperature;
 	$: tc12_display = $tc12_temperature === undefined ? 'N/A' : $tc12_temperature;
-	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : (Number($lc1_mass) - Number($loadcellTares['1'] || 0)).toFixed(2);
-	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : (Number($lc2_mass) - Number($loadcellTares['2'] || 0)).toFixed(2);
-	$: lc3_mass_display = $lc3_mass === undefined ? 'N/A' : (Number($lc3_mass) - Number($loadcellTares['3'] || 0)).toFixed(2);
-	$: lc4_mass_display = $lc4_mass === undefined ? 'N/A' : (Number($lc4_mass) - Number($loadcellTares['4'] || 0)).toFixed(2);
-	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : (Number($lc5_mass) - Number($loadcellTares['5'] || 0)).toFixed(2);
-	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : (Number($lc6_mass) - Number($loadcellTares['6'] || 0)).toFixed(2);
-	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
+	$: lc1_mass_display = $lc1_mass === undefined || Number($lc1_mass) < 0 ? 'NaN' : (Number($lc1_mass) - Number($lc1_tare || 0)).toFixed(2);
+	$: lc2_mass_display = $lc2_mass === undefined || Number($lc2_mass) < 0 ? 'NaN' : (Number($lc2_mass) - Number($lc2_tare || 0)).toFixed(2);
+	$: lc3_mass_display = $lc3_mass === undefined || Number($lc3_mass) < 0 ? 'NaN' : (Number($lc3_mass) - Number($lc3_tare || 0)).toFixed(2);
+	$: lc4_mass_display = $lc4_mass === undefined || Number($lc4_mass) < 0 ? 'NaN' : (Number($lc4_mass) - Number($lc4_tare || 0)).toFixed(2);
+	$: lc5_mass_display = $lc5_mass === undefined || Number($lc5_mass) < 0 ? 'NaN' : (Number($lc5_mass) - Number($lc5_tare || 0)).toFixed(2);
+	$: lc6_mass_display = $lc6_mass === undefined || Number($lc6_mass) < 0 ? 'NaN' : (Number($lc6_mass) - Number($lc6_tare || 0)).toFixed(2);
+	$: lc7_mass_display = $lc7_mass === undefined || Number($lc7_mass) < 0 ? 'NaN' : (Number($lc7_mass) - Number($lc7_tare || 0)).toFixed(2);
 
-	const performTare = (loadcell_num: string) => {
+	const performTare = async (loadcell_num: string) => {
 		// Get the current value of the loadcell
 		const currentValue = get((stores as Record<string, Writable<number | undefined>>)[`lc${loadcell_num}_mass`]);
+		console.log(`Performing tare for loadcell ${loadcell_num}, current value:`, currentValue);
+
 		if (currentValue !== undefined) {
 			loadcellTares.update(tares => {
 				tares[loadcell_num] = currentValue;
+				console.log(`Updated loadcellTares for loadcell ${loadcell_num}:`, tares);
 				return tares;
 			});
-			loadcellTares.update(tares => {
-				tares[loadcell_num] = currentValue;
-				return tares;
-			});
+
+			try {
+				// Write the updated tare value to the LoadCellTareValues table
+				console.log(`Writing tare values to DB for loadcell ${loadcell_num}`);
+				await writeLoadCellTares(
+					loadcell_num === '1' ? Number(currentValue) : Number($lc1_tare || 0),
+					loadcell_num === '2' ? Number(currentValue) : Number($lc2_tare || 0),
+					loadcell_num === '3' ? Number(currentValue) : Number($lc3_tare || 0),
+					loadcell_num === '4' ? Number(currentValue) : Number($lc4_tare || 0),
+					loadcell_num === '5' ? Number(currentValue) : Number($lc5_tare || 0),
+					loadcell_num === '6' ? Number(currentValue) : Number($lc6_tare || 0),
+					loadcell_num === '7' ? Number(currentValue) : Number($lc7_tare || 0)
+				);
+				console.log(`Successfully wrote tare values to DB for loadcell ${loadcell_num}`);
+			} catch (error) {
+				console.error(`Failed to update LoadCellTareValues for loadcell ${loadcell_num}:`, error);
+			}
 		} else {
 			console.error(`Loadcell ${loadcell_num} value is undefined`);
 		}

@@ -47,6 +47,19 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		});
 	};
 
+	const writeLoadCellTares = async (lc1: number, lc2: number, lc3: number, lc4: number, lc5: number, lc6: number, lc7: number) => {
+		await pocketbase.collection('LoadCellTareValues').create({
+			LC1: lc1,
+			LC2: lc2,
+			LC3: lc3,
+			LC4: lc4,
+			LC5: lc5,
+			LC6: lc6,
+			LC7: lc7
+		});
+	};
+
+
 	const subscribeToCollections = () => {
         pocketbase.collection('Plc').subscribe('*', (e) => {
             stores.pbv1_open.set(e.record.PBV1[0]);
@@ -115,6 +128,16 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			timestamps.sys_state = Date.now();
 		});
 
+		pocketbase.collection('LoadCellTareValues').subscribe('*', (e) => {
+			stores.lc1_tare.set(e.record.LC1);
+			stores.lc2_tare.set(e.record.LC2);
+			stores.lc3_tare.set(e.record.LC3);
+			stores.lc4_tare.set(e.record.LC4);
+			stores.lc5_tare.set(e.record.LC5);
+			stores.lc6_tare.set(e.record.LC6);
+			stores.lc7_tare.set(e.record.LC7);
+		});
+
 		// Fetch the most recent entry and set the currentState
 		(async () => {
 			try {
@@ -126,6 +149,25 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 				console.error('Error fetching the most recent SystemState entry:', error);
 			}
 		})();
+
+		// Fetch the most recent entry and set the LoadCellTare values
+		(async () => {
+			try {
+				const latestTareEntry = await pocketbase.collection('LoadCellTareValues').getList(1, 1, { sort: '-created' });
+				if (latestTareEntry.items.length > 0) {
+					const tareValues = latestTareEntry.items[0];
+					stores.lc1_tare.set(tareValues.LC1);
+					stores.lc2_tare.set(tareValues.LC2);
+					stores.lc3_tare.set(tareValues.LC3);
+					stores.lc4_tare.set(tareValues.LC4);
+					stores.lc5_tare.set(tareValues.LC5);
+					stores.lc6_tare.set(tareValues.LC6);
+					stores.lc7_tare.set(tareValues.LC7);
+				}
+			} catch (error) {
+				console.error('Error fetching the most recent LoadCellTareValues entry:', error);
+			}
+		})();
 	};
 
 	return {
@@ -133,6 +175,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		sendHeartbeat,
 		writeStateChange,
         writeGroundSystemsCommand,
+		writeLoadCellTares,
 		subscribeToCollections
 	};
 };
