@@ -212,6 +212,7 @@
 	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
 	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
 	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
+	$: hwAbortActive = $currentState === "HW_ABORT_ACTIVE";
 
 
 	async function handleSliderChange(
@@ -231,6 +232,14 @@
 
 <div class="container">
 	<Diagram />
+
+	<div
+  		class={`abort-indicator ${hwAbortActive ? 'active' : 'inactive'}`}
+  		role="status"
+ 		aria-live="polite"
+	>
+  		{hwAbortActive ? 'ABORT ACTIVE' : 'Abort idle'}
+	</div>
 
 	<div class="static_pbv1_slider">
 		<SlideToggle
