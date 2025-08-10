@@ -6,6 +6,7 @@
 	import { initStores, auth, currentState } from '$lib/stores';
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
+	import { writable, type Writable } from 'svelte/store';
 	import { SlideToggle } from '@skeletonlabs/skeleton';
 	const timestamps = initTimestamps();
 	const stores = initStores();
@@ -158,6 +159,11 @@
 		'IGN1': $ign1_on,
 		'IGN2': $ign2_on
 	};
+	const loadcellTares = writable<Record<string, number>>({});
+	// Initialize loadcell tares
+	loadcellTares.set(
+		Object.fromEntries(['1', '2', '3', '4', '5', '6'].map(num => [num, 0]))
+	);
 
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSED';
 	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'CLOSED' : 'OPEN';
@@ -205,14 +211,31 @@
 	$: tc10_display = $tc10_temperature === undefined ? 'N/A' : $tc10_temperature;
 	$: tc11_display = $tc11_temperature === undefined ? 'N/A' : $tc11_temperature;
 	$: tc12_display = $tc12_temperature === undefined ? 'N/A' : $tc12_temperature;
-	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : Number($lc1_mass).toFixed(2);
-	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : Number($lc2_mass).toFixed(2);
-	$: lc3_mass_display = $lc3_mass === undefined ? 'N/A' : Number($lc3_mass).toFixed(2);
-	$: lc4_mass_display = $lc4_mass === undefined ? 'N/A' : Number($lc4_mass).toFixed(2);
-	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : Number($lc5_mass).toFixed(2);
-	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : Number($lc6_mass).toFixed(2);
+	$: lc1_mass_display = $lc1_mass === undefined ? 'N/A' : (Number($lc1_mass) - Number($loadcellTares['1'] || 0)).toFixed(2);
+	$: lc2_mass_display = $lc2_mass === undefined ? 'N/A' : (Number($lc2_mass) - Number($loadcellTares['2'] || 0)).toFixed(2);
+	$: lc3_mass_display = $lc3_mass === undefined ? 'N/A' : (Number($lc3_mass) - Number($loadcellTares['3'] || 0)).toFixed(2);
+	$: lc4_mass_display = $lc4_mass === undefined ? 'N/A' : (Number($lc4_mass) - Number($loadcellTares['4'] || 0)).toFixed(2);
+	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : (Number($lc5_mass) - Number($loadcellTares['5'] || 0)).toFixed(2);
+	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : (Number($lc6_mass) - Number($loadcellTares['6'] || 0)).toFixed(2);
 	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
 
+	const performTare = (loadcell_num: string) => {
+		// Get the current value of the loadcell
+		import { get } from 'svelte/store';
+		const currentValue = get((stores as Record<string, Writable<number | undefined>>)[`lc${loadcell_num}_mass`]);
+		if (currentValue !== undefined) {
+			loadcellTares.update(tares => {
+				tares[loadcell_num] = currentValue;
+				return tares;
+			});
+			loadcellTares.update(tares => {
+				tares[loadcell_num] = currentValue;
+				return tares;
+			});
+		} else {
+			console.error(`Loadcell ${loadcell_num} value is undefined`);
+		}
+	};
 
 	async function handleSliderChange(
 		e: any,
@@ -604,6 +627,66 @@
 
 	<div class="static_pt19_pressure">
 		<p>{pt19_pressure_display}</p>
+	</div>
+
+	<div class="lc1_tare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("1")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="lc2_tare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("2")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="lc3_tare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("3")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="lc4_tare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("4")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="lc5_tare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("5")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="lc6_tare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("6")}
+		>
+			TARE
+		</button>
 	</div>
 
 	<!-- Render different buttons based on the current state -->
