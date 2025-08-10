@@ -51,6 +51,10 @@
 			</svelte:fragment>
 
 			<svelte:fragment slot="trail">
+				<h3 class="text-lg">
+					{'Cold Flow'}
+				</h3>
+
 				<LightSwitch class="ml-auto" />
 				{#if $auth === false}
 					<ReadOnlySvg />
