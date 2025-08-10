@@ -6,7 +6,7 @@
 	import { initStores, auth, currentState } from '$lib/stores';
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
-	import { writable, type Writable } from 'svelte/store';
+	import { writable, type Writable, get } from 'svelte/store';
 	import { SlideToggle } from '@skeletonlabs/skeleton';
 	const timestamps = initTimestamps();
 	const stores = initStores();
@@ -20,7 +20,8 @@
 	} = usePocketbaseHook;
 	const {
 		confirmStateChange,
-		instantStateChange
+		instantStateChange,
+		confirmPlcReset,
 	} = useInteractionHook;
 	// Destructor stores for later use
 	const {
@@ -218,11 +219,9 @@
 	$: lc5_mass_display = $lc5_mass === undefined ? 'N/A' : (Number($lc5_mass) - Number($loadcellTares['5'] || 0)).toFixed(2);
 	$: lc6_mass_display = $lc6_mass === undefined ? 'N/A' : (Number($lc6_mass) - Number($loadcellTares['6'] || 0)).toFixed(2);
 	$: lc7_mass_display = $lc7_mass === undefined ? 'N/A' : Number($lc7_mass).toFixed(2);
-	$: hwAbortActive = $currentState === "HW_ABORT_ACTIVE";
 
 	const performTare = (loadcell_num: string) => {
 		// Get the current value of the loadcell
-		import { get } from 'svelte/store';
 		const currentValue = get((stores as Record<string, Writable<number | undefined>>)[`lc${loadcell_num}_mass`]);
 		if (currentValue !== undefined) {
 			loadcellTares.update(tares => {
@@ -255,14 +254,6 @@
 
 <div class="container">
 	<Diagram />
-
-	<div
-  		class={`abort-indicator ${hwAbortActive ? 'active' : 'inactive'}`}
-  		role="status"
- 		aria-live="polite"
-	>
-  		{hwAbortActive ? 'ABORT ACTIVE' : 'Abort idle'}
-	</div>
 
 	<div class="static_pbv1_slider">
 		<SlideToggle
@@ -695,6 +686,16 @@
 			on:click={() => performTare("6")}
 		>
 			TARE
+		</button>
+	</div>
+
+	<div class="plc_reset">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => confirmPlcReset()}
+		>
+			PLC RESET
 		</button>
 	</div>
 

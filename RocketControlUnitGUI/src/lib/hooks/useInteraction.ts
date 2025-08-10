@@ -1,6 +1,7 @@
 import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 import type { PocketbaseHook } from './usePocketbase';
 
+
 const stateToCommand: { [key: string]: string } = {
     ABORT: 'GOTO_ABORT',
 	TEST: 'GOTO_TEST',
@@ -150,9 +151,26 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 		nextStatePending = '';
 	};
 
+	const confirmPlcReset = () => {
+		const modal: ModalSettings = {
+			type: 'confirm',
+			title: 'Confirm PLC Reset',
+			body: 'Are you sure you want to send PLC RESET to the Ground System?',
+			response: (r: boolean) => {
+				if (r) {
+					pocketbaseHook.writeGroundSystemsCommand('PLC_RESET');
+				}
+			}
+		};
+
+		modalStore.trigger(modal);
+	};
+
+
 
 	return {
 		confirmStateChange,
 		instantStateChange,
+		confirmPlcReset,
 	};
 };

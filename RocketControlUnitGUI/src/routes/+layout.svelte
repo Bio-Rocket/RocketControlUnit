@@ -2,7 +2,7 @@
 	import '../styles/app.postcss';
 	import ReadOnlySvg from '$lib/components/ReadOnlySvg.svelte';
 	import { ThemeData, ThemeType } from '$lib/theme';
-	import { auth, currentState } from "$lib/stores";
+	import { auth, currentState, hardware_abort_active } from "$lib/stores"; 
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { page } from '$app/stores';
 	import {
@@ -41,25 +41,35 @@
 						/>
 					</div>
 				</div>
-
-
-
 			</svelte:fragment>
 
 			<svelte:fragment>
-				<h1 class="text-xl">Current System State: {$currentState}</h1>
+				<h1 class="text-xl">
+					Current System State: {$currentState}
+				</h1>
 			</svelte:fragment>
 
 			<svelte:fragment slot="trail">
-				<h3 class="text-lg">
-					{'Cold Flow'}
-				</h3>
+				<div class="flex flex-col items-end gap-1">
+					<div class="text-sm font-semibold">
+						<span>Hardware Abort:</span>
+						{#if $hardware_abort_active}
+							<span class="text-red-500 font-bold animate-pulse ml-1">ACTIVE</span>
+						{:else}
+							<span class="text-green-500 font-bold ml-1">CLEAR</span>
+						{/if}
+					</div>
 
-				<LightSwitch class="ml-auto" />
-				{#if $auth === false}
-					<ReadOnlySvg />
-				{/if}
+					<div class="flex items-center gap-2">
+						<h3 class="text-lg">Cold Flow</h3>
+						<LightSwitch />
+						{#if $auth === false}
+							<ReadOnlySvg />
+						{/if}
+					</div>
+				</div>
 			</svelte:fragment>
+
 		</AppBar>
 	</svelte:fragment>
 
@@ -84,8 +94,5 @@
 		margin-right: auto;
 		width: 30%;
 		height: width;
-	}
-	.select {
-		width: 35%;
 	}
 </style>

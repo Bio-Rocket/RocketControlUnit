@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 import type { Timestamps } from '../timestamps';
 import type { Stores } from '../stores';
-import { currentState } from '../stores';
+import { currentState, hardware_abort_active } from '../stores';
 
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
@@ -110,6 +110,8 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 
 		pocketbase.collection('SystemState').subscribe('*', (e) => {
 			currentState.set(e.record.system_state);
+			const v = e.record?.hardware_abort;
+			hardware_abort_active.set(v === true || v === 1 || v === 'true');
 			timestamps.sys_state = Date.now();
 		});
 

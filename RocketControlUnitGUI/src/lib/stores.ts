@@ -2,6 +2,7 @@ import { writable, type Writable } from 'svelte/store';
 
 export const currentState = writable('N/A');
 export const auth = writable(false);
+export const hardware_abort_active = writable(false);
 
 const isBrowser = typeof window !== 'undefined';
 const storedOperationConfig = isBrowser ? localStorage.getItem('operationConfig') || 'Static Fire' : 'Static Fire';

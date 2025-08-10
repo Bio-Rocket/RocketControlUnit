@@ -583,25 +583,10 @@
 	left: 87.94%;
 	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 }
-.abort-indicator {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 50;
-  padding: 0.35rem 0.6rem;
-  border-radius: 9999px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.03em;
-  color: white;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  user-select: none;
-}
-.abort-indicator.inactive {
-  background: #6b7280; /* gray-500 */
-  opacity: 0.85;
-}
-.abort-indicator.active {
-  background: #ef4444; /* red-500 */
-  animation: pulse 1.2s ease-in-out infinite;
+
+.plc_reset {
+	position: absolute;
+	top: calc(var(--container-width) * 0.53);
+	left: 95%;
+	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 }
