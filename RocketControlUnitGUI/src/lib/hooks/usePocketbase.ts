@@ -87,7 +87,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 					// Display a banner to notify the user
 					notificationBanner.set({
 						type: 'error',
-						message: 'Failed to download CSVs: Invalid recording state detected.'
+						message: 'Cannot download while recording.'
 					});
 					return;
 				}
@@ -98,13 +98,25 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 				end_recording_time = latest.created;
 			} else if (entries.items.length === 1) {
 				console.log('Only one entry found. Latest created time:', entries.items[0].created);
+				notificationBanner.set({
+					type: 'error',
+					message: 'Failed to download CSVs.'
+				});
 				return;
 			} else {
 				console.warn('No entries found in RecordingWindow.');
+				notificationBanner.set({
+					type: 'error',
+					message: 'Failed to download CSVs'
+				});
 				return;
 			}
 		} catch (error) {
 			console.error('Error fetching the last two RecordingWindow entries:', error);
+			notificationBanner.set({
+				type: 'error',
+				message: 'Failed to download CSVs.'
+			});
 			return;
 		}
 
@@ -115,6 +127,10 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		} catch (error) {
 			console.error('Error downloading CSV files:', error);
 		}
+		notificationBanner.set({
+			type: 'success',
+			message: 'Downloaded CSV files.'
+		});
 	};
 
 	const downloadLabJackCSV = async (startTime: string, endTime: string) => {
