@@ -1,6 +1,7 @@
 <script lang="ts">
 	import "../styles/static-fire.postcss";
 	import Diagram from '$lib/components/StaticFire.svelte';
+	import NotificationBanner from '$lib/components/NotificationBanner.svelte';
 	import { initTimestamps, type Timestamps } from '$lib/timestamps';
 	import { usePocketbase } from '$lib/hooks/usePocketbase';
 	import { initStores, auth, currentState, recordState } from '$lib/stores';
@@ -277,6 +278,7 @@
 
 
 <div class="container">
+	<NotificationBanner />
 	<Diagram />
 
 	<div class="static_pbv1_slider">

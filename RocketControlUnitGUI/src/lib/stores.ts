@@ -8,6 +8,7 @@ export const hardware_abort_active = writable(false);
 const isBrowser = typeof window !== 'undefined';
 const storedOperationConfig = isBrowser ? localStorage.getItem('operationConfig') || 'Static Fire' : 'Static Fire';
 export const operationConfig = writable(storedOperationConfig);
+export const notificationBanner = writable<{ type: string; message: string } | null>(null);
 
 if (isBrowser) {
     operationConfig.subscribe(value => {
@@ -139,6 +140,6 @@ export const initStores = () => {
         lc4_tare: writable<number | undefined>(undefined),
         lc5_tare: writable<number | undefined>(undefined),
         lc6_tare: writable<number | undefined>(undefined),
-        lc7_tare: writable<number | undefined>(undefined)
+        lc7_tare: writable<number | undefined>(undefined),
 	};
 };

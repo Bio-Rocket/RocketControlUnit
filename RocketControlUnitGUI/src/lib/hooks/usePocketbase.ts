@@ -3,7 +3,7 @@ import type { Timestamps } from '../timestamps';
 import { get } from 'svelte/store';
 import type { Stores } from '../stores';
 
-import { currentState, recordState, hardware_abort_active } from '../stores';
+import { currentState, recordState, hardware_abort_active, notificationBanner } from '../stores';
 
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
@@ -84,6 +84,11 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 
 				if (secondLatest.start_stop !== true || latest.start_stop !== false) {
 					console.error('Invalid state: second latest is not true or latest is not false.');
+					// Display a banner to notify the user
+					notificationBanner.set({
+						type: 'error',
+						message: 'Failed to download CSVs: Invalid recording state detected.'
+					});
 					return;
 				}
 
