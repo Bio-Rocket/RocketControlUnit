@@ -60,6 +60,13 @@
 					</div>
 
 					<div class="flex items-center gap-2">
+						<button
+							type="button"
+							class="btn btn-sm variant-filled-tertiary"
+							on:click={() => console.log("ll ")}
+						>
+							Download Logs
+						</button>
 						<h3 class="text-lg">Cold Flow</h3>
 						<LightSwitch />
 						<!-- {#if $auth === false}
