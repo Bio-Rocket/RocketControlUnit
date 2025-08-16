@@ -1,7 +1,9 @@
 import PocketBase from 'pocketbase';
 import type { Timestamps } from '../timestamps';
+import { get } from 'svelte/store';
 import type { Stores } from '../stores';
-import { currentState, hardware_abort_active } from '../stores';
+
+import { currentState, recordState, hardware_abort_active } from '../stores';
 
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
@@ -41,6 +43,18 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		});
 	};
 
+	const toggleRecording = async () => {
+		const currentRecordState = get(recordState);
+		const newRecordState = !currentRecordState;
+
+		console.log('Toggling recording state from', currentRecordState, 'to', newRecordState);
+		recordState.set(newRecordState);
+
+		await pocketbase.collection('RecordingWindow').create({
+			start_stop: newRecordState
+		});
+	};
+
 	const writeGroundSystemsCommand = async (command: string) => {
 		await pocketbase.collection('GroundSystemsCommand').create({
 			command: command
@@ -58,7 +72,6 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			LC7: lc7
 		});
 	};
-
 
 	const subscribeToCollections = () => {
         pocketbase.collection('Plc').subscribe('*', (e) => {
@@ -150,6 +163,19 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			}
 		})();
 
+		// Fetch the most recent entry and set the recordState
+		(async () => {
+			try {
+				const latestEntry = await pocketbase.collection('RecordingWindow').getList(1, 1, { sort: '-created' });
+				if (latestEntry.items.length > 0) {
+					recordState.set(latestEntry.items[0].start_stop);
+				}
+			} catch (error) {
+				recordState.set(false);
+				console.error('Error fetching the most recent SystemState entry:', error);
+			}
+		})();
+
 		// Fetch the most recent entry and set the LoadCellTare values
 		(async () => {
 			try {
@@ -176,6 +202,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		writeStateChange,
         writeGroundSystemsCommand,
 		writeLoadCellTares,
-		subscribeToCollections
+		subscribeToCollections,
+		toggleRecording
 	};
 };

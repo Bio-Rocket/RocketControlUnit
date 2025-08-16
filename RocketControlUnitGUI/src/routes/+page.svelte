@@ -3,7 +3,7 @@
 	import Diagram from '$lib/components/StaticFire.svelte';
 	import { initTimestamps, type Timestamps } from '$lib/timestamps';
 	import { usePocketbase } from '$lib/hooks/usePocketbase';
-	import { initStores, auth, currentState } from '$lib/stores';
+	import { initStores, auth, currentState, recordState } from '$lib/stores';
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
 	import { writable, type Writable, get } from 'svelte/store';
@@ -18,6 +18,7 @@
 		subscribeToCollections,
 		writeGroundSystemsCommand,
 		writeLoadCellTares,
+		toggleRecording,
 	} = usePocketbaseHook;
 	const {
 		confirmStateChange,
@@ -770,6 +771,21 @@
 		>
 			UNTARE
 		</button>
+	</div>
+
+
+	<div class="recording_btn">
+		{#if $recordState}
+			<button
+				class="btn btn-sm variant-filled-error"
+				on:click={() => toggleRecording()}>Recording...</button
+			>
+		{:else}
+			<button
+				class="btn btn-sm variant-filled-secondary"
+				on:click={() => toggleRecording()}>Start Recording</button
+			>
+		{/if}
 	</div>
 
 	<div class="plc_reset">

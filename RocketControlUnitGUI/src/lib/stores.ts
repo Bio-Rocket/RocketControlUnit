@@ -1,6 +1,7 @@
 import { writable, type Writable } from 'svelte/store';
 
 export const currentState = writable('N/A');
+export const recordState = writable(false); // False by default, true when recording
 export const auth = writable(false);
 export const hardware_abort_active = writable(false);
 

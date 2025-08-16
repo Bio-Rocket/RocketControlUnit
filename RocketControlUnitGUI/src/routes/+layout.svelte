@@ -1,8 +1,7 @@
 <script lang="ts">
 	import '../styles/app.postcss';
-	import ReadOnlySvg from '$lib/components/ReadOnlySvg.svelte';
 	import { ThemeData, ThemeType } from '$lib/theme';
-	import { auth, currentState, hardware_abort_active } from "$lib/stores"; 
+	import { currentState, hardware_abort_active } from "$lib/stores";
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { page } from '$app/stores';
 	import {
@@ -63,9 +62,9 @@
 					<div class="flex items-center gap-2">
 						<h3 class="text-lg">Cold Flow</h3>
 						<LightSwitch />
-						{#if $auth === false}
+						<!-- {#if $auth === false}
 							<ReadOnlySvg />
-						{/if}
+						{/if} -->
 					</div>
 				</div>
 			</svelte:fragment>
