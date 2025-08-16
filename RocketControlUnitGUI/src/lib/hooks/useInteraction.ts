@@ -18,14 +18,14 @@ const commandToState = Object.fromEntries(
 const expected_valve_states: {[key: string]: {[key: string]: string}} = {
 	'GOTO_ABORT': {
 		'PBV1': 'PBV1_CLOSE',
-		'PBV2': 'PBV2_OPEN',
+		'PBV2': 'PBV2_OPEN', //ENERGIZED SO OPEN MEANS CLOSED
 		'PBV3': 'PBV3_CLOSE',
-		'PBV4': 'PBV4_OPEN',
-		'PBV5': 'PBV5_OPEN',
+		'PBV4': 'PBV4_OPEN', //ENERGIZED SO OPEN MEANS CLOSED
+		'PBV5': 'PBV5_OPEN', //ENERGIZED SO OPEN MEANS CLOSED
 		'PBV6': 'PBV6_CLOSE',
 		'PBV7': 'PBV7_CLOSE',
 		'PBV8': 'PBV8_CLOSE',
-		'PBV9': 'PBV9_OPEN',
+		'PBV9': 'PBV9_OPEN', //ENERGIZED SO OPEN MEANS CLOSED
 		'PBV10': 'PBV10_CLOSE',
 		'PBV11': 'PBV11_CLOSE',
 		'SOL1': 'SOL1_CLOSE',
@@ -45,14 +45,14 @@ const expected_valve_states: {[key: string]: {[key: string]: string}} = {
 	},
 	'GOTO_IGNITION': {
 		'PBV1': 'PBV1_CLOSE',
-		'PBV2': 'PBV2_CLOSE',
+		'PBV2': 'PBV2_OPEN', //ENERGIZED SO OPEN MEANS CLOSED
 		'PBV3': 'PBV3_CLOSE',
-		'PBV4': 'PBV4_CLOSE',
-		'PBV5': 'PBV5_CLOSE',
+		'PBV4': 'PBV4_OPEN', //ENERGIZED SO OPEN MEANS CLOSED
+		'PBV5': 'PBV5_OPEN', //ENERGIZED SO OPEN MEANS CLOSED
 		'PBV6': 'PBV6_CLOSE',
 		'PBV7': 'PBV7_CLOSE',
 		'PBV8': 'PBV8_OPEN',
-		'PBV9': 'PBV9_CLOSE',
+		'PBV9': 'PBV9_OPEN', //ENERGIZED SO OPEN MEANS CLOSED
 		'PBV10': 'PBV10_CLOSE',
 		'PBV11': 'PBV11_CLOSE',
 		'SOL1': 'SOL1_CLOSE',

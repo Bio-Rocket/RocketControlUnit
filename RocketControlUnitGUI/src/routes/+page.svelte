@@ -162,9 +162,6 @@
 		'PBV11': $pbv11_open,
 		'SOL1': $sol1_open,
 		'SOL2': $sol2_open,
-		'SOL3': $sol3_open,
-		'SOL4': $sol4_open,
-		'SOL5': $sol5_open,
 		'IGN1': $ign1_on,
 		'IGN2': $ign2_on
 	};
@@ -222,15 +219,17 @@
 	$: tc12_display = $tc12_temperature === undefined ? 'N/A' : $tc12_temperature;
 	$: lc1_mass_display = $lc1_mass === undefined || Number($lc1_mass) < 0 ? 'NaN' : (Number($lc1_mass) - Number($lc1_tare || 0)).toFixed(2);
 	$: lc2_mass_display = $lc2_mass === undefined || Number($lc2_mass) < 0 ? 'NaN' : (Number($lc2_mass) - Number($lc2_tare || 0)).toFixed(2);
-	$: lc3_mass_display = $lc3_mass === undefined || Number($lc3_mass) < 0 ? 'NaN' : (Number($lc3_mass) - Number($lc3_tare || 0)).toFixed(2);
-	$: lc4_mass_display = $lc4_mass === undefined || Number($lc4_mass) < 0 ? 'NaN' : (Number($lc4_mass) - Number($lc4_tare || 0)).toFixed(2);
-	$: lc5_mass_display = $lc5_mass === undefined || Number($lc5_mass) < 0 ? 'NaN' : (Number($lc5_mass) - Number($lc5_tare || 0)).toFixed(2);
-	$: lc6_mass_display = $lc6_mass === undefined || Number($lc6_mass) < 0 ? 'NaN' : (Number($lc6_mass) - Number($lc6_tare || 0)).toFixed(2);
-	$: lc7_mass_display = $lc7_mass === undefined || Number($lc7_mass) < 0 ? 'NaN' : (Number($lc7_mass) - Number($lc7_tare || 0)).toFixed(2);
+	$: lc3_mass_display = $lc3_mass === undefined ? 'NaN' : (Number($lc3_mass) - Number($lc3_tare || 0)).toFixed(2);
+	$: lc4_mass_display = $lc4_mass === undefined ? 'NaN' : (Number($lc4_mass) - Number($lc4_tare || 0)).toFixed(2);
+	$: lc5_mass_display = $lc5_mass === undefined ? 'NaN' : (Number($lc5_mass) - Number($lc5_tare || 0)).toFixed(2);
+	$: lc6_mass_display = $lc6_mass === undefined ? 'NaN' : (Number($lc6_mass) - Number($lc6_tare || 0)).toFixed(2);
+	$: lc7_mass_display = $lc7_mass === undefined ? 'NaN' : (Number($lc7_mass) - Number($lc7_tare || 0)).toFixed(2);
 
-	const performTare = async (loadcell_num: string) => {
-		// Get the current value of the loadcell
-		const currentValue = get((stores as Record<string, Writable<number | undefined>>)[`lc${loadcell_num}_mass`]);
+	const performTare = async (loadcell_num: string, tareValue?: number) => {
+		// Get the current value of the loadcell if tareValue is not provided
+		const currentValue = tareValue !== undefined
+			? tareValue
+			: get((stores as Record<string, Writable<number | undefined>>)[`lc${loadcell_num}_mass`]);
 		console.log(`Performing tare for loadcell ${loadcell_num}, current value:`, currentValue);
 
 		if (currentValue !== undefined) {
@@ -710,6 +709,66 @@
 			on:click={() => performTare("6")}
 		>
 			TARE
+		</button>
+	</div>
+
+	<div class="lc1_untare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("1", 0)}
+		>
+			UNTARE
+		</button>
+	</div>
+
+	<div class="lc2_untare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("2", 0)}
+		>
+			UNTARE
+		</button>
+	</div>
+
+	<div class="lc3_untare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("3", 0)}
+		>
+			UNTARE
+		</button>
+	</div>
+
+	<div class="lc4_untare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("4", 0)}
+		>
+			UNTARE
+		</button>
+	</div>
+
+	<div class="lc5_untare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("5", 0)}
+		>
+			UNTARE
+		</button>
+	</div>
+
+	<div class="lc6_untare_button">
+		<button
+			type="button"
+			class="btn btn-sm variant-filled-secondary"
+			on:click={() => performTare("6", 0)}
+		>
+			UNTARE
 		</button>
 	</div>
 
