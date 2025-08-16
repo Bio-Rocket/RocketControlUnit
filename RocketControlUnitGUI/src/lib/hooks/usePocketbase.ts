@@ -100,14 +100,14 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 				console.log('Only one entry found. Latest created time:', entries.items[0].created);
 				notificationBanner.set({
 					type: 'error',
-					message: 'Failed to download CSVs.'
+					message: 'Unresolvable time range.'
 				});
 				return;
 			} else {
 				console.warn('No entries found in RecordingWindow.');
 				notificationBanner.set({
 					type: 'error',
-					message: 'Failed to download CSVs'
+					message: 'No time range.'
 				});
 				return;
 			}
