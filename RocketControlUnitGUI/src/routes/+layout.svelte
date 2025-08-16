@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../styles/app.postcss';
 	import { ThemeData, ThemeType } from '$lib/theme';
-	import { currentState, hardware_abort_active } from "$lib/stores";
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { page } from '$app/stores';
 	import {
@@ -10,16 +9,24 @@
 		AppRailAnchor,
 		AppBar,
 		initializeStores,
-		LightSwitch,
 		Modal,
 		storePopup,
-		modeCurrent
 	} from '@skeletonlabs/skeleton';
+	import { initTimestamps, } from '$lib/timestamps';
+	import { usePocketbase } from '$lib/hooks/usePocketbase';
+	import { initStores, currentState, hardware_abort_active } from '$lib/stores';
+
+	const timestamps = initTimestamps();
+	const stores = initStores();
+	const usePocketbaseHook = usePocketbase(timestamps, stores);
+	const {
+		downloadAllCSVs,
+	} = usePocketbaseHook;
 
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 	initializeStores();
 
-	$: themeData = new ThemeData($modeCurrent ? ThemeType.LIGHT : ThemeType.DARK);
+	$: themeData = new ThemeData(ThemeType.LIGHT);
 </script>
 
 <Modal />
@@ -63,15 +70,11 @@
 						<button
 							type="button"
 							class="btn btn-sm variant-filled-tertiary"
-							on:click={() => console.log("ll ")}
+							on:click={() => downloadAllCSVs()}
 						>
 							Download Logs
 						</button>
 						<h3 class="text-lg">Cold Flow</h3>
-						<LightSwitch />
-						<!-- {#if $auth === false}
-							<ReadOnlySvg />
-						{/if} -->
 					</div>
 				</div>
 			</svelte:fragment>
